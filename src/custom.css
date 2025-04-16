@@ -1,0 +1,49 @@
+:root {
+    --main-color: #0DB2AC;
+    --secondary-color: #FABA32;
+    --elements-color: #FC694D;
+    --bg-button: #089691;
+  }
+  
+  body {
+    font-family: 'Roboto', sans-serif;
+  }
+  
+  .text-bold {
+    font-weight: bold;
+  }
+  
+  .custom-btn {
+    background-color: var(--main-color);
+    border-bottom: 3px solid var(--bg-button);
+    font-size: 20px;
+  }
+  
+  .bg-main {
+    background-color: var(--main-color);
+  }
+  
+  .bg-elements {
+    background-color: var(--elements-color);
+  }
+  
+  .bg-button {
+    background-color: var(--bg-button);
+  }
+  
+  .text-elements {
+    color: var(--elements-color);
+  }
+  
+  .text-secondary {
+    color: var(--secondary-color) !important;
+  }
+  
+  #bg-pata {
+    position: absolute;
+    z-index: -1;
+    height: 450px;
+    opacity: 0.3;
+    rotate: 15deg;
+  }
+  
