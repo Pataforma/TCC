@@ -4,7 +4,7 @@ import logo from '../assets/imgs/logo.png';
 
 function Header() {
   return (
-    <header className="position-fixed top-0 start-0 w-100 bg-white shadow-sm z-index-1000 py-3 header">
+    <header className="position-fixed top-0 start-0 w-100 bg-white shadow-sm py-3 header">
       <div className="container d-flex justify-content-between align-items-center py-3">
         <div className="d-flex align-items-center">
           <img src={logo} alt="Logo" className="logo" />

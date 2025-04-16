@@ -1,7 +1,7 @@
 :root {
     --main-color: #0DB2AC;
     --secondary-color: #FABA32;
-    --elements-color: #FC694D;
+    --elements-color: #fa745a;
     --bg-button: #089691;
   }
   
@@ -70,3 +70,7 @@
     left: 0;
   }
   
+  .espacamento-header {
+    padding-top: 9rem;
+    padding-bottom: 6rem;
+  }

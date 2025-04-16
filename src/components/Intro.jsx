@@ -2,7 +2,7 @@ import bgPata from "../assets/imgs/bg-pata.png";
 import cachorro from "../assets/imgs/cachorro.png"
 const Intro = () => {
     return (
-      <section className="container d-flex flex-column flex-lg-row align-items-center justify-content-between mt-10 my-5 px-5">
+      <section className="container d-flex flex-column flex-lg-row align-items-center justify-content-between my-5 px-5 espacamento-header" >
         <div className="w-100 w-lg-50">
           <h1 className="text-elements">Pataforma</h1>
           <h3>
