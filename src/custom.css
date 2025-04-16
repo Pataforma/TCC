@@ -18,6 +18,11 @@
     border-bottom: 3px solid var(--bg-button);
     font-size: 20px;
   }
+
+  .custom-btn:hover{
+    background-color: var(--bg-button);
+    border-bottom: 3px solid var(--main-color);
+  }
   
   .bg-main {
     background-color: var(--main-color);
@@ -32,7 +37,7 @@
   }
   
   .text-elements {
-    color: var(--elements-color);
+    color: var(--main-color);
   }
   
   .text-secondary {
@@ -45,5 +50,23 @@
     height: 450px;
     opacity: 0.3;
     rotate: 15deg;
+  }
+
+  .logo{
+    width: 4rem;
+  }
+
+  .intro-dog {
+    position: relative;
+    z-index: 1; /* Garante que a imagem do cachorro fique abaixo do header */
+    margin-top: -50px; /* Ajuste para subir a imagem do cachorro para não cobrir o header */
+  }
+
+  .header {
+    z-index: 1000; /* Garante que o header tenha um z-index maior que o da imagem */
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
   }
   

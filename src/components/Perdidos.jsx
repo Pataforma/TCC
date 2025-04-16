@@ -1,3 +1,5 @@
+import perdido from "../assets/imgs/perdido.png";
+
 const Perdidos = () => {
     return (
       <section className="py-5 bg-button text-white">
@@ -11,7 +13,7 @@ const Perdidos = () => {
             </p>
           </div>
           <img
-            src="/imgs/perdido.png"
+            src={perdido}
             alt="Gatinho perdido"
             className="img-fluid mt-3 mt-lg-0"
             style={{ maxHeight: '300px' }}

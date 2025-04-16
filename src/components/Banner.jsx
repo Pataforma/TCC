@@ -1,3 +1,5 @@
+import banner from "../assets/imgs/banner.png";
+
 const Banner = () => {
     return (
       <section className="py-5 bg-elements">
@@ -10,7 +12,7 @@ const Banner = () => {
             </p>
           </div>
           <img
-            src="/imgs/banner.png"
+            src={banner}
             alt="Banner"
             className="img-fluid"
             style={{ maxHeight: '250px' }}
