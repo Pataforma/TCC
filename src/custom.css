@@ -105,7 +105,8 @@
   height: 300px;
   border-radius: 10px;
   object-fit: cover;
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 12px 4px rgba(0, 0, 0, 0.3);
+
 }
 
 /* Texto sobreposto no carrossel */
@@ -139,4 +140,97 @@
 .btn-paleta:hover {
   background-color: var(--elements-color);
   color: white;
+}
+
+/* Custom Carousel Styling */
+.custom-carousel .carousel-control-prev,
+.custom-carousel .carousel-control-next {
+  width: 5%;
+  opacity: 0.8;
+}
+
+.custom-carousel .carousel-control-prev-icon,
+.custom-carousel .carousel-control-next-icon {
+  background-color: var(--elements-color);
+  padding: 20px;
+  border-radius: 50%;
+  background-size: 50%;
+}
+
+.custom-carousel .carousel-control-prev {
+  left: -10px;
+}
+
+.custom-carousel .carousel-control-next {
+  right: -10px;
+}
+
+.custom-carousel .carousel-control-prev:hover,
+.custom-carousel .carousel-control-next:hover {
+  opacity: 1;
+}
+
+/* Ensure the carousel arrows are always visible */
+.custom-carousel:hover .carousel-control-prev,
+.custom-carousel:hover .carousel-control-next {
+  opacity: 1;
+}
+
+/* Nova estrutura de legenda para o carrossel */
+.carousel-caption-container {
+  margin-top: 1.5rem;
+  text-align: center;
+  padding: 0 2rem;
+}
+
+.carousel-caption-custom {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 1.2rem 2rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  display: inline-block;
+  margin: 0 auto;
+  min-width: 50%;
+}
+
+.carousel-caption-custom h3 {
+  color: var(--elements-color);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  font-size: 1.5rem;
+}
+
+.carousel-caption-custom p {
+  color: #555;
+  margin-bottom: 0;
+}
+
+/* Melhorar a visibilidade dos indicadores do carrossel */
+.custom-carousel .carousel-indicators {
+  position: absolute;
+  bottom: -50px;
+  margin-bottom: 0;
+  z-index: 5;
+}
+
+.custom-carousel .carousel-indicators [data-bs-target] {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: var(--elements-color);
+  opacity: 0.5;
+  margin: 0 6px;
+  border: none;
+}
+
+.custom-carousel .carousel-indicators .active {
+  opacity: 1;
+  background-color: var(--elements-color);
+  width: 14px;
+  height: 14px;
+}
+
+/* Reorganizar elementos para evitar sobreposição */
+.custom-carousel .carousel-inner {
+  margin-bottom: 3.5rem;
 }
