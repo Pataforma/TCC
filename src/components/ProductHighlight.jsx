@@ -5,6 +5,7 @@ function ProductHighlight() {
     <section className="py-5 bg-light text-center">
       <h3>Alimentador Inteligente</h3>
       <p>Descubra como o nosso alimentador pode transformar a alimentação do seu pet.</p>
+      <img src="src\assets\imgs\alimentador.png" alt="Alimentador" width={"300px"}  />
       <button className="btn btn-primary">Saiba mais</button>
     </section>
   );

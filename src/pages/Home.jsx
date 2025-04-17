@@ -7,6 +7,8 @@ import CarrouselSection from "../components/CarrouselSection";
 import ProductHighlight from "../components/ProductHighlight";
 import CallToAction from "../components/CallToAction";
 import Footer from "../components/Footer";
+import CardsHome from "../components/CardsHome";
+import EventSection from "../components/EventSection";
 
 const Home = () => {
   return (
@@ -15,7 +17,8 @@ const Home = () => {
       <Intro />
       <Banner />
       <CarrouselSection />
-      <Perdidos />
+      <CardsHome /> 
+      <EventSection />
       <ProductHighlight />
       <CallToAction />
       <Footer />

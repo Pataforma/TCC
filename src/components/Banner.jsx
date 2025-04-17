@@ -5,7 +5,7 @@ const Banner = () => {
       <section className="py-5 bg-elements">
         <div className="container px-5 d-flex flex-column flex-lg-row align-items-center justify-content-between">
           <div className="text-white mb-4 mb-lg-0">
-            <h3 className="fw-bold">Tudo o que seu pet precisa, em um só lugar!</h3>
+            <h3 className="fw-bold">Cuidado e amor conectados em um só lugar!</h3>
             <p>
               Uma plataforma inovadora criada para reunir informações e serviços
               essenciais para o cuidado e bem-estar dos animais.
