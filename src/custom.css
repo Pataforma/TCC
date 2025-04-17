@@ -14,13 +14,13 @@
   }
   
   .custom-btn {
-    background-color: var(--main-color);
+    background-color: var(--secondary-color);
     border-bottom: 3px solid var(--bg-button);
     font-size: 20px;
   }
 
   .custom-btn:hover{
-    background-color: var(--bg-button);
+    background-color: var(--elements-color);
     border-bottom: 3px solid var(--main-color);
   }
   

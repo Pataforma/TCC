@@ -1,4 +1,5 @@
 import React from "react";
+import Button from "./Button";
 
 function EventSection() {
   const eventos = [
@@ -28,7 +29,12 @@ function EventSection() {
                   <h5 className="card-title text-elements">{evento.titulo}</h5>
                   <h6 className="card-subtitle mb-2 text-muted">{evento.data} - {evento.local}</h6>
                   <p className="card-text">{evento.descricao}</p>
-                  <button className="btn btn-paleta mt-2">Saiba mais</button>
+                  <Button 
+                    text="Saiba mais" 
+                    bgColor="var(--secondary-color)" 
+                    hoverColor="var(--elements-color)" 
+                    className="mt-2"
+                  />
                 </div>
               </div>
             </div>

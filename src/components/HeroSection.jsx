@@ -1,4 +1,5 @@
 import React from "react";
+import Button from "./Button";
 
 function HeroSection() {
   return (
@@ -6,8 +7,21 @@ function HeroSection() {
       <h2>Cuidado e amor, conectados em um só lugar!</h2>
       <p>Encontre tudo o que você precisa para o bem-estar e cuidado do seu amigo de quatro patas.</p>
       <div>
-        <button className="btn btn-lg btn-outline-light me-3">Cadastrar meu pet</button>
-        <button className="btn btn-lg btn-outline-light">Anunciar pet perdido</button>
+        <Button 
+          text="Cadastrar meu pet" 
+          bgColor="transparent"
+          hoverColor="rgba(255, 255, 255, 0.2)"
+          textColor="white"
+          className="me-3"
+          style={{ border: "1px solid white" }}
+        />
+        <Button 
+          text="Anunciar pet perdido" 
+          bgColor="transparent"
+          hoverColor="rgba(255, 255, 255, 0.2)"
+          textColor="white"
+          style={{ border: "1px solid white" }}
+        />
       </div>
     </section>
   );

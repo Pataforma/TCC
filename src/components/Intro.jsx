@@ -1,5 +1,7 @@
 import bgPata from "../assets/imgs/bg-pata.png";
 import cachorro from "../assets/imgs/cachorro.png"
+import Button from "./Button";
+
 const Intro = () => {
     return (
       <section className="container d-flex flex-column flex-lg-row align-items-center justify-content-between my-5 px-5 espacamento-header" >
@@ -12,7 +14,12 @@ const Intro = () => {
             <span className="fw-bold">Cuide da saúde:</span> agende consultas veterinárias, <br />
             vacinas e exames diretamente pela nossa <br /> plataforma, com <span className="fw-bold">total confiança.</span>
           </p>
-          <button className="btn text-white mt-2 custom-btn">Saiba mais</button>
+          <Button 
+            text="Saiba mais" 
+            bgColor="var(--secondary-color)" 
+            hoverColor="var(--elements-color)" 
+            className="mt-2"
+          />
         </div>
         <div className="position-relative w-100 w-lg-50 text-center mt-4 mt-lg-0">
           <img src={bgPata} alt="Background" id="bg-pata" />

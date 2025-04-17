@@ -1,5 +1,6 @@
 import React from "react";
 import Carousel from "react-bootstrap/Carousel"; // Usando o carousel do Bootstrap
+import Button from "./Button";
 
 function CarrouselSection() {
   return (
@@ -7,7 +8,11 @@ function CarrouselSection() {
       <div className="container">
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h3 className="m-0">Nossos Carrosséis</h3>
-          <button className="btn btn-paleta">Ver todos</button>
+          <Button 
+            text="Ver todos" 
+            bgColor="var(--secondary-color)" 
+            hoverColor="var(--elements-color)" 
+          />
         </div>
         <Carousel 
           indicators={true}

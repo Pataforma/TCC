@@ -1,4 +1,5 @@
 import React from "react";
+import Button from "./Button";
 
 function CallToAction() {
   return (
@@ -6,8 +7,19 @@ function CallToAction() {
       <h3>Junte-se à comunidade!</h3>
       <p>Cadastre-se como tutor ou veterinário e faça a diferença!</p>
       <div>
-        <button className="btn btn-light me-3">Cadastrar como Tutor</button>
-        <button className="btn btn-light">Cadastrar como Veterinário</button>
+        <Button 
+          text="Cadastrar como Tutor" 
+          bgColor="white" 
+          hoverColor="#f8f9fa" 
+          textColor="black" 
+          className="me-3"
+        />
+        <Button 
+          text="Cadastrar como Veterinário" 
+          bgColor="white" 
+          hoverColor="#f8f9fa" 
+          textColor="black"
+        />
       </div>
     </section>
   );
