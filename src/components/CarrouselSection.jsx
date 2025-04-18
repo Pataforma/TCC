@@ -7,7 +7,7 @@ function CarrouselSection() {
     <section className="py-5">
       <div className="container">
         <div className="d-flex justify-content-between align-items-center mb-4">
-          <h3 className="m-0">Nossos Carrosséis</h3>
+          <h3 className="m-0 text-elements">Nossos Carrosséis</h3>
           <Button 
             text="Ver todos" 
             bgColor="var(--secondary-color)" 
