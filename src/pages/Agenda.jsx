@@ -14,11 +14,11 @@ const Agenda = () => {
   });
   const [eventoSelecionado, setEventoSelecionado] = useState(null);
   const [eventosVisiveis, setEventosVisiveis] = useState([]);
-  
+
   // Dados de exemplo para filtros
   const cidades = ["Feira de Santana", "Salvador", "Alagoinhas", "Santo Antônio de Jesus"];
   const tiposEvento = ["Vacinação", "Feira de Adoção", "Evento de ONG", "Palestra", "Live"];
-  
+
   // Dados de exemplo para eventos
   const eventos = [
     {
@@ -118,46 +118,46 @@ const Agenda = () => {
       imagem: logo
     }
   ];
-  
+
   // Função para encontrar data com eventos
   const tileClassName = ({ date, view }) => {
     if (view === 'month') {
-      const eventosNoDia = eventos.filter(evento => 
-        evento.data.getDate() === date.getDate() && 
-        evento.data.getMonth() === date.getMonth() && 
+      const eventosNoDia = eventos.filter(evento =>
+        evento.data.getDate() === date.getDate() &&
+        evento.data.getMonth() === date.getMonth() &&
         evento.data.getFullYear() === date.getFullYear()
       );
-      
+
       if (eventosNoDia.length > 0) {
         return 'bg-main text-white rounded';
       }
     }
   };
-  
+
   // Carregar eventos do dia selecionado e aplicar filtros
   useEffect(() => {
-    let eventosFiltrados = eventos.filter(evento => 
-      evento.data.getDate() === date.getDate() && 
-      evento.data.getMonth() === date.getMonth() && 
+    let eventosFiltrados = eventos.filter(evento =>
+      evento.data.getDate() === date.getDate() &&
+      evento.data.getMonth() === date.getMonth() &&
       evento.data.getFullYear() === date.getFullYear()
     );
-    
+
     if (filtros.cidade) {
-      eventosFiltrados = eventosFiltrados.filter(evento => 
+      eventosFiltrados = eventosFiltrados.filter(evento =>
         evento.cidade === filtros.cidade || evento.cidade === "Online"
       );
     }
-    
+
     if (filtros.tipoEvento) {
-      eventosFiltrados = eventosFiltrados.filter(evento => 
+      eventosFiltrados = eventosFiltrados.filter(evento =>
         evento.tipo === filtros.tipoEvento
       );
     }
-    
+
     setEventosVisiveis(eventosFiltrados);
     setEventoSelecionado(null);
   }, [date, filtros]);
-  
+
   // Manipuladores de eventos
   const handleFiltroChange = (e) => {
     const { name, value } = e.target;
@@ -166,25 +166,27 @@ const Agenda = () => {
       [name]: value
     }));
   };
-  
+
   const handleParticipacao = (evento) => {
     alert(`Você demonstrou interesse em participar do evento: ${evento.titulo}. 
 Os organizadores entrarão em contato em breve!`);
   };
-  
+
   return (
     <>
       <Header />
-      
-      <section className="container-fluid bg-main text-white py-5 mt-5">
-        <div className="container py-4">
+
+      <section className="container-fluid agenda-bg text-white py-5 mt-5 position-relative">
+        <div className="position-absolute top-0 start-0 w-100 h-100" style={{ backgroundColor: 'rgba(0, 0, 0, 0.4)', zIndex: 1 }}></div>
+        <div className="container py-4 position-relative" style={{ zIndex: 2 }}>
           <h1 className="display-5 fw-bold">Agenda de Eventos</h1>
           <p className="lead">
             Acompanhe as campanhas, eventos e atividades para você e seu pet
           </p>
         </div>
       </section>
-      
+
+
       <div className="container py-5">
         <div className="row">
           {/* Calendário e Filtros */}
@@ -193,8 +195,8 @@ Os organizadores entrarão em contato em breve!`);
               <div className="card-body">
                 <h5 className="text-elements fw-bold mb-3">Calendário</h5>
                 <div className="calendar-container">
-                  <Calendar 
-                    onChange={setDate} 
+                  <Calendar
+                    onChange={setDate}
                     value={date}
                     tileClassName={tileClassName}
                     className="w-100 border-0"
@@ -207,16 +209,16 @@ Os organizadores entrarão em contato em breve!`);
                 </div>
               </div>
             </div>
-            
+
             <div className="card border-0 shadow-sm">
               <div className="card-body">
                 <h5 className="text-elements fw-bold mb-3">Filtros</h5>
-                
+
                 <div className="mb-3">
                   <label htmlFor="cidade" className="form-label fw-semibold">Cidade</label>
-                  <select 
-                    className="form-select" 
-                    id="cidade" 
+                  <select
+                    className="form-select"
+                    id="cidade"
                     name="cidade"
                     value={filtros.cidade}
                     onChange={handleFiltroChange}
@@ -228,12 +230,12 @@ Os organizadores entrarão em contato em breve!`);
                     <option value="Online">Online</option>
                   </select>
                 </div>
-                
+
                 <div className="mb-3">
                   <label htmlFor="tipoEvento" className="form-label fw-semibold">Tipo de Evento</label>
-                  <select 
-                    className="form-select" 
-                    id="tipoEvento" 
+                  <select
+                    className="form-select"
+                    id="tipoEvento"
                     name="tipoEvento"
                     value={filtros.tipoEvento}
                     onChange={handleFiltroChange}
@@ -244,29 +246,29 @@ Os organizadores entrarão em contato em breve!`);
                     ))}
                   </select>
                 </div>
-                
-                <Button 
-                  text="Limpar Filtros" 
-                  bgColor="var(--secondary-color)" 
-                  hoverColor="var(--elements-color)" 
+
+                <Button
+                  text="Limpar Filtros"
+                  bgColor="var(--secondary-color)"
+                  hoverColor="var(--elements-color)"
                   onClick={() => setFiltros({ cidade: "", tipoEvento: "" })}
                   className="w-100 mt-3"
                 />
               </div>
             </div>
           </div>
-          
+
           {/* Lista de Eventos */}
           <div className="col-md-8">
             <div className="d-flex justify-content-between align-items-center mb-4">
               <h4>
-                {eventosVisiveis.length > 0 
+                {eventosVisiveis.length > 0
                   ? `Eventos em ${date.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })}`
                   : "Nenhum evento na data selecionada"
                 }
               </h4>
             </div>
-            
+
             {eventoSelecionado ? (
               <div className="card border-0 shadow-sm mb-4">
                 <div className="card-body">
@@ -274,13 +276,13 @@ Os organizadores entrarão em contato em breve!`);
                     <h3 className="text-elements">{eventoSelecionado.titulo}</h3>
                     <span className="badge bg-main text-white">{eventoSelecionado.tipo}</span>
                   </div>
-                  
+
                   <div className="row">
                     <div className="col-md-4 mb-3 mb-md-0">
-                      <img 
-                        src={eventoSelecionado.imagem} 
-                        alt={eventoSelecionado.titulo} 
-                        className="img-fluid rounded" 
+                      <img
+                        src={eventoSelecionado.imagem}
+                        alt={eventoSelecionado.titulo}
+                        className="img-fluid rounded"
                       />
                     </div>
                     <div className="col-md-8">
@@ -304,7 +306,7 @@ Os organizadores entrarão em contato em breve!`);
                         <i className="bi bi-file-text me-2"></i>
                         <strong>Descrição:</strong> {eventoSelecionado.descricao}
                       </p>
-                      
+
                       <div className="card bg-light border-0 mb-3">
                         <div className="card-body py-2">
                           <h6>Contato</h6>
@@ -318,18 +320,18 @@ Os organizadores entrarão em contato em breve!`);
                           </p>
                         </div>
                       </div>
-                      
+
                       <div className="d-flex justify-content-between">
-                        <Button 
-                          text="Voltar" 
-                          bgColor="var(--secondary-color)" 
-                          hoverColor="var(--elements-color)" 
+                        <Button
+                          text="Voltar"
+                          bgColor="var(--secondary-color)"
+                          hoverColor="var(--elements-color)"
                           onClick={() => setEventoSelecionado(null)}
                         />
-                        <Button 
-                          text="Quero Participar" 
-                          bgColor="var(--main-color)" 
-                          hoverColor="var(--bg-button)" 
+                        <Button
+                          text="Quero Participar"
+                          bgColor="var(--main-color)"
+                          hoverColor="var(--bg-button)"
                           onClick={() => handleParticipacao(eventoSelecionado)}
                         />
                       </div>
@@ -359,10 +361,10 @@ Os organizadores entrarão em contato em breve!`);
                               <i className="bi bi-geo-alt me-1"></i> {evento.local}, {evento.cidade}
                             </p>
                             <p className="card-text small text-truncate mb-3">{evento.descricao}</p>
-                            <Button 
-                              text="Ver Detalhes" 
-                              bgColor="var(--main-color)" 
-                              hoverColor="var(--bg-button)" 
+                            <Button
+                              text="Ver Detalhes"
+                              bgColor="var(--main-color)"
+                              hoverColor="var(--bg-button)"
                               onClick={() => setEventoSelecionado(evento)}
                               className="w-100"
                             />
@@ -383,7 +385,7 @@ Os organizadores entrarão em contato em breve!`);
           </div>
         </div>
       </div>
-      
+
       {/* Próximos Eventos Destacados */}
       <section className="container-fluid py-5 bg-light">
         <div className="container">
@@ -392,11 +394,11 @@ Os organizadores entrarão em contato em breve!`);
             {eventos.slice(0, 3).map(evento => (
               <div key={evento.id} className="col-md-4">
                 <div className="card h-100 border-0 shadow-sm">
-                  <img 
-                    src={evento.imagem} 
-                    alt={evento.titulo} 
-                    className="card-img-top" 
-                    style={{ height: "180px", objectFit: "cover" }} 
+                  <img
+                    src={evento.imagem}
+                    alt={evento.titulo}
+                    className="card-img-top"
+                    style={{ height: "180px", objectFit: "cover" }}
                   />
                   <div className="card-body">
                     <span className="badge bg-main text-white mb-2">{evento.tipo}</span>
@@ -407,10 +409,10 @@ Os organizadores entrarão em contato em breve!`);
                     <p className="card-text small mb-2">
                       <i className="bi bi-geo-alt me-1"></i> {evento.cidade}
                     </p>
-                    <Button 
-                      text="Ver Detalhes" 
-                      bgColor="var(--secondary-color)" 
-                      hoverColor="var(--elements-color)" 
+                    <Button
+                      text="Ver Detalhes"
+                      bgColor="var(--secondary-color)"
+                      hoverColor="var(--elements-color)"
                       onClick={() => {
                         setDate(evento.data);
                         setEventoSelecionado(evento);
@@ -424,28 +426,28 @@ Os organizadores entrarão em contato em breve!`);
           </div>
         </div>
       </section>
-      
+
       {/* Cadastre seu Evento */}
       <section className="container py-5">
         <div className="row align-items-center">
           <div className="col-md-6 mb-4 mb-md-0">
             <h2 className="text-elements fw-bold mb-3">Tem um evento para anunciar?</h2>
             <p className="mb-4">
-              ONGs, clínicas veterinárias e organizadores de eventos para pets podem 
-              cadastrar suas atividades gratuitamente na nossa plataforma. Basta preencher 
+              ONGs, clínicas veterinárias e organizadores de eventos para pets podem
+              cadastrar suas atividades gratuitamente na nossa plataforma. Basta preencher
               o formulário e entraremos em contato para validar as informações.
             </p>
             <div className="d-flex">
-              <Button 
-                text="Cadastrar Evento" 
-                bgColor="var(--main-color)" 
-                hoverColor="var(--bg-button)" 
+              <Button
+                text="Cadastrar Evento"
+                bgColor="var(--main-color)"
+                hoverColor="var(--bg-button)"
                 className="px-4 py-2 fw-bold me-3"
               />
-              <Button 
-                text="Saiba Mais" 
-                bgColor="white" 
-                hoverColor="#f8f9fa" 
+              <Button
+                text="Saiba Mais"
+                bgColor="white"
+                hoverColor="#f8f9fa"
                 textColor="var(--main-color)"
                 className="px-4 py-2 fw-bold"
                 style={{ border: "1px solid var(--main-color)" }}
@@ -453,16 +455,16 @@ Os organizadores entrarão em contato em breve!`);
             </div>
           </div>
           <div className="col-md-6 text-center">
-            <img 
-              src={logo} 
-              alt="Cadastre seu evento" 
-              className="img-fluid rounded shadow-sm" 
-              style={{ maxWidth: "80%" }} 
+            <img
+              src={logo}
+              alt="Cadastre seu evento"
+              className="img-fluid rounded shadow-sm"
+              style={{ maxWidth: "80%" }}
             />
           </div>
         </div>
       </section>
-      
+
       <Footer />
     </>
   );

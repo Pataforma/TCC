@@ -1,81 +1,84 @@
 :root {
-    --main-color: #0DB2AC;
-    --secondary-color: #FABA32;
-    --elements-color: #fa745a;
-    --bg-button: #089691;
-  }
-  
-  body {
-    font-family: 'Roboto', sans-serif;
-  }
-  
-  .text-bold {
-    font-weight: bold;
-  }
-  
-  .custom-btn {
-    background-color: var(--secondary-color);
-    border-bottom: 3px solid var(--bg-button);
-    font-size: 20px;
-  }
+  --main-color: #0DB2AC;
+  --secondary-color: #FABA32;
+  --elements-color: #fa745a;
+  --bg-button: #089691;
+}
 
-  .custom-btn:hover{
-    background-color: var(--elements-color);
-    border-bottom: 3px solid var(--main-color);
-  }
-  
-  .bg-main {
-    background-color: var(--main-color);
-  }
-  
-  .bg-elements {
-    background-color: var(--elements-color);
-  }
-  
-  .bg-button {
-    background-color: var(--bg-button);
-  }
-  
-  .text-elements {
-    color: var(--main-color);
-  }
-  
-  .text-secondary {
-    color: var(--secondary-color) !important;
-  }
-  
-  #bg-pata {
-    position: absolute;
-    z-index: -1;
-    height: 450px;
-    opacity: 0.3;
-    rotate: 15deg;
-  }
+body {
+  font-family: 'Roboto', sans-serif;
+}
 
-  .logo{
-    width: 4rem;
-  }
+.text-bold {
+  font-weight: bold;
+}
 
-  .intro-dog {
-    position: relative;
-    z-index: 1; /* Garante que a imagem do cachorro fique abaixo do header */
-    margin-top: -50px; /* Ajuste para subir a imagem do cachorro para não cobrir o header */
-  }
+.custom-btn {
+  background-color: var(--secondary-color);
+  border-bottom: 3px solid var(--bg-button);
+  font-size: 20px;
+}
 
-  .header {
-    z-index: 1000; /* Garante que o header tenha um z-index maior que o da imagem */
-    position: fixed;
-    width: 100%;
-    top: 0;
-    left: 0;
-  }
-  
-  .espacamento-header {
-    padding-top: 9rem;
-    padding-bottom: 6rem;
-  }
+.custom-btn:hover {
+  background-color: var(--elements-color);
+  border-bottom: 3px solid var(--main-color);
+}
 
-  /* Estilo geral da seção do carrossel */
+.bg-main {
+  background-color: var(--main-color);
+}
+
+.bg-elements {
+  background-color: var(--elements-color);
+}
+
+.bg-button {
+  background-color: var(--bg-button);
+}
+
+.text-elements {
+  color: var(--main-color);
+}
+
+.text-secondary {
+  color: var(--secondary-color) !important;
+}
+
+#bg-pata {
+  position: absolute;
+  z-index: -1;
+  height: 450px;
+  opacity: 0.3;
+  rotate: 15deg;
+}
+
+.logo {
+  width: 4rem;
+}
+
+.intro-dog {
+  position: relative;
+  z-index: 1;
+  /* Garante que a imagem do cachorro fique abaixo do header */
+  margin-top: -50px;
+  /* Ajuste para subir a imagem do cachorro para não cobrir o header */
+}
+
+.header {
+  z-index: 1000;
+  /* Garante que o header tenha um z-index maior que o da imagem */
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+}
+
+.espacamento-header {
+  padding-top: 9rem;
+  padding-bottom: 6rem;
+}
+
+/* Estilo geral da seção do carrossel */
 .carrossel-section {
   background-color: var(--background-color);
   color: var(--text-color);
@@ -115,7 +118,8 @@
   bottom: 10%;
   left: 50%;
   transform: translateX(-50%);
-  background-color: rgba(0, 0, 0, 0.5); /* fundo escuro transparente */
+  background-color: rgba(0, 0, 0, 0.5);
+  /* fundo escuro transparente */
   padding: 1rem 2rem;
   border-radius: 12px;
   text-align: center;
@@ -234,3 +238,41 @@
 .custom-carousel .carousel-inner {
   margin-bottom: 3.5rem;
 }
+
+.animais-bg {
+  background-image: url('assets/imgs/animais-bg.jpg');
+  background-size:cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  
+}
+
+.sobre-bg {
+  background-image: url('assets/imgs/sobre-bg.jpg');
+  background-size:cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  
+}
+
+.veterinarios-bg {
+  background-image: url('assets/imgs/veterinarios-bg.jpg');
+  background-size:cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.contato-bg {
+  background-image: url('assets/imgs/contato-bg.jpg');
+  background-size:cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.agenda-bg {
+  background-image: url('assets/imgs/agenda-bg.jpg');
+  background-size:cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+

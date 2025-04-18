@@ -3,6 +3,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Button from "../components/Button";
 import logo from "../assets/imgs/logo.png";
+import alimentador from "../assets/imgs/alimentador.png";
 
 const Produto = () => {
   const [faqOpen, setFaqOpen] = useState({});
@@ -105,10 +106,10 @@ const Produto = () => {
             </div>
             <div className="col-md-6 text-center">
               <img 
-                src={logo} 
+                src={alimentador} 
                 alt="Alimentador Inteligente" 
-                className="img-fluid rounded shadow" 
-                style={{ maxWidth: "80%" }} 
+                className="img-fluid bg-transparent" 
+                style={{ maxWidth: "50%" }} 
               />
             </div>
           </div>

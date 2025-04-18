@@ -9,26 +9,19 @@ const Sobre = () => {
     <>
       <Header />
       {/* Hero Section */}
-      <section className="container-fluid bg-main text-white py-5 mt-5">
-        <div className="container py-5">
-          <div className="row align-items-center">
-            <div className="col-md-6">
-              <h1 className="display-4 fw-bold">Sobre a Pataforma</h1>
-              <p className="lead">
-                Conectando pessoas e pets em uma plataforma dedicada ao bem-estar animal.
-              </p>
-            </div>
-            <div className="col-md-6 text-center">
-              <img 
-                src={logo} 
-                alt="Logo Pataforma" 
-                className="img-fluid shadow rounded-circle" 
-                style={{ maxWidth: "300px" }} 
-              />
-            </div>
-          </div>
+      <section className="container-fluid text-white py-5 mt-5 position-relative sobre-bg">
+        {/* Overlay escuro */}
+        <div className="position-absolute top-0 start-0 w-100 h-100" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)', zIndex: 1 }}></div>
+
+        {/* Conteúdo com z-index acima do overlay */}
+        <div className="container py-4 position-relative" style={{ zIndex: 2 }}>
+          <h1 className="display-5 fw-bold">Animais</h1>
+          <p className="lead">
+            Encontre pets perdidos, adote um amigo ou aprenda mais sobre cuidados com animais
+          </p>
         </div>
       </section>
+
 
       {/* Nossa Missão */}
       <section className="container py-5">
@@ -39,22 +32,22 @@ const Sobre = () => {
           </div>
           <div className="col-md-6">
             <p className="lead">
-              A Pataforma nasceu com o objetivo de transformar a relação entre tutores, 
-              veterinários e animais de estimação, oferecendo soluções tecnológicas que 
+              A Pataforma nasceu com o objetivo de transformar a relação entre tutores,
+              veterinários e animais de estimação, oferecendo soluções tecnológicas que
               facilitam o cuidado e bem-estar dos pets.
             </p>
             <p>
-              Acreditamos que cada animal merece cuidados de qualidade e que a tecnologia 
-              pode aproximar pessoas e recursos para proporcionar uma vida mais saudável 
+              Acreditamos que cada animal merece cuidados de qualidade e que a tecnologia
+              pode aproximar pessoas e recursos para proporcionar uma vida mais saudável
               e feliz aos nossos amigos de quatro patas.
             </p>
           </div>
           <div className="col-md-6 text-center">
-            <img 
-              src={logo} 
-              alt="Nossa Missão" 
-              className="img-fluid shadow rounded" 
-              style={{ maxWidth: "350px" }} 
+            <img
+              src={logo}
+              alt="Nossa Missão"
+              className="img-fluid shadow rounded"
+              style={{ maxWidth: "350px" }}
             />
           </div>
         </div>
@@ -106,7 +99,7 @@ const Sobre = () => {
                   </div>
                   <h4 className="text-elements">Inovação</h4>
                   <p>
-                    Buscamos constantemente soluções tecnológicas inovadoras para 
+                    Buscamos constantemente soluções tecnológicas inovadoras para
                     facilitar o acesso aos serviços e melhorar a experiência de todos.
                   </p>
                 </div>
@@ -123,7 +116,7 @@ const Sobre = () => {
             <h2 className="text-elements fw-bold">Nossa Equipe</h2>
             <div className="mx-auto" style={{ width: "50px", height: "4px", backgroundColor: "var(--secondary-color)" }}></div>
             <p className="mt-3">
-              Conheça as pessoas por trás da Pataforma que trabalham diariamente para proporcionar 
+              Conheça as pessoas por trás da Pataforma que trabalham diariamente para proporcionar
               a melhor experiência para você e seu pet.
             </p>
           </div>
@@ -132,11 +125,11 @@ const Sobre = () => {
           <div className="col-md-4">
             <div className="card border-0 shadow-sm h-100">
               <div className="text-center pt-4">
-                <img 
-                  src={logo} 
-                  alt="Membro da Equipe" 
-                  className="rounded-circle" 
-                  style={{ width: "150px", height: "150px", objectFit: "cover" }} 
+                <img
+                  src={logo}
+                  alt="Membro da Equipe"
+                  className="rounded-circle"
+                  style={{ width: "150px", height: "150px", objectFit: "cover" }}
                 />
               </div>
               <div className="card-body text-center">
@@ -151,11 +144,11 @@ const Sobre = () => {
           <div className="col-md-4">
             <div className="card border-0 shadow-sm h-100">
               <div className="text-center pt-4">
-                <img 
-                  src={logo} 
-                  alt="Membro da Equipe" 
-                  className="rounded-circle" 
-                  style={{ width: "150px", height: "150px", objectFit: "cover" }} 
+                <img
+                  src={logo}
+                  alt="Membro da Equipe"
+                  className="rounded-circle"
+                  style={{ width: "150px", height: "150px", objectFit: "cover" }}
                 />
               </div>
               <div className="card-body text-center">
@@ -170,11 +163,11 @@ const Sobre = () => {
           <div className="col-md-4">
             <div className="card border-0 shadow-sm h-100">
               <div className="text-center pt-4">
-                <img 
-                  src={logo} 
-                  alt="Membro da Equipe" 
-                  className="rounded-circle" 
-                  style={{ width: "150px", height: "150px", objectFit: "cover" }} 
+                <img
+                  src={logo}
+                  alt="Membro da Equipe"
+                  className="rounded-circle"
+                  style={{ width: "150px", height: "150px", objectFit: "cover" }}
                 />
               </div>
               <div className="card-body text-center">
@@ -197,17 +190,17 @@ const Sobre = () => {
             Junte-se à nossa comunidade e transforme a vida do seu pet com a Pataforma
           </p>
           <div>
-            <Button 
-              text="Quero fazer parte" 
-              bgColor="var(--secondary-color)" 
-              hoverColor="var(--elements-color)" 
-              textColor="white" 
+            <Button
+              text="Quero fazer parte"
+              bgColor="var(--secondary-color)"
+              hoverColor="var(--elements-color)"
+              textColor="white"
               className="me-3 px-4 py-2"
             />
-            <Button 
-              text="Fale Conosco" 
-              bgColor="transparent" 
-              hoverColor="rgba(255, 255, 255, 0.2)" 
+            <Button
+              text="Fale Conosco"
+              bgColor="var(--secondary-color)"
+              hoverColor="var(--elements-color)"
               textColor="white"
               className="px-4 py-2"
               style={{ border: "1px solid white" }}

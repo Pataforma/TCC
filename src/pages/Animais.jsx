@@ -9,14 +9,14 @@ const Animais = () => {
   const [filtroPerdidos, setFiltroPerdidos] = useState({ cidade: "", bairro: "" });
   const [filtroAdocao, setFiltroAdocao] = useState({ porte: "", idade: "", cidade: "" });
   const [categoriaDicas, setCategoriaDicas] = useState("todas");
-  
+
   // Dados de exemplo para filtros
   const cidades = ["Feira de Santana", "Salvador", "Alagoinhas", "Santo Antônio de Jesus"];
   const bairros = ["Centro", "Kalilândia", "Serraria Brasil", "Cidade Nova"];
   const portes = ["Pequeno", "Médio", "Grande"];
   const idades = ["Filhote", "Adulto", "Idoso"];
   const categorias = ["Alimentação", "Higiene", "Comportamento", "Saúde", "Treinamento"];
-  
+
   // Dados de exemplo para pets perdidos
   const petsPerdidos = [
     {
@@ -77,7 +77,7 @@ const Animais = () => {
       }
     },
   ];
-  
+
   // Dados de exemplo para adoção
   const petsAdocao = [
     {
@@ -156,7 +156,7 @@ const Animais = () => {
       }
     },
   ];
-  
+
   // Dados de exemplo para dicas
   const dicas = [
     {
@@ -205,14 +205,14 @@ const Animais = () => {
       imagem: logo
     },
   ];
-  
+
   // Filtragem de pets perdidos
   const perdidosFiltrados = petsPerdidos.filter(pet => {
     const cidadeMatch = !filtroPerdidos.cidade || pet.desaparecido.cidade === filtroPerdidos.cidade;
     const bairroMatch = !filtroPerdidos.bairro || pet.desaparecido.bairro === filtroPerdidos.bairro;
     return cidadeMatch && bairroMatch;
   });
-  
+
   // Filtragem de pets para adoção
   const adocaoFiltrados = petsAdocao.filter(pet => {
     const porteMatch = !filtroAdocao.porte || pet.porte === filtroAdocao.porte;
@@ -220,42 +220,44 @@ const Animais = () => {
     const cidadeMatch = !filtroAdocao.cidade || pet.cidade === filtroAdocao.cidade;
     return porteMatch && idadeMatch && cidadeMatch;
   });
-  
+
   // Filtragem de dicas
-  const dicasFiltradas = dicas.filter(dica => 
+  const dicasFiltradas = dicas.filter(dica =>
     categoriaDicas === "todas" || dica.categoria === categoriaDicas
   );
-  
+
   // Manipuladores de eventos
   const handleFiltroPerdidosChange = (e) => {
     const { name, value } = e.target;
     setFiltroPerdidos(prev => ({ ...prev, [name]: value }));
   };
-  
+
   const handleFiltroAdocaoChange = (e) => {
     const { name, value } = e.target;
     setFiltroAdocao(prev => ({ ...prev, [name]: value }));
   };
-  
+
   return (
     <>
       <Header />
-      
-      <section className="container-fluid bg-main text-white py-5 mt-5">
-        <div className="container py-4">
+      <section className="container-fluid animais-bg text-white py-5 mt-5 position-relative">
+        {/* Overlay escuro */}
+        <div className="position-absolute top-0 start-0 w-100 h-100" style={{ backgroundColor: 'rgba(0, 0, 0, 0.4)', zIndex: 1 }}></div>
+        {/* Conteúdo com z-index acima do overlay */}
+        <div className="container py-4 position-relative" style={{ zIndex: 2 }}>
           <h1 className="display-5 fw-bold">Animais</h1>
           <p className="lead">
             Encontre pets perdidos, adote um amigo ou aprenda mais sobre cuidados com animais
           </p>
         </div>
       </section>
-      
+
       <div className="container py-5">
         {/* Abas de navegação */}
         <ul className="nav nav-tabs mb-4" id="animaisTabs" role="tablist">
           <li className="nav-item" role="presentation">
-            <button 
-              className={`nav-link ${activeTab === 'perdidos' ? 'active text-elements fw-semibold' : ''}`} 
+            <button
+              className={`nav-link ${activeTab === 'perdidos' ? 'active text-elements fw-semibold' : ''}`}
               onClick={() => setActiveTab('perdidos')}
               style={{ borderBottom: activeTab === 'perdidos' ? '3px solid var(--secondary-color)' : 'none' }}
             >
@@ -263,8 +265,8 @@ const Animais = () => {
             </button>
           </li>
           <li className="nav-item" role="presentation">
-            <button 
-              className={`nav-link ${activeTab === 'adocao' ? 'active text-elements fw-semibold' : ''}`} 
+            <button
+              className={`nav-link ${activeTab === 'adocao' ? 'active text-elements fw-semibold' : ''}`}
               onClick={() => setActiveTab('adocao')}
               style={{ borderBottom: activeTab === 'adocao' ? '3px solid var(--secondary-color)' : 'none' }}
             >
@@ -272,8 +274,8 @@ const Animais = () => {
             </button>
           </li>
           <li className="nav-item" role="presentation">
-            <button 
-              className={`nav-link ${activeTab === 'dicas' ? 'active text-elements fw-semibold' : ''}`} 
+            <button
+              className={`nav-link ${activeTab === 'dicas' ? 'active text-elements fw-semibold' : ''}`}
               onClick={() => setActiveTab('dicas')}
               style={{ borderBottom: activeTab === 'dicas' ? '3px solid var(--secondary-color)' : 'none' }}
             >
@@ -281,7 +283,7 @@ const Animais = () => {
             </button>
           </li>
         </ul>
-        
+
         {/* Conteúdo das abas */}
         <div className="tab-content" id="animaisTabsContent">
           {/* Pets Perdidos */}
@@ -292,12 +294,12 @@ const Animais = () => {
                 <div className="card border-0 shadow-sm">
                   <div className="card-body">
                     <h5 className="text-elements mb-4 fw-bold">Filtrar Pets Perdidos</h5>
-                    
+
                     <div className="mb-3">
                       <label htmlFor="perdidosCidade" className="form-label fw-semibold">Cidade</label>
-                      <select 
-                        className="form-select" 
-                        id="perdidosCidade" 
+                      <select
+                        className="form-select"
+                        id="perdidosCidade"
                         name="cidade"
                         value={filtroPerdidos.cidade}
                         onChange={handleFiltroPerdidosChange}
@@ -308,12 +310,12 @@ const Animais = () => {
                         ))}
                       </select>
                     </div>
-                    
+
                     <div className="mb-3">
                       <label htmlFor="perdidosBairro" className="form-label fw-semibold">Bairro</label>
-                      <select 
-                        className="form-select" 
-                        id="perdidosBairro" 
+                      <select
+                        className="form-select"
+                        id="perdidosBairro"
                         name="bairro"
                         value={filtroPerdidos.bairro}
                         onChange={handleFiltroPerdidosChange}
@@ -324,33 +326,33 @@ const Animais = () => {
                         ))}
                       </select>
                     </div>
-                    
-                    <Button 
-                      text="Limpar Filtros" 
-                      bgColor="var(--secondary-color)" 
-                      hoverColor="var(--elements-color)" 
+
+                    <Button
+                      text="Limpar Filtros"
+                      bgColor="var(--secondary-color)"
+                      hoverColor="var(--elements-color)"
                       onClick={() => setFiltroPerdidos({ cidade: "", bairro: "" })}
                       className="w-100 mt-3"
                     />
 
                     <div className="mt-4">
-                      <Button 
-                        text="Registrar Pet Perdido" 
-                        bgColor="var(--main-color)" 
-                        hoverColor="var(--bg-button)" 
+                      <Button
+                        text="Registrar Pet Perdido"
+                        bgColor="var(--main-color)"
+                        hoverColor="var(--bg-button)"
                         className="w-100"
                       />
                     </div>
                   </div>
                 </div>
               </div>
-              
+
               {/* Lista de Pets Perdidos */}
               <div className="col-md-9">
                 <div className="d-flex justify-content-between align-items-center mb-4">
                   <h4>{perdidosFiltrados.length} Pets Perdidos</h4>
                 </div>
-                
+
                 <div className="row g-4">
                   {perdidosFiltrados.length > 0 ? (
                     perdidosFiltrados.map(pet => (
@@ -358,11 +360,11 @@ const Animais = () => {
                         <div className="card h-100 border-0 shadow-sm">
                           <div className="row g-0">
                             <div className="col-md-4">
-                              <img 
-                                src={logo} 
-                                alt={pet.nome} 
-                                className="img-fluid rounded-start h-100" 
-                                style={{ objectFit: "cover" }} 
+                              <img
+                                src={logo}
+                                alt={pet.nome}
+                                className="img-fluid rounded-start h-100"
+                                style={{ objectFit: "cover" }}
                               />
                             </div>
                             <div className="col-md-8">
@@ -375,10 +377,10 @@ const Animais = () => {
                                 <p className="card-text mb-2"><i className="bi bi-geo-alt"></i> {pet.desaparecido.cidade}, {pet.desaparecido.bairro}</p>
                                 <p className="card-text"><small className="text-muted">Desaparecido em: {pet.desaparecido.data}</small></p>
                                 <p className="card-text small">{pet.descricao}</p>
-                                <Button 
-                                  text="Entrar em Contato" 
-                                  bgColor="var(--main-color)" 
-                                  hoverColor="var(--bg-button)" 
+                                <Button
+                                  text="Entrar em Contato"
+                                  bgColor="var(--main-color)"
+                                  hoverColor="var(--bg-button)"
                                   className="w-100 mt-2"
                                 />
                               </div>
@@ -390,10 +392,10 @@ const Animais = () => {
                   ) : (
                     <div className="col-12 text-center py-5">
                       <p className="text-muted">Nenhum pet perdido encontrado com os filtros selecionados.</p>
-                      <Button 
-                        text="Limpar Filtros" 
-                        bgColor="var(--secondary-color)" 
-                        hoverColor="var(--elements-color)" 
+                      <Button
+                        text="Limpar Filtros"
+                        bgColor="var(--secondary-color)"
+                        hoverColor="var(--elements-color)"
                         onClick={() => setFiltroPerdidos({ cidade: "", bairro: "" })}
                       />
                     </div>
@@ -402,7 +404,7 @@ const Animais = () => {
               </div>
             </div>
           )}
-          
+
           {/* Adoção */}
           {activeTab === 'adocao' && (
             <div className="row">
@@ -411,12 +413,12 @@ const Animais = () => {
                 <div className="card border-0 shadow-sm">
                   <div className="card-body">
                     <h5 className="text-elements mb-4 fw-bold">Filtrar Pets para Adoção</h5>
-                    
+
                     <div className="mb-3">
                       <label htmlFor="adocaoPorte" className="form-label fw-semibold">Porte</label>
-                      <select 
-                        className="form-select" 
-                        id="adocaoPorte" 
+                      <select
+                        className="form-select"
+                        id="adocaoPorte"
                         name="porte"
                         value={filtroAdocao.porte}
                         onChange={handleFiltroAdocaoChange}
@@ -427,12 +429,12 @@ const Animais = () => {
                         ))}
                       </select>
                     </div>
-                    
+
                     <div className="mb-3">
                       <label htmlFor="adocaoIdade" className="form-label fw-semibold">Idade</label>
-                      <select 
-                        className="form-select" 
-                        id="adocaoIdade" 
+                      <select
+                        className="form-select"
+                        id="adocaoIdade"
                         name="idade"
                         value={filtroAdocao.idade}
                         onChange={handleFiltroAdocaoChange}
@@ -443,12 +445,12 @@ const Animais = () => {
                         ))}
                       </select>
                     </div>
-                    
+
                     <div className="mb-3">
                       <label htmlFor="adocaoCidade" className="form-label fw-semibold">Cidade</label>
-                      <select 
-                        className="form-select" 
-                        id="adocaoCidade" 
+                      <select
+                        className="form-select"
+                        id="adocaoCidade"
                         name="cidade"
                         value={filtroAdocao.cidade}
                         onChange={handleFiltroAdocaoChange}
@@ -459,33 +461,33 @@ const Animais = () => {
                         ))}
                       </select>
                     </div>
-                    
-                    <Button 
-                      text="Limpar Filtros" 
-                      bgColor="var(--secondary-color)" 
-                      hoverColor="var(--elements-color)" 
+
+                    <Button
+                      text="Limpar Filtros"
+                      bgColor="var(--secondary-color)"
+                      hoverColor="var(--elements-color)"
                       onClick={() => setFiltroAdocao({ porte: "", idade: "", cidade: "" })}
                       className="w-100 mt-3"
                     />
-                    
+
                     <div className="mt-4">
-                      <Button 
-                        text="Cadastrar Pet para Adoção" 
-                        bgColor="var(--main-color)" 
-                        hoverColor="var(--bg-button)" 
+                      <Button
+                        text="Cadastrar Pet para Adoção"
+                        bgColor="var(--main-color)"
+                        hoverColor="var(--bg-button)"
                         className="w-100"
                       />
                     </div>
                   </div>
                 </div>
               </div>
-              
+
               {/* Lista de Pets para Adoção */}
               <div className="col-md-9">
                 <div className="d-flex justify-content-between align-items-center mb-4">
                   <h4>{adocaoFiltrados.length} Pets para Adoção</h4>
                 </div>
-                
+
                 <div className="row g-4">
                   {adocaoFiltrados.length > 0 ? (
                     adocaoFiltrados.map(pet => (
@@ -493,11 +495,11 @@ const Animais = () => {
                         <div className="card h-100 border-0 shadow-sm">
                           <div className="row g-0">
                             <div className="col-md-4">
-                              <img 
-                                src={logo} 
-                                alt={pet.nome} 
-                                className="img-fluid rounded-start h-100" 
-                                style={{ objectFit: "cover" }} 
+                              <img
+                                src={logo}
+                                alt={pet.nome}
+                                className="img-fluid rounded-start h-100"
+                                style={{ objectFit: "cover" }}
                               />
                             </div>
                             <div className="col-md-8">
@@ -509,7 +511,7 @@ const Animais = () => {
                                 <p className="card-text mb-1"><small>{pet.tipo} • {pet.raca} • {pet.sexo}</small></p>
                                 <p className="card-text mb-1"><small className="text-muted">{pet.porte} • {pet.idade}</small></p>
                                 <p className="card-text mb-2"><i className="bi bi-geo-alt"></i> {pet.cidade}</p>
-                                
+
                                 <div className="mb-2">
                                   <span className={`badge me-1 ${pet.saude.vacinado ? 'bg-info' : 'bg-light text-dark'}`}>
                                     {pet.saude.vacinado ? 'Vacinado' : 'Não vacinado'}
@@ -518,17 +520,17 @@ const Animais = () => {
                                     {pet.saude.castrado ? 'Castrado' : 'Não castrado'}
                                   </span>
                                 </div>
-                                
+
                                 <div className="mb-2">
                                   {pet.comportamento.sociavel && <span className="badge bg-light text-dark me-1">Sociável</span>}
                                   {pet.comportamento.tranquilo && <span className="badge bg-light text-dark me-1">Tranquilo</span>}
                                   {pet.comportamento.ativo && <span className="badge bg-light text-dark me-1">Ativo</span>}
                                 </div>
-                                
-                                <Button 
-                                  text="Quero Adotar" 
-                                  bgColor="var(--main-color)" 
-                                  hoverColor="var(--bg-button)" 
+
+                                <Button
+                                  text="Quero Adotar"
+                                  bgColor="var(--main-color)"
+                                  hoverColor="var(--bg-button)"
                                   className="w-100 mt-2"
                                 />
                               </div>
@@ -540,10 +542,10 @@ const Animais = () => {
                   ) : (
                     <div className="col-12 text-center py-5">
                       <p className="text-muted">Nenhum pet para adoção encontrado com os filtros selecionados.</p>
-                      <Button 
-                        text="Limpar Filtros" 
-                        bgColor="var(--secondary-color)" 
-                        hoverColor="var(--elements-color)" 
+                      <Button
+                        text="Limpar Filtros"
+                        bgColor="var(--secondary-color)"
+                        hoverColor="var(--elements-color)"
                         onClick={() => setFiltroAdocao({ porte: "", idade: "", cidade: "" })}
                       />
                     </div>
@@ -552,21 +554,21 @@ const Animais = () => {
               </div>
             </div>
           )}
-          
+
           {/* Dicas e Cuidados */}
           {activeTab === 'dicas' && (
             <div className="row">
               {/* Categorias */}
               <div className="col-12 mb-4">
                 <div className="d-flex flex-wrap justify-content-center">
-                  <button 
+                  <button
                     className={`btn ${categoriaDicas === 'todas' ? 'btn-main text-white' : 'btn-light'} m-1`}
                     onClick={() => setCategoriaDicas('todas')}
                   >
                     Todas
                   </button>
                   {categorias.map((cat, index) => (
-                    <button 
+                    <button
                       key={index}
                       className={`btn ${categoriaDicas === cat ? 'btn-main text-white' : 'btn-light'} m-1`}
                       onClick={() => setCategoriaDicas(cat)}
@@ -576,18 +578,18 @@ const Animais = () => {
                   ))}
                 </div>
               </div>
-              
+
               {/* Artigos */}
               <div className="col-12">
                 <div className="row g-4">
                   {dicasFiltradas.map(dica => (
                     <div key={dica.id} className="col-md-4">
                       <div className="card h-100 border-0 shadow-sm">
-                        <img 
-                          src={dica.imagem} 
-                          alt={dica.titulo} 
-                          className="card-img-top" 
-                          style={{ height: "200px", objectFit: "cover" }} 
+                        <img
+                          src={dica.imagem}
+                          alt={dica.titulo}
+                          className="card-img-top"
+                          style={{ height: "200px", objectFit: "cover" }}
                         />
                         <div className="card-body">
                           <span className="badge bg-main text-white mb-2">{dica.categoria}</span>
@@ -599,10 +601,10 @@ const Animais = () => {
                             <small className="text-muted">{dica.data}</small>
                             <small className="text-muted">{dica.autor}</small>
                           </div>
-                          <Button 
-                            text="Ler Artigo" 
-                            bgColor="var(--secondary-color)" 
-                            hoverColor="var(--elements-color)" 
+                          <Button
+                            text="Ler Artigo"
+                            bgColor="var(--secondary-color)"
+                            hoverColor="var(--elements-color)"
                             className="w-100 mt-2"
                           />
                         </div>
@@ -615,7 +617,7 @@ const Animais = () => {
           )}
         </div>
       </div>
-      
+
       <Footer />
     </>
   );

@@ -94,7 +94,7 @@ const Veterinarios = () => {
     const cidadeMatch = !filtros.cidade || vet.cidade === filtros.cidade;
     const especialidadeMatch = !filtros.especialidade || vet.especialidade === filtros.especialidade;
     const atendimentoMatch = !filtros.atendimento || vet.atendimento.includes(filtros.atendimento);
-    
+
     return cidadeMatch && especialidadeMatch && atendimentoMatch;
   });
 
@@ -119,15 +119,17 @@ const Veterinarios = () => {
   return (
     <>
       <Header />
-      
-      <section className="container-fluid bg-main text-white py-5 mt-5">
-        <div className="container py-4">
+
+      <section className="container-fluid veterinarios-bg text-white py-5 mt-5 position-relative">
+        <div className="position-absolute top-0 start-0 w-100 h-100" style={{ backgroundColor: 'rgba(0, 0, 0, 0.4)', zIndex: 1 }}></div>
+        <div className="container py-4 position-relative" style={{ zIndex: 2 }}>
           <h1 className="display-5 fw-bold">Veterinários</h1>
           <p className="lead">
             Encontre os melhores profissionais para cuidar do seu pet
           </p>
         </div>
       </section>
+
 
       <div className="container py-5">
         {viewProfile === null ? (
@@ -137,12 +139,12 @@ const Veterinarios = () => {
               <div className="card border-0 shadow-sm">
                 <div className="card-body">
                   <h5 className="text-elements mb-4 fw-bold">Filtros</h5>
-                  
+
                   <div className="mb-3">
                     <label htmlFor="cidade" className="form-label fw-semibold">Cidade</label>
-                    <select 
-                      className="form-select" 
-                      id="cidade" 
+                    <select
+                      className="form-select"
+                      id="cidade"
                       name="cidade"
                       value={filtros.cidade}
                       onChange={handleFiltroChange}
@@ -153,12 +155,12 @@ const Veterinarios = () => {
                       ))}
                     </select>
                   </div>
-                  
+
                   <div className="mb-3">
                     <label htmlFor="especialidade" className="form-label fw-semibold">Especialidade</label>
-                    <select 
-                      className="form-select" 
-                      id="especialidade" 
+                    <select
+                      className="form-select"
+                      id="especialidade"
                       name="especialidade"
                       value={filtros.especialidade}
                       onChange={handleFiltroChange}
@@ -169,12 +171,12 @@ const Veterinarios = () => {
                       ))}
                     </select>
                   </div>
-                  
+
                   <div className="mb-3">
                     <label htmlFor="atendimento" className="form-label fw-semibold">Tipo de Atendimento</label>
-                    <select 
-                      className="form-select" 
-                      id="atendimento" 
+                    <select
+                      className="form-select"
+                      id="atendimento"
                       name="atendimento"
                       value={filtros.atendimento}
                       onChange={handleFiltroChange}
@@ -185,35 +187,35 @@ const Veterinarios = () => {
                       ))}
                     </select>
                   </div>
-                  
-                  <Button 
-                    text="Limpar Filtros" 
-                    bgColor="var(--secondary-color)" 
-                    hoverColor="var(--elements-color)" 
-                    onClick={() => setFiltros({cidade: "", especialidade: "", atendimento: ""})}
+
+                  <Button
+                    text="Limpar Filtros"
+                    bgColor="var(--secondary-color)"
+                    hoverColor="var(--elements-color)"
+                    onClick={() => setFiltros({ cidade: "", especialidade: "", atendimento: "" })}
                     className="w-100 mt-3"
                   />
                 </div>
               </div>
             </div>
-            
+
             {/* Lista de Veterinários */}
             <div className="col-md-9">
               <div className="d-flex justify-content-between align-items-center mb-4">
                 <h4>{veterinariosFiltrados.length} Veterinários encontrados</h4>
               </div>
-              
+
               <div className="row g-4">
                 {veterinariosFiltrados.length > 0 ? (
                   veterinariosFiltrados.map(vet => (
                     <div key={vet.id} className="col-md-6 col-lg-4">
                       <div className="card h-100 border-0 shadow-sm">
                         <div className="text-center pt-4">
-                          <img 
-                            src={logo} 
-                            alt={vet.nome} 
-                            className="rounded-circle" 
-                            style={{ width: "120px", height: "120px", objectFit: "cover" }} 
+                          <img
+                            src={logo}
+                            alt={vet.nome}
+                            className="rounded-circle"
+                            style={{ width: "120px", height: "120px", objectFit: "cover" }}
                           />
                         </div>
                         <div className="card-body text-center">
@@ -227,10 +229,10 @@ const Veterinarios = () => {
                               ))}
                             </small>
                           </p>
-                          <Button 
-                            text="Ver Perfil" 
-                            bgColor="var(--main-color)" 
-                            hoverColor="var(--bg-button)" 
+                          <Button
+                            text="Ver Perfil"
+                            bgColor="var(--main-color)"
+                            hoverColor="var(--bg-button)"
                             onClick={() => handleVerPerfil(vet.id)}
                           />
                         </div>
@@ -240,11 +242,11 @@ const Veterinarios = () => {
                 ) : (
                   <div className="col-12 text-center py-5">
                     <p className="text-muted">Nenhum veterinário encontrado com os filtros selecionados.</p>
-                    <Button 
-                      text="Limpar Filtros" 
-                      bgColor="var(--secondary-color)" 
-                      hoverColor="var(--elements-color)" 
-                      onClick={() => setFiltros({cidade: "", especialidade: "", atendimento: ""})}
+                    <Button
+                      text="Limpar Filtros"
+                      bgColor="var(--secondary-color)"
+                      hoverColor="var(--elements-color)"
+                      onClick={() => setFiltros({ cidade: "", especialidade: "", atendimento: "" })}
                     />
                   </div>
                 )}
@@ -254,27 +256,27 @@ const Veterinarios = () => {
         ) : (
           /* Perfil do Veterinário */
           <div>
-            <Button 
-              text="← Voltar para a lista" 
-              bgColor="var(--secondary-color)" 
-              hoverColor="var(--elements-color)" 
+            <Button
+              text="← Voltar para a lista"
+              bgColor="var(--secondary-color)"
+              hoverColor="var(--elements-color)"
               onClick={handleVoltar}
               className="mb-4"
             />
-            
+
             {(() => {
               const vet = veterinarios.find(v => v.id === viewProfile);
-              
+
               return (
                 <div className="row">
                   <div className="col-md-4">
                     <div className="card border-0 shadow-sm mb-4">
                       <div className="card-body text-center">
-                        <img 
-                          src={logo} 
-                          alt={vet.nome} 
-                          className="rounded-circle mb-3" 
-                          style={{ width: "180px", height: "180px", objectFit: "cover" }} 
+                        <img
+                          src={logo}
+                          alt={vet.nome}
+                          className="rounded-circle mb-3"
+                          style={{ width: "180px", height: "180px", objectFit: "cover" }}
                         />
                         <h3 className="text-elements">{vet.nome}</h3>
                         <p className="text-muted">{vet.especialidade}</p>
@@ -286,23 +288,23 @@ const Veterinarios = () => {
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="card border-0 shadow-sm">
                       <div className="card-body">
                         <h5 className="text-elements mb-3">Contato</h5>
                         <p><i className="bi bi-telephone"></i> {vet.contato.telefone}</p>
                         <p><i className="bi bi-envelope"></i> {vet.contato.email}</p>
                         <p><i className="bi bi-geo"></i> {vet.contato.endereco}</p>
-                        <Button 
-                          text="Agendar Consulta" 
-                          bgColor="var(--main-color)" 
-                          hoverColor="var(--bg-button)" 
+                        <Button
+                          text="Agendar Consulta"
+                          bgColor="var(--main-color)"
+                          hoverColor="var(--bg-button)"
                           className="w-100 mt-2"
                         />
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="col-md-8">
                     <div className="card border-0 shadow-sm mb-4">
                       <div className="card-body">
@@ -310,7 +312,7 @@ const Veterinarios = () => {
                         <p>{vet.bio}</p>
                       </div>
                     </div>
-                    
+
                     <div className="card border-0 shadow-sm mb-4">
                       <div className="card-body">
                         <h5 className="text-elements mb-3">Especialidades</h5>
@@ -321,7 +323,7 @@ const Veterinarios = () => {
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="card border-0 shadow-sm">
                       <div className="card-body">
                         <div className="d-flex justify-content-between align-items-center mb-3">
@@ -331,15 +333,15 @@ const Veterinarios = () => {
                             /5
                           </span>
                         </div>
-                        
+
                         {vet.avaliacoes.map((aval, index) => (
                           <div key={index} className="mb-3 pb-3 border-bottom">
                             <div className="d-flex justify-content-between">
                               <p className="fw-semibold mb-1">{aval.autor}</p>
                               <div>
                                 {[...Array(5)].map((_, i) => (
-                                  <i 
-                                    key={i} 
+                                  <i
+                                    key={i}
                                     className={`bi bi-star${i < aval.nota ? '-fill' : ''} text-warning`}
                                   ></i>
                                 ))}
@@ -348,11 +350,11 @@ const Veterinarios = () => {
                             <p className="mb-0">{aval.comentario}</p>
                           </div>
                         ))}
-                        
-                        <Button 
-                          text="Ver todas as avaliações" 
-                          bgColor="var(--secondary-color)" 
-                          hoverColor="var(--elements-color)" 
+
+                        <Button
+                          text="Ver todas as avaliações"
+                          bgColor="var(--secondary-color)"
+                          hoverColor="var(--elements-color)"
                           className="w-100 mt-2"
                         />
                       </div>
@@ -364,7 +366,7 @@ const Veterinarios = () => {
           </div>
         )}
       </div>
-      
+
       <Footer />
     </>
   );
