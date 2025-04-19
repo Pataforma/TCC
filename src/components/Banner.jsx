@@ -10,7 +10,7 @@ const Banner = () => {
             className="img-fluid"
             style={{ maxHeight: '350px'}}
           />
-          <div className="text-white mb-4 mb-lg-0 w-100 w-lg-50">
+          <div className="text-white mb-4 mb-lg-0 w-100 w-lg-50 d-flex flex-column gap-4">
             <h3 className="fw-bold fs-1">Cuidado e amor conectados em um só lugar!</h3>
             <p className="fs-5">
               Uma plataforma inovadora criada para reunir informações e serviços

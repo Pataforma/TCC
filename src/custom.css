@@ -71,6 +71,16 @@ body {
   width: 100%;
   top: 0;
   left: 0;
+  box-shadow: 0 0 12px 4px rgba(0, 0, 0, 0.6);
+}
+
+.text-hover-header{
+  color: white;
+}
+
+.text-hover-header:hover{
+  color: var(--elements-color);
+  transition: ease 150ms;
 }
 
 .espacamento-header {

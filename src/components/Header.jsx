@@ -11,7 +11,7 @@ function Header() {
   };
 
   return (
-    <header className="position-fixed top-0 start-0 w-100 shadow-sm py-2 header bg-main">
+    <header className="position-fixed top-0 start-0 w-100 py-2 header bg-main">
       <div className="container d-flex justify-content-between align-items-center py-2">
         <div className="d-flex align-items-center">
           <img src={logo} alt="Logo" className="logo" />
@@ -20,25 +20,25 @@ function Header() {
         <nav>
           <ul className="d-flex list-unstyled mb-0">
             <li className="ms-4">
-              <Link to="/" className="text-decoration-none text-white fs-5">Início</Link>
+              <Link to="/" className="text-decoration-none fs-5 text-hover-header">Início</Link>
             </li>
             <li className="ms-4">
-              <Link to="/sobre" className="text-decoration-none text-white fs-5">Sobre</Link>
+              <Link to="/sobre" className="text-decoration-none text-hover-header fs-5">Sobre</Link>
             </li>
             <li className="ms-4">
-              <Link to="/veterinarios" className="text-decoration-none text-white fs-5">Veterinários</Link>
+              <Link to="/veterinarios" className="text-decoration-none text-hover-header fs-5">Veterinários</Link>
             </li>
             <li className="ms-4">
-              <Link to="/animais" className="text-decoration-none text-white fs-5">Animais</Link>
+              <Link to="/animais" className="text-decoration-none text-hover-header fs-5">Animais</Link>
             </li>
             <li className="ms-4">
-              <Link to="/produto" className="text-decoration-none text-white fs-5">Nosso Produto</Link>
+              <Link to="/produto" className="text-decoration-none text-hover-header fs-5">Nosso Produto</Link>
             </li>
             <li className="ms-4">
-              <Link to="/agenda" className="text-decoration-none text-white fs-5">Agenda</Link>
+              <Link to="/agenda" className="text-decoration-none text-hover-header fs-5">Agenda</Link>
             </li>
             <li className="ms-4">
-              <Link to="/contato" className="text-decoration-none text-white fs-5">Contato</Link>
+              <Link to="/contato" className="text-decoration-none text-hover-header fs-5">Contato</Link>
             </li>
           </ul>
         </nav>
