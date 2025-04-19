@@ -1,8 +1,8 @@
 // src/App.jsx
 
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
+import ScrollToTop from "./components/ScrollToTop";
 
-// Páginas ou seções principais
 import Home from './pages/Home'
 import Sobre from './pages/Sobre'
 import Veterinarios from './pages/Veterinarios'
@@ -16,6 +16,7 @@ import Cadastro from './pages/Cadastro'
 function App() {
   return (
     <>
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/sobre" element={<Sobre />} />
@@ -28,7 +29,7 @@ function App() {
         <Route path="/cadastro" element={<Cadastro />} />
       </Routes>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
