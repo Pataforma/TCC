@@ -3,6 +3,17 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Button from "../components/Button";
 import logo from "../assets/imgs/logo.png";
+import thor from "../assets/imgs/thor.webp";
+import luna from "../assets/imgs/luna.avif";
+import max from "../assets/imgs/max.webp";
+import nina from "../assets/imgs/nina.jpeg";
+import simba from "../assets/imgs/simba.jpg";
+import rex from "../assets/imgs/rex.jpg";
+import racao from "../assets/imgs/racao.webp";
+import adestramento from "../assets/imgs/adestramento.webp";
+import ansioso from "../assets/imgs/ansioso.jpg";
+import higiene from "../assets/imgs/higiene.jpg";
+import vacina from "../assets/imgs/vacina.jpg";
 
 const Animais = () => {
   const [activeTab, setActiveTab] = useState("perdidos");
@@ -21,6 +32,7 @@ const Animais = () => {
   const petsPerdidos = [
     {
       id: 1,
+      foto: thor,
       nome: "Thor",
       tipo: "Cachorro",
       raca: "SRD",
@@ -40,6 +52,7 @@ const Animais = () => {
     },
     {
       id: 2,
+      foto: luna,
       nome: "Luna",
       tipo: "Gato",
       raca: "Siamês",
@@ -59,6 +72,7 @@ const Animais = () => {
     },
     {
       id: 3,
+      foto: max,
       nome: "Max",
       tipo: "Cachorro",
       raca: "Golden Retriever",
@@ -82,6 +96,7 @@ const Animais = () => {
   const petsAdocao = [
     {
       id: 1,
+      foto: nina,
       nome: "Nina",
       tipo: "Cachorro",
       raca: "SRD",
@@ -107,6 +122,7 @@ const Animais = () => {
     },
     {
       id: 2,
+      foto: simba,
       nome: "Simba",
       tipo: "Gato",
       raca: "SRD",
@@ -132,6 +148,7 @@ const Animais = () => {
     },
     {
       id: 3,
+      foto: rex,
       nome: "Rex",
       tipo: "Cachorro",
       raca: "Labrador",
@@ -166,7 +183,7 @@ const Animais = () => {
       resumo: "Aprenda a selecionar a melhor alimentação conforme idade, porte e necessidades específicas do seu pet.",
       data: "15/03/2023",
       autor: "Dra. Paula Mendes",
-      imagem: logo
+      imagem: racao 
     },
     {
       id: 2,
@@ -175,7 +192,7 @@ const Animais = () => {
       resumo: "Dicas práticas para manter seu gato limpo e saudável, respeitando seus hábitos naturais.",
       data: "22/04/2023",
       autor: "Dr. Ricardo Sousa",
-      imagem: logo
+      imagem: higiene
     },
     {
       id: 3,
@@ -184,7 +201,7 @@ const Animais = () => {
       resumo: "Técnicas e exercícios para ajudar seu cachorro a lidar com o estresse e a ansiedade.",
       data: "10/05/2023",
       autor: "Mariana Costa - Comportamentalista",
-      imagem: logo
+      imagem: ansioso
     },
     {
       id: 4,
@@ -193,7 +210,7 @@ const Animais = () => {
       resumo: "Conheça o calendário de vacinas recomendado para cães e gatos nos primeiros meses de vida.",
       data: "05/06/2023",
       autor: "Dr. Felipe Andrade",
-      imagem: logo
+      imagem: vacina
     },
     {
       id: 5,
@@ -202,7 +219,7 @@ const Animais = () => {
       resumo: "Comandos simples que você pode ensinar ao seu cão para melhorar a convivência diária.",
       data: "18/07/2023",
       autor: "Carlos Oliveira - Adestrador",
-      imagem: logo
+      imagem: adestramento
     },
   ];
 
@@ -361,7 +378,7 @@ const Animais = () => {
                           <div className="row g-0">
                             <div className="col-md-4">
                               <img
-                                src={logo}
+                                src={pet.foto}
                                 alt={pet.nome}
                                 className="img-fluid rounded-start h-100"
                                 style={{ objectFit: "cover" }}
@@ -496,7 +513,7 @@ const Animais = () => {
                           <div className="row g-0">
                             <div className="col-md-4">
                               <img
-                                src={logo}
+                                src={pet.foto}
                                 alt={pet.nome}
                                 className="img-fluid rounded-start h-100"
                                 style={{ objectFit: "cover" }}

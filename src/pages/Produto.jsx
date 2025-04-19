@@ -91,18 +91,18 @@ const Produto = () => {
                 praticidade e o melhor cuidado para seu amigo de quatro patas.
               </p>
               <Button 
-                text="Saiba mais" 
+                text="Garanta o seu" 
                 bgColor="var(--secondary-color)" 
                 hoverColor="var(--elements-color)" 
                 className="me-2 px-4 py-2 fw-bold"
               />
-              <Button 
+              {/* <Button 
                 text="Garanta o seu" 
                 bgColor="white" 
                 hoverColor="#f8f9fa" 
                 textColor="var(--main-color)"
                 className="px-4 py-2 fw-bold"
-              />
+              /> */}
             </div>
             <div className="col-md-6 text-center">
               <img 

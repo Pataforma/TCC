@@ -241,6 +241,9 @@ body {
 
 .animais-bg {
   background-image: url('assets/imgs/animais-bg.jpg');
+  height: 500px;
+  display: flex;
+  align-items: center;
   background-size:cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -249,6 +252,9 @@ body {
 
 .sobre-bg {
   background-image: url('assets/imgs/sobre-bg.jpg');
+  height: 500px;
+  display: flex;
+  align-items: center;
   background-size:cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -257,6 +263,9 @@ body {
 
 .veterinarios-bg {
   background-image: url('assets/imgs/veterinarios-bg.jpg');
+  height: 500px;
+  display: flex;
+  align-items: center;
   background-size:cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -264,6 +273,9 @@ body {
 
 .contato-bg {
   background-image: url('assets/imgs/contato-bg.jpg');
+  height: 500px;
+  display: flex;
+  align-items: center;
   background-size:cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -271,6 +283,9 @@ body {
 
 .agenda-bg {
   background-image: url('assets/imgs/agenda-bg.jpg');
+  height: 500px;
+  display: flex;
+  align-items: center;
   background-size:cover;
   background-position: center;
   background-repeat: no-repeat;
