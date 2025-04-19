@@ -3,9 +3,13 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Button from "../components/Button";
 import logo from "../assets/imgs/logo.png";
+import vetmariana from "../assets/imgs/vetmariana.jpeg";
+import vetandre from "../assets/imgs/vetandre.jpeg";
+import vetrafaell from "../assets/imgs/vetrafaell.jpeg";
+import vetjuliana from "../assets/imgs/vetjuliana.jpeg";
 
 const Veterinarios = () => {
-  const [viewProfile, setViewProfile] = useState(null);
+  const [viewProfile, setViewProfile] = useState(null); 
   const [filtros, setFiltros] = useState({
     cidade: "",
     especialidade: "",
@@ -22,6 +26,7 @@ const Veterinarios = () => {
     {
       id: 1,
       nome: "Dra. Mariana Santos",
+      foto: vetmariana,
       especialidade: "Clínico Geral",
       cidade: "Feira de Santana",
       atendimento: ["Presencial", "Telemedicina"],
@@ -29,7 +34,7 @@ const Veterinarios = () => {
       contato: {
         telefone: "(75) 99999-9999",
         email: "mariana.santos@vet.com",
-        endereco: "Av. Getúlio Vargas, 123 - Centro"
+        endereco: "Av. Getúlio Vargas, 123 - Centro",
       },
       avaliacoes: [
         { autor: "João Silva", nota: 5, comentario: "Excelente profissional, meu pet adorou!" },
@@ -39,6 +44,7 @@ const Veterinarios = () => {
     {
       id: 2,
       nome: "Dr. Rafael Mendes",
+      foto: vetrafaell,
       especialidade: "Ortopedia",
       cidade: "Salvador",
       atendimento: ["Presencial", "Domicílio"],
@@ -46,7 +52,7 @@ const Veterinarios = () => {
       contato: {
         telefone: "(71) 98888-8888",
         email: "rafael.mendes@vet.com",
-        endereco: "Rua da Graça, 456 - Graça"
+        endereco: "Rua da Graça, 456 - Graça",
       },
       avaliacoes: [
         { autor: "Carlos Eduardo", nota: 5, comentario: "Realizou uma cirurgia complexa no meu cachorro com grande sucesso!" },
@@ -56,6 +62,7 @@ const Veterinarios = () => {
     {
       id: 3,
       nome: "Dra. Juliana Costa",
+      foto: vetjuliana,
       especialidade: "Dermatologia",
       cidade: "Feira de Santana",
       atendimento: ["Presencial", "Telemedicina"],
@@ -73,6 +80,7 @@ const Veterinarios = () => {
     {
       id: 4,
       nome: "Dr. André Peixoto",
+      foto: vetandre,
       especialidade: "Odontologia",
       cidade: "Salvador",
       atendimento: ["Presencial"],
@@ -212,7 +220,7 @@ const Veterinarios = () => {
                       <div className="card h-100 border-0 shadow-sm">
                         <div className="text-center pt-4">
                           <img
-                            src={logo}
+                            src={vet.foto}
                             alt={vet.nome}
                             className="rounded-circle"
                             style={{ width: "120px", height: "120px", objectFit: "cover" }}

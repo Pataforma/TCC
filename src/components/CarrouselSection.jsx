@@ -80,20 +80,20 @@ function CarrouselSection() {
             <div className="d-flex justify-content-center gap-3">
               <img
                 className="img-fluid"
-                style={{ width: "300px", height: "300px", borderRadius: "5px", objectFit: "cover"}}
-                src="src\assets\imgs\petperdido1.webp"
+                style={{ width: "300px", height: "300px", borderRadius: "5px", objectFit: "contain"}}
+                src="src\assets\imgs\perdido1.png"
                 alt="Anúncio de pet perdido 1"
               />
               <img
                 className="img-fluid"
-                style={{ width: "300px", height: "300px", borderRadius: "5px", objectFit: "cover" }}
-                src="src\assets\imgs\petperdido2.webp"
+                style={{ width: "300px", height: "300px", borderRadius: "5px", objectFit: "contain" }}
+                src="src\assets\imgs\perdido2.png"
                 alt="Anúncio de pet perdido 2"
               />
               <img
                 className="img-fluid"
-                style={{ width: "300px", height: "300px", borderRadius: "5px", objectFit: "cover" }}
-                src="src\assets\imgs\petperdido3.png"
+                style={{ width: "300px", height: "300px", borderRadius: "5px", objectFit: "contain" }}
+                src="src\assets\imgs\perdido3.png"
                 alt="Anúncio de pet perdido 3"
               />
             </div>
