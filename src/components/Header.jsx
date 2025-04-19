@@ -1,9 +1,15 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo from '../assets/imgs/logo.png';
 import Button from './Button';
 
 function Header() {
+  const navigate = useNavigate();
+
+  const handleAuthClick = () => {
+    navigate('/login');
+  };
+
   return (
     <header className="position-fixed top-0 start-0 w-100 shadow-sm py-2 header bg-main">
       <div className="container d-flex justify-content-between align-items-center py-2">
@@ -42,6 +48,7 @@ function Header() {
           hoverColor="var(--elements-color)" 
           textColor="white"
           className="ms-2"
+          onClick={handleAuthClick}
         />
       </div>
     </header>
