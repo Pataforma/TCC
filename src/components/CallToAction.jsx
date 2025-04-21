@@ -1,5 +1,6 @@
 import React from "react";
 import Button from "./Button";
+import LoadingButton from "./LoadingButton";
 
 function CallToAction() {
   return (
@@ -7,18 +8,24 @@ function CallToAction() {
       <h3>Junte-se à comunidade!</h3>
       <p>Cadastre-se como tutor ou veterinário e faça a diferença!</p>
       <div>
-        <Button 
+        <LoadingButton 
           text="Cadastrar como Tutor" 
           bgColor="white" 
           hoverColor="#f8f9fa" 
           textColor="black" 
           className="me-3"
+          to="/cadastro"
+          loadingMessage="Preparando formulário de cadastro..."
+          timeout={2500}
         />
-        <Button 
+        <LoadingButton 
           text="Cadastrar como Veterinário" 
           bgColor="white" 
           hoverColor="#f8f9fa" 
           textColor="black"
+          to="/veterinarios?cadastro=true"
+          loadingMessage="Carregando área de veterinários..."
+          timeout={2000}
         />
       </div>
     </section>

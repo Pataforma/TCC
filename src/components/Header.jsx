@@ -1,10 +1,15 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import logo from '../assets/imgs/logo.png';
 import Button from './Button';
 
 function Header() {
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  const isActive = (path) => {
+    return location.pathname === path;
+  };
 
   const handleAuthClick = () => {
     navigate('/login');
@@ -20,25 +25,60 @@ function Header() {
         <nav>
           <ul className="d-flex list-unstyled mb-0">
             <li className="ms-4">
-              <Link to="/" className="text-decoration-none fs-5 text-hover-header">Início</Link>
+              <Link 
+                to="/" 
+                className={`text-decoration-none fs-5 nav-link ${isActive('/') ? 'active' : ''}`}
+              >
+                Início
+              </Link>
             </li>
             <li className="ms-4">
-              <Link to="/sobre" className="text-decoration-none text-hover-header fs-5">Sobre</Link>
+              <Link 
+                to="/sobre" 
+                className={`text-decoration-none nav-link fs-5 ${isActive('/sobre') ? 'active' : ''}`}
+              >
+                Sobre
+              </Link>
             </li>
             <li className="ms-4">
-              <Link to="/veterinarios" className="text-decoration-none text-hover-header fs-5">Veterinários</Link>
+              <Link 
+                to="/veterinarios" 
+                className={`text-decoration-none nav-link fs-5 ${isActive('/veterinarios') ? 'active' : ''}`}
+              >
+                Veterinários
+              </Link>
             </li>
             <li className="ms-4">
-              <Link to="/animais" className="text-decoration-none text-hover-header fs-5">Animais</Link>
+              <Link 
+                to="/animais" 
+                className={`text-decoration-none nav-link fs-5 ${isActive('/animais') ? 'active' : ''}`}
+              >
+                Animais
+              </Link>
             </li>
             <li className="ms-4">
-              <Link to="/produto" className="text-decoration-none text-hover-header fs-5">Nosso Produto</Link>
+              <Link 
+                to="/produto" 
+                className={`text-decoration-none nav-link fs-5 ${isActive('/produto') ? 'active' : ''}`}
+              >
+                Nosso Produto
+              </Link>
             </li>
             <li className="ms-4">
-              <Link to="/agenda" className="text-decoration-none text-hover-header fs-5">Agenda</Link>
+              <Link 
+                to="/agenda" 
+                className={`text-decoration-none nav-link fs-5 ${isActive('/agenda') ? 'active' : ''}`}
+              >
+                Agenda
+              </Link>
             </li>
             <li className="ms-4">
-              <Link to="/contato" className="text-decoration-none text-hover-header fs-5">Contato</Link>
+              <Link 
+                to="/contato" 
+                className={`text-decoration-none nav-link fs-5 ${isActive('/contato') ? 'active' : ''}`}
+              >
+                Contato
+              </Link>
             </li>
           </ul>
         </nav>

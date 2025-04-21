@@ -12,6 +12,7 @@ import Agenda from './pages/Agenda'
 import Contato from './pages/Contato'
 import Login from './pages/Login'
 import Cadastro from './pages/Cadastro'
+import LoadingPage from './pages/LoadingPage'
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
         <Route path="/contato" element={<Contato />} />
         <Route path="/login" element={<Login />} />
         <Route path="/cadastro" element={<Cadastro />} />
+        <Route path="/loading" element={<LoadingPage />} />
       </Routes>
     </>
   );
