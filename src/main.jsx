@@ -8,7 +8,7 @@ import './custom.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename="/TCC-oficial">
       <App />
     </BrowserRouter>
   </React.StrictMode>
