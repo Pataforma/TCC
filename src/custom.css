@@ -7,6 +7,7 @@
 
 body {
   font-family: 'Roboto', sans-serif; 
+  overflow-x: hidden;
 }
 
 .text-bold {
@@ -52,8 +53,20 @@ body {
   rotate: 15deg;
 }
 
+@media (max-width: 768px) {
+  #bg-pata {
+    height: 300px;
+  }
+}
+
 .logo {
   width: 4rem;
+}
+
+@media (max-width: 576px) {
+  .logo {
+    width: 3rem;
+  }
 }
 
 .intro-dog {
@@ -88,6 +101,20 @@ body {
   padding-bottom: 6rem;
 }
 
+@media (max-width: 768px) {
+  .espacamento-header {
+    padding-top: 7rem;
+    padding-bottom: 4rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .espacamento-header {
+    padding-top: 6rem;
+    padding-bottom: 3rem;
+  }
+}
+
 /* Estilo geral da seção do carrossel */
 .carrossel-section {
   background-color: var(--background-color);
@@ -112,6 +139,13 @@ body {
   position: relative;
 }
 
+@media (max-width: 768px) {
+  .carousel-img-group {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
 /* Imagens */
 .carousel-img-group img {
   width: 300px;
@@ -119,7 +153,16 @@ body {
   border-radius: 10px;
   object-fit: cover;
   box-shadow: 0 0 12px 4px rgba(0, 0, 0, 0.3);
+}
 
+@media (max-width: 768px) {
+  .carousel-img-group img {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+    aspect-ratio: 1/1;
+    margin-bottom: 1rem;
+  }
 }
 
 /* Texto sobreposto no carrossel */
@@ -137,6 +180,13 @@ body {
   backdrop-filter: blur(5px);
   z-index: 2;
   max-width: 80%;
+}
+
+@media (max-width: 576px) {
+  .carousel-overlay {
+    width: 90%;
+    padding: 0.75rem 1rem;
+  }
 }
 
 /* Botão com cores da paleta */
@@ -171,6 +221,13 @@ body {
   background-size: 50%;
 }
 
+@media (max-width: 576px) {
+  .custom-carousel .carousel-control-prev-icon,
+  .custom-carousel .carousel-control-next-icon {
+    padding: 12px;
+  }
+}
+
 .custom-carousel .carousel-control-prev {
   left: -10px;
 }
@@ -195,6 +252,13 @@ body {
   margin-top: 1.5rem;
   text-align: center;
   padding: 0 2rem;
+}
+
+@media (max-width: 576px) {
+  .carousel-caption-container {
+    padding: 0 1rem;
+    margin-top: 1rem;
+  }
 }
 
 .carousel-caption-custom {

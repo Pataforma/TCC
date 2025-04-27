@@ -21,22 +21,43 @@ function CarrouselSection() {
           interval={5000}
         >
           <Carousel.Item>
-            <div className="d-flex justify-content-center gap-3">
+            <div className="d-flex flex-column flex-md-row justify-content-center gap-3">
               <img
-                className="img-fluid"
-                style={{ width: "300px", height: "300px", borderRadius: "5px", objectFit: "cover" }}
+                className="img-fluid mb-3 mb-md-0 mx-auto"
+                style={{ 
+                  width: "100%", 
+                  maxWidth: "300px", 
+                  height: "auto", 
+                  aspectRatio: "1/1",
+                  borderRadius: "5px", 
+                  objectFit: "cover" 
+                }}
                 src="src\assets\imgs\petadocao1.jpg"
                 alt="Anúncio de pet perdido 1"
               />
               <img
-                className="img-fluid"
-                style={{ width: "300px", height: "300px", borderRadius: "5px", objectFit: "cover" }}
+                className="img-fluid mb-3 mb-md-0 mx-auto d-none d-sm-block"
+                style={{ 
+                  width: "100%", 
+                  maxWidth: "300px", 
+                  height: "auto", 
+                  aspectRatio: "1/1",
+                  borderRadius: "5px", 
+                  objectFit: "cover" 
+                }}
                 src="src\assets\imgs\petadocao2.jpg"
                 alt="Anúncio de pet perdido 2"
               />
               <img
-                className="img-fluid"
-                style={{ width: "300px", height: "300px", borderRadius: "5px", objectFit: "cover" }}
+                className="img-fluid mb-3 mb-md-0 mx-auto d-none d-md-block"
+                style={{ 
+                  width: "100%", 
+                  maxWidth: "300px", 
+                  height: "auto", 
+                  aspectRatio: "1/1",
+                  borderRadius: "5px", 
+                  objectFit: "cover" 
+                }}
                 src="src\assets\imgs\petadocao3.avif"
                 alt="Anúncio de pet perdido 3"
               />
@@ -49,22 +70,43 @@ function CarrouselSection() {
             </div>
           </Carousel.Item>
           <Carousel.Item>
-            <div className="d-flex justify-content-center gap-3">
+            <div className="d-flex flex-column flex-md-row justify-content-center gap-3">
               <img
-                className="img-fluid"
-                style={{ width: "300px", height: "300px", borderRadius: "5px", objectFit: "cover" }}
+                className="img-fluid mb-3 mb-md-0 mx-auto"
+                style={{ 
+                  width: "100%", 
+                  maxWidth: "300px", 
+                  height: "auto", 
+                  aspectRatio: "1/1",
+                  borderRadius: "5px", 
+                  objectFit: "cover" 
+                }}
                 src="src\assets\imgs\vetparceiro.jpg"
                 alt="Veterinário 1"
               />
               <img
-                className="img-fluid"
-                style={{ width: "300px", height: "300px", borderRadius: "5px", objectFit: "cover" }}
+                className="img-fluid mb-3 mb-md-0 mx-auto d-none d-sm-block"
+                style={{ 
+                  width: "100%", 
+                  maxWidth: "300px", 
+                  height: "auto", 
+                  aspectRatio: "1/1",
+                  borderRadius: "5px", 
+                  objectFit: "cover" 
+                }}
                 src="src\assets\imgs\vetparceiro2.jpg"
                 alt="Veterinário 2"
               />
               <img
-                className="img-fluid"
-                style={{ width: "300px", height: "300px", borderRadius: "5px", objectFit: "cover" }}
+                className="img-fluid mb-3 mb-md-0 mx-auto d-none d-md-block"
+                style={{ 
+                  width: "100%", 
+                  maxWidth: "300px", 
+                  height: "auto", 
+                  aspectRatio: "1/1",
+                  borderRadius: "5px", 
+                  objectFit: "cover" 
+                }}
                 src="src\assets\imgs\vetparceiro3.png"
                 alt="Veterinário 3"
               />
@@ -77,22 +119,43 @@ function CarrouselSection() {
             </div>
           </Carousel.Item>
           <Carousel.Item>
-            <div className="d-flex justify-content-center gap-3">
+            <div className="d-flex flex-column flex-md-row justify-content-center gap-3">
               <img
-                className="img-fluid"
-                style={{ width: "300px", height: "300px", borderRadius: "5px", objectFit: "contain"}}
+                className="img-fluid mb-3 mb-md-0 mx-auto"
+                style={{ 
+                  width: "100%", 
+                  maxWidth: "300px", 
+                  height: "auto", 
+                  aspectRatio: "1/1",
+                  borderRadius: "5px", 
+                  objectFit: "contain"
+                }}
                 src="src\assets\imgs\perdido1.png"
                 alt="Anúncio de pet perdido 1"
               />
               <img
-                className="img-fluid"
-                style={{ width: "300px", height: "300px", borderRadius: "5px", objectFit: "contain" }}
+                className="img-fluid mb-3 mb-md-0 mx-auto d-none d-sm-block"
+                style={{ 
+                  width: "100%", 
+                  maxWidth: "300px", 
+                  height: "auto", 
+                  aspectRatio: "1/1",
+                  borderRadius: "5px", 
+                  objectFit: "contain" 
+                }}
                 src="src\assets\imgs\perdido2.png"
                 alt="Anúncio de pet perdido 2"
               />
               <img
-                className="img-fluid"
-                style={{ width: "300px", height: "300px", borderRadius: "5px", objectFit: "contain" }}
+                className="img-fluid mb-3 mb-md-0 mx-auto d-none d-md-block"
+                style={{ 
+                  width: "100%", 
+                  maxWidth: "300px", 
+                  height: "auto", 
+                  aspectRatio: "1/1",
+                  borderRadius: "5px", 
+                  objectFit: "contain" 
+                }}
                 src="src\assets\imgs\perdido3.png"
                 alt="Anúncio de pet perdido 3"
               />
