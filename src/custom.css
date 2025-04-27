@@ -306,15 +306,25 @@ body {
   color: white;
   position: relative;
   padding-bottom: 3px;
+  border-color: var(--bs-nav-tabs-link-active-border-color);
 }
 
-.nav-link:hover {
+.nav-link-tab {
+  color: #aaaaaa;
+  position: relative;
+  padding-bottom: 3px;
+  border: 0;
+  background-color: transparent;
+  border-color: var(--bs-nav-tabs-link-active-border-color) !important;
+}
+
+.nav-link:hover, .nav-link-tab:hover {
   color: var(--elements-color);
-  transition: color ease 150ms;
+  transition: color ease 150ms; 
 }
 
 /* Efeito de sublinhado para os links ativos e hover */
-.nav-link::after {
+.nav-link::after, .nav-link-tab::after {
   content: '';
   position: absolute;
   width: 0;
@@ -327,16 +337,16 @@ body {
 }
 
 /* Quando o link está com hover, o sublinhado se expande */
-.nav-link:hover::after {
+.nav-link:hover::after, .nav-link-tab:hover::after {
   width: 100%;
 }
 
 /* Link ativo sempre mostra sublinhado */
-.nav-link.active {
+.nav-link.active, .nav-link-tab.active {
   color: var(--secondary-color);
 }
 
-.nav-link.active::after {
+.nav-link.active::after, .nav-link-tab.active::after {
   width: 100%;
   background-color: var(--secondary-color);
 }

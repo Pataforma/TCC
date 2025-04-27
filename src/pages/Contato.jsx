@@ -126,10 +126,10 @@ const Contato = () => {
           <div className="col-lg-8 mb-4 mb-lg-0">
             <div className="card border-0 shadow-sm">
               <div className="card-body p-4">
-                <ul className="nav nav-tabs mb-4">
+                <ul className="nav nav-tabs mb-4 ">
                   <li className="nav-item">
                     <button
-                      className={`nav-link ${activeTab === "geral" ? "active text-elements fw-bold" : ""}`}
+                      className={`nav-link nav-link-tab ${activeTab === "geral" ? "active text-elements fw-bold" : ""}`}
                       onClick={() => setActiveTab("geral")}
                     >
                       Contato Geral
@@ -137,7 +137,7 @@ const Contato = () => {
                   </li>
                   <li className="nav-item">
                     <button
-                      className={`nav-link ${activeTab === "parceria" ? "active text-elements fw-bold" : ""}`}
+                      className={`nav-link nav-link-tab ${activeTab === "parceria" ? "active text-elements fw-bold" : ""}`}
                       onClick={() => setActiveTab("parceria")}
                     >
                       Parcerias
@@ -145,7 +145,7 @@ const Contato = () => {
                   </li>
                   <li className="nav-item">
                     <button
-                      className={`nav-link ${activeTab === "suporte" ? "active text-elements fw-bold" : ""}`}
+                      className={`nav-link nav-link-tab ${activeTab === "suporte" ? "active text-elements fw-bold" : ""}`}
                       onClick={() => setActiveTab("suporte")}
                     >
                       Suporte Técnico
