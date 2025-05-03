@@ -314,7 +314,7 @@ body {
 }
 
 .animais-bg {
-  background-image: url('assets/imgs/animais-bg.jpg');
+  background-image: url('src/assets/imgs/animais-bg.jpg');
   height: 500px;
   display: flex;
   align-items: center;
@@ -325,7 +325,7 @@ body {
 }
 
 .sobre-bg {
-  background-image: url('assets/imgs/sobre-bg.jpg');
+  background-image: url('src/assets/imgs/sobre-bg.jpg');
   height: 500px;
   display: flex;
   align-items: center;
@@ -336,7 +336,7 @@ body {
 }
 
 .veterinarios-bg {
-  background-image: url('assets/imgs/veterinarios-bg.jpg');
+  background-image: url('src/assets/imgs/veterinarios-bg.jpg');
   height: 500px;
   display: flex;
   align-items: center;
@@ -346,7 +346,7 @@ body {
 }
 
 .contato-bg {
-  background-image: url('assets/imgs/contato-bg.jpg');
+  background-image: url('src/assets/imgs/contato-bg.jpg');
   height: 500px;
   display: flex;
   align-items: center;
@@ -356,7 +356,7 @@ body {
 }
 
 .agenda-bg {
-  background-image: url('assets/imgs/agenda-bg.jpg');
+  background-image: url('src/assets/imgs/agenda-bg.jpg');
   height: 500px;
   display: flex;
   align-items: center;
