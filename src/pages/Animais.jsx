@@ -269,32 +269,51 @@ const Animais = () => {
         </div>
       </section>
 
+      <div className="container mt-3">
+        <button 
+          className="btn btn-link text-dark" 
+          onClick={() => window.history.back()}
+          style={{ textDecoration: 'none' }}
+        >
+          <i className="bi bi-arrow-left-circle fs-4"></i>
+        </button>
+      </div>
+
       <div className="container py-5">
         {/* Abas de navegação */}
         <ul className="nav nav-tabs mb-4" id="animaisTabs" role="tablist">
           <li className="nav-item" role="presentation">
             <button
-              className={`nav-link ${activeTab === 'perdidos' ? 'active text-elements fw-semibold' : ''}`}
+              className={`nav-link ${activeTab === 'perdidos' ? 'active text-elements fw-semibold' : 'text-dark'}`}
               onClick={() => setActiveTab('perdidos')}
-              style={{ borderBottom: activeTab === 'perdidos' ? '3px solid var(--secondary-color)' : 'none' }}
+              style={{ 
+                borderBottom: activeTab === 'perdidos' ? '3px solid var(--secondary-color)' : 'none',
+                opacity: activeTab === 'perdidos' ? 1 : 0.7
+              }}
             >
               Pets Perdidos
             </button>
           </li>
           <li className="nav-item" role="presentation">
             <button
-              className={`nav-link ${activeTab === 'adocao' ? 'active text-elements fw-semibold' : ''}`}
+              className={`nav-link ${activeTab === 'adocao' ? 'active text-elements fw-semibold' : 'text-dark'}`}
               onClick={() => setActiveTab('adocao')}
-              style={{ borderBottom: activeTab === 'adocao' ? '3px solid var(--secondary-color)' : 'none' }}
+              style={{ 
+                borderBottom: activeTab === 'adocao' ? '3px solid var(--secondary-color)' : 'none',
+                opacity: activeTab === 'adocao' ? 1 : 0.7
+              }}
             >
               Adoção
             </button>
           </li>
           <li className="nav-item" role="presentation">
             <button
-              className={`nav-link ${activeTab === 'dicas' ? 'active text-elements fw-semibold' : ''}`}
+              className={`nav-link ${activeTab === 'dicas' ? 'active text-elements fw-semibold' : 'text-dark'}`}
               onClick={() => setActiveTab('dicas')}
-              style={{ borderBottom: activeTab === 'dicas' ? '3px solid var(--secondary-color)' : 'none' }}
+              style={{ 
+                borderBottom: activeTab === 'dicas' ? '3px solid var(--secondary-color)' : 'none',
+                opacity: activeTab === 'dicas' ? 1 : 0.7
+              }}
             >
               Dicas e Cuidados
             </button>
@@ -577,18 +596,32 @@ const Animais = () => {
             <div className="row">
               {/* Categorias */}
               <div className="col-12 mb-4">
-                <div className="d-flex flex-wrap justify-content-center">
+                <div className="d-flex flex-wrap justify-content-center gap-2">
                   <button
-                    className={`btn ${categoriaDicas === 'todas' ? 'btn-main text-white' : 'btn-light'} m-1`}
+                    className="btn m-1"
                     onClick={() => setCategoriaDicas('todas')}
+                    style={{ 
+                      backgroundColor: categoriaDicas === 'todas' ? 'var(--main-color)' : 'white',
+                      color: categoriaDicas === 'todas' ? 'white' : 'var(--main-color)',
+                      border: '1px solid var(--main-color)',
+                      opacity: categoriaDicas === 'todas' ? 1 : 0.8,
+                      transition: 'all 0.3s ease'
+                    }}
                   >
                     Todas
                   </button>
                   {categorias.map((cat, index) => (
                     <button
                       key={index}
-                      className={`btn ${categoriaDicas === cat ? 'btn-main text-white' : 'btn-light'} m-1`}
+                      className="btn m-1"
                       onClick={() => setCategoriaDicas(cat)}
+                      style={{ 
+                        backgroundColor: categoriaDicas === cat ? 'var(--main-color)' : 'white',
+                        color: categoriaDicas === cat ? 'white' : 'var(--main-color)',
+                        border: '1px solid var(--main-color)',
+                        opacity: categoriaDicas === cat ? 1 : 0.8,
+                        transition: 'all 0.3s ease'
+                      }}
                     >
                       {cat}
                     </button>
