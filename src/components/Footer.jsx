@@ -13,11 +13,10 @@ function Footer() {
           </li>
         </ul>
         <div className="mt-3">
-          <a href="https://facebook.com" className="text-decoration-none text-white me-3">Facebook</a>
           <a href="https://instagram.com" className="text-decoration-none text-white me-3">Instagram</a>
-          <a href="https://twitter.com" className="text-decoration-none text-white">Twitter</a>
+          <a href="https://twitter.com" className="text-decoration-none text-white">Youtube</a>
         </div>
-        <p className="mt-3 mb-0">&copy; 2024 Plataforma. Todos os direitos reservados.</p>
+        <p className="mt-3 mb-0">&copy; 2025 Pataforma. Todos os direitos reservados.</p>
       </div>
     </footer>
   );

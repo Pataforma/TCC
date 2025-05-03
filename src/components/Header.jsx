@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import logo from '../assets/imgs/logo.png';
 import Button from './Button';
 
+
 function Header() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -13,7 +14,7 @@ function Header() {
   };
 
   const handleAuthClick = () => {
-    navigate('/login');
+    navigate('/Auth');
   };
 
   const toggleMenu = () => {
@@ -101,17 +102,6 @@ function Header() {
           </ul>
         </nav>
         
-        {/* <div className="d-none d-lg-block">
-          <Button 
-            text="Login / Cadastro" 
-            bgColor="var(--secondary-color)" 
-            hoverColor="var(--elements-color)" 
-            textColor="white"
-            className="ms-2"
-            onClick={handleAuthClick}
-          />
-        </div>
-      </div> */}
         <div className="d-none d-lg-block">
           <span 
             className="material-symbols-outlined ms-2"
