@@ -9,16 +9,27 @@ import vetrafaell from "../assets/imgs/vetrafaell.jpeg";
 import vetjuliana from "../assets/imgs/vetjuliana.jpeg";
 
 const Veterinarios = () => {
-  const [viewProfile, setViewProfile] = useState(null); 
+  const [viewProfile, setViewProfile] = useState(null);
   const [filtros, setFiltros] = useState({
     cidade: "",
     especialidade: "",
-    atendimento: ""
+    atendimento: "",
   });
 
   // Dados de exemplo para os filtros
-  const cidades = ["Feira de Santana", "Salvador", "Alagoinhas", "Santo Antônio de Jesus"];
-  const especialidades = ["Clínico Geral", "Ortopedia", "Dermatologia", "Odontologia", "Cardiologia"];
+  const cidades = [
+    "Feira de Santana",
+    "Salvador",
+    "Alagoinhas",
+    "Santo Antônio de Jesus",
+  ];
+  const especialidades = [
+    "Clínico Geral",
+    "Ortopedia",
+    "Dermatologia",
+    "Odontologia",
+    "Cardiologia",
+  ];
   const tiposAtendimento = ["Presencial", "Domicílio", "Telemedicina"];
 
   // Dados de exemplo para os veterinários
@@ -37,9 +48,17 @@ const Veterinarios = () => {
         endereco: "Av. Getúlio Vargas, 123 - Centro",
       },
       avaliacoes: [
-        { autor: "João Silva", nota: 5, comentario: "Excelente profissional, meu pet adorou!" },
-        { autor: "Ana Oliveira", nota: 4, comentario: "Muito atenciosa e cuidadosa." }
-      ]
+        {
+          autor: "João Silva",
+          nota: 5,
+          comentario: "Excelente profissional, meu pet adorou!",
+        },
+        {
+          autor: "Ana Oliveira",
+          nota: 4,
+          comentario: "Muito atenciosa e cuidadosa.",
+        },
+      ],
     },
     {
       id: 2,
@@ -55,9 +74,18 @@ const Veterinarios = () => {
         endereco: "Rua da Graça, 456 - Graça",
       },
       avaliacoes: [
-        { autor: "Carlos Eduardo", nota: 5, comentario: "Realizou uma cirurgia complexa no meu cachorro com grande sucesso!" },
-        { autor: "Patricia Lemos", nota: 5, comentario: "Muito dedicado e profissional, recomendo!" }
-      ]
+        {
+          autor: "Carlos Eduardo",
+          nota: 5,
+          comentario:
+            "Realizou uma cirurgia complexa no meu cachorro com grande sucesso!",
+        },
+        {
+          autor: "Patricia Lemos",
+          nota: 5,
+          comentario: "Muito dedicado e profissional, recomendo!",
+        },
+      ],
     },
     {
       id: 3,
@@ -70,12 +98,21 @@ const Veterinarios = () => {
       contato: {
         telefone: "(75) 97777-7777",
         email: "juliana.costa@vet.com",
-        endereco: "Rua Conselheiro Franco, 789 - Kalilândia"
+        endereco: "Rua Conselheiro Franco, 789 - Kalilândia",
       },
       avaliacoes: [
-        { autor: "Marcia Alves", nota: 4, comentario: "Resolveu o problema de alergia do meu gato que sofria há anos." },
-        { autor: "Roberto Pires", nota: 5, comentario: "Profissional excepcional, diagnóstico preciso." }
-      ]
+        {
+          autor: "Marcia Alves",
+          nota: 4,
+          comentario:
+            "Resolveu o problema de alergia do meu gato que sofria há anos.",
+        },
+        {
+          autor: "Roberto Pires",
+          nota: 5,
+          comentario: "Profissional excepcional, diagnóstico preciso.",
+        },
+      ],
     },
     {
       id: 4,
@@ -88,20 +125,31 @@ const Veterinarios = () => {
       contato: {
         telefone: "(71) 96666-6666",
         email: "andre.peixoto@vet.com",
-        endereco: "Av. Tancredo Neves, 1011 - Caminho das Árvores"
+        endereco: "Av. Tancredo Neves, 1011 - Caminho das Árvores",
       },
       avaliacoes: [
-        { autor: "Marcelo Santana", nota: 5, comentario: "Tratamento odontológico perfeito, meu pet está muito melhor!" },
-        { autor: "Laura Góes", nota: 4, comentario: "Excelente profissional, muito detalhista." }
-      ]
-    }
+        {
+          autor: "Marcelo Santana",
+          nota: 5,
+          comentario:
+            "Tratamento odontológico perfeito, meu pet está muito melhor!",
+        },
+        {
+          autor: "Laura Góes",
+          nota: 4,
+          comentario: "Excelente profissional, muito detalhista.",
+        },
+      ],
+    },
   ];
 
   // Filtragem de veterinários
-  const veterinariosFiltrados = veterinarios.filter(vet => {
+  const veterinariosFiltrados = veterinarios.filter((vet) => {
     const cidadeMatch = !filtros.cidade || vet.cidade === filtros.cidade;
-    const especialidadeMatch = !filtros.especialidade || vet.especialidade === filtros.especialidade;
-    const atendimentoMatch = !filtros.atendimento || vet.atendimento.includes(filtros.atendimento);
+    const especialidadeMatch =
+      !filtros.especialidade || vet.especialidade === filtros.especialidade;
+    const atendimentoMatch =
+      !filtros.atendimento || vet.atendimento.includes(filtros.atendimento);
 
     return cidadeMatch && especialidadeMatch && atendimentoMatch;
   });
@@ -109,9 +157,9 @@ const Veterinarios = () => {
   // Manipuladores de eventos
   const handleFiltroChange = (e) => {
     const { name, value } = e.target;
-    setFiltros(prevFiltros => ({
+    setFiltros((prevFiltros) => ({
       ...prevFiltros,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -127,7 +175,7 @@ const Veterinarios = () => {
   return (
     <>
       <Header />
-
+      {/* 
       <section className="container-fluid veterinarios-bg text-white py-5 mt-5 position-relative">
         <div className="position-absolute top-0 start-0 w-100 h-100" style={{ backgroundColor: 'rgba(0, 0, 0, 0.4)', zIndex: 1 }}></div>
         <div className="container py-4 position-relative" style={{ zIndex: 2 }}>
@@ -136,8 +184,25 @@ const Veterinarios = () => {
             Encontre os melhores profissionais para cuidar do seu pet
           </p>
         </div>
-      </section>
+      </section> */}
 
+      {viewProfile === null && (
+        <section className="container-fluid veterinarios-bg text-white py-5 mt-5 position-relative">
+          <div
+            className="position-absolute top-0 start-0 w-100 h-100"
+            style={{ backgroundColor: "rgba(0, 0, 0, 0.4)", zIndex: 1 }}
+          ></div>
+          <div
+            className="container py-4 position-relative"
+            style={{ zIndex: 2 }}
+          >
+            <h1 className="display-5 fw-bold">Veterinários</h1>
+            <p className="lead">
+              Encontre os melhores profissionais para cuidar do seu pet
+            </p>
+          </div>
+        </section>
+      )}
 
       <div className="container py-5">
         {viewProfile === null ? (
@@ -149,7 +214,9 @@ const Veterinarios = () => {
                   <h5 className="text-elements mb-4 fw-bold">Filtros</h5>
 
                   <div className="mb-3">
-                    <label htmlFor="cidade" className="form-label fw-semibold">Cidade</label>
+                    <label htmlFor="cidade" className="form-label fw-semibold">
+                      Cidade
+                    </label>
                     <select
                       className="form-select"
                       id="cidade"
@@ -159,13 +226,20 @@ const Veterinarios = () => {
                     >
                       <option value="">Todas as cidades</option>
                       {cidades.map((cidade, index) => (
-                        <option key={index} value={cidade}>{cidade}</option>
+                        <option key={index} value={cidade}>
+                          {cidade}
+                        </option>
                       ))}
                     </select>
                   </div>
 
                   <div className="mb-3">
-                    <label htmlFor="especialidade" className="form-label fw-semibold">Especialidade</label>
+                    <label
+                      htmlFor="especialidade"
+                      className="form-label fw-semibold"
+                    >
+                      Especialidade
+                    </label>
                     <select
                       className="form-select"
                       id="especialidade"
@@ -175,13 +249,20 @@ const Veterinarios = () => {
                     >
                       <option value="">Todas as especialidades</option>
                       {especialidades.map((esp, index) => (
-                        <option key={index} value={esp}>{esp}</option>
+                        <option key={index} value={esp}>
+                          {esp}
+                        </option>
                       ))}
                     </select>
                   </div>
 
                   <div className="mb-3">
-                    <label htmlFor="atendimento" className="form-label fw-semibold">Tipo de Atendimento</label>
+                    <label
+                      htmlFor="atendimento"
+                      className="form-label fw-semibold"
+                    >
+                      Tipo de Atendimento
+                    </label>
                     <select
                       className="form-select"
                       id="atendimento"
@@ -191,7 +272,9 @@ const Veterinarios = () => {
                     >
                       <option value="">Todos os tipos</option>
                       {tiposAtendimento.map((tipo, index) => (
-                        <option key={index} value={tipo}>{tipo}</option>
+                        <option key={index} value={tipo}>
+                          {tipo}
+                        </option>
                       ))}
                     </select>
                   </div>
@@ -200,7 +283,13 @@ const Veterinarios = () => {
                     text="Limpar Filtros"
                     bgColor="var(--secondary-color)"
                     hoverColor="var(--elements-color)"
-                    onClick={() => setFiltros({ cidade: "", especialidade: "", atendimento: "" })}
+                    onClick={() =>
+                      setFiltros({
+                        cidade: "",
+                        especialidade: "",
+                        atendimento: "",
+                      })
+                    }
                     className="w-100 mt-3"
                   />
                 </div>
@@ -215,7 +304,7 @@ const Veterinarios = () => {
 
               <div className="row g-4">
                 {veterinariosFiltrados.length > 0 ? (
-                  veterinariosFiltrados.map(vet => (
+                  veterinariosFiltrados.map((vet) => (
                     <div key={vet.id} className="col-md-6 col-lg-4">
                       <div className="card h-100 border-0 shadow-sm">
                         <div className="text-center pt-4">
@@ -223,17 +312,28 @@ const Veterinarios = () => {
                             src={vet.foto}
                             alt={vet.nome}
                             className="rounded-circle"
-                            style={{ width: "120px", height: "120px", objectFit: "cover" }}
+                            style={{
+                              width: "120px",
+                              height: "120px",
+                              objectFit: "cover",
+                            }}
                           />
                         </div>
                         <div className="card-body text-center">
                           <h5 className="text-elements">{vet.nome}</h5>
                           <p className="text-muted mb-1">{vet.especialidade}</p>
-                          <p className="mb-3"><i className="bi bi-geo-alt"></i> {vet.cidade}</p>
+                          <p className="mb-3">
+                            <i className="bi bi-geo-alt"></i> {vet.cidade}
+                          </p>
                           <p className="mb-3">
                             <small>
                               {vet.atendimento.map((tipo, index) => (
-                                <span key={index} className="badge bg-light text-dark me-1">{tipo}</span>
+                                <span
+                                  key={index}
+                                  className="badge bg-light text-dark me-1"
+                                >
+                                  {tipo}
+                                </span>
                               ))}
                             </small>
                           </p>
@@ -249,12 +349,20 @@ const Veterinarios = () => {
                   ))
                 ) : (
                   <div className="col-12 text-center py-5">
-                    <p className="text-muted">Nenhum veterinário encontrado com os filtros selecionados.</p>
+                    <p className="text-muted">
+                      Nenhum veterinário encontrado com os filtros selecionados.
+                    </p>
                     <Button
                       text="Limpar Filtros"
                       bgColor="var(--secondary-color)"
                       hoverColor="var(--elements-color)"
-                      onClick={() => setFiltros({ cidade: "", especialidade: "", atendimento: "" })}
+                      onClick={() =>
+                        setFiltros({
+                          cidade: "",
+                          especialidade: "",
+                          atendimento: "",
+                        })
+                      }
                     />
                   </div>
                 )}
@@ -273,7 +381,7 @@ const Veterinarios = () => {
             />
 
             {(() => {
-              const vet = veterinarios.find(v => v.id === viewProfile);
+              const vet = veterinarios.find((v) => v.id === viewProfile);
 
               return (
                 <div className="row">
@@ -281,17 +389,29 @@ const Veterinarios = () => {
                     <div className="card border-0 shadow-sm mb-4">
                       <div className="card-body text-center">
                         <img
-                          src={logo}
+                          src={vet.foto}
                           alt={vet.nome}
                           className="rounded-circle mb-3"
-                          style={{ width: "180px", height: "180px", objectFit: "cover" }}
+                          style={{
+                            width: "180px",
+                            height: "180px",
+                            objectFit: "cover",
+                          }}
                         />
+
                         <h3 className="text-elements">{vet.nome}</h3>
                         <p className="text-muted">{vet.especialidade}</p>
-                        <p><i className="bi bi-geo-alt"></i> {vet.cidade}</p>
+                        <p>
+                          <i className="bi bi-geo-alt"></i> {vet.cidade}
+                        </p>
                         <div className="d-flex justify-content-center">
                           {vet.atendimento.map((tipo, index) => (
-                            <span key={index} className="badge bg-light text-dark me-1">{tipo}</span>
+                            <span
+                              key={index}
+                              className="badge bg-light text-dark me-1"
+                            >
+                              {tipo}
+                            </span>
                           ))}
                         </div>
                       </div>
@@ -300,9 +420,16 @@ const Veterinarios = () => {
                     <div className="card border-0 shadow-sm">
                       <div className="card-body">
                         <h5 className="text-elements mb-3">Contato</h5>
-                        <p><i className="bi bi-telephone"></i> {vet.contato.telefone}</p>
-                        <p><i className="bi bi-envelope"></i> {vet.contato.email}</p>
-                        <p><i className="bi bi-geo"></i> {vet.contato.endereco}</p>
+                        <p>
+                          <i className="bi bi-telephone"></i>{" "}
+                          {vet.contato.telefone}
+                        </p>
+                        <p>
+                          <i className="bi bi-envelope"></i> {vet.contato.email}
+                        </p>
+                        <p>
+                          <i className="bi bi-geo"></i> {vet.contato.endereco}
+                        </p>
                         <Button
                           text="Agendar Consulta"
                           bgColor="var(--main-color)"
@@ -325,9 +452,15 @@ const Veterinarios = () => {
                       <div className="card-body">
                         <h5 className="text-elements mb-3">Especialidades</h5>
                         <div className="d-flex flex-wrap">
-                          <span className="badge bg-main text-white me-2 mb-2 p-2">{vet.especialidade}</span>
-                          <span className="badge bg-main text-white me-2 mb-2 p-2">Medicina Preventiva</span>
-                          <span className="badge bg-main text-white me-2 mb-2 p-2">Cuidados Gerais</span>
+                          <span className="badge bg-main text-white me-2 mb-2 p-2">
+                            {vet.especialidade}
+                          </span>
+                          <span className="badge bg-main text-white me-2 mb-2 p-2">
+                            Medicina Preventiva
+                          </span>
+                          <span className="badge bg-main text-white me-2 mb-2 p-2">
+                            Cuidados Gerais
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -337,7 +470,14 @@ const Veterinarios = () => {
                         <div className="d-flex justify-content-between align-items-center mb-3">
                           <h5 className="text-elements mb-0">Avaliações</h5>
                           <span className="badge bg-success">
-                            {Math.round(vet.avaliacoes.reduce((acc, aval) => acc + aval.nota, 0) / vet.avaliacoes.length * 10) / 10}
+                            {Math.round(
+                              (vet.avaliacoes.reduce(
+                                (acc, aval) => acc + aval.nota,
+                                0
+                              ) /
+                                vet.avaliacoes.length) *
+                                10
+                            ) / 10}
                             /5
                           </span>
                         </div>
@@ -350,7 +490,9 @@ const Veterinarios = () => {
                                 {[...Array(5)].map((_, i) => (
                                   <i
                                     key={i}
-                                    className={`bi bi-star${i < aval.nota ? '-fill' : ''} text-warning`}
+                                    className={`bi bi-star${
+                                      i < aval.nota ? "-fill" : ""
+                                    } text-warning`}
                                   ></i>
                                 ))}
                               </div>

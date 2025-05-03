@@ -101,7 +101,7 @@ function Header() {
           </ul>
         </nav>
         
-        <div className="d-none d-lg-block">
+        {/* <div className="d-none d-lg-block">
           <Button 
             text="Login / Cadastro" 
             bgColor="var(--secondary-color)" 
@@ -110,6 +110,23 @@ function Header() {
             className="ms-2"
             onClick={handleAuthClick}
           />
+        </div>
+      </div> */}
+        <div className="d-none d-lg-block">
+          <span 
+            className="material-symbols-outlined ms-2"
+            style={{ 
+              fontSize: '32px', 
+              color: 'white', 
+              cursor: 'pointer',
+              backgroundColor: 'var(--secondary-color)',
+              padding: '8px',
+              borderRadius: '50%'
+            }}
+            onClick={handleAuthClick}
+          >
+            account_circle
+          </span>
         </div>
       </div>
       
