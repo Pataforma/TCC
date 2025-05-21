@@ -109,20 +109,22 @@ const Sobre = () => {
         </div>
       </section>
 
-      {/* Nossa Equipe */}
       <section className="container py-5">
         <div className="row">
           <div className="col-12 text-center mb-5">
             <h2 className="text-elements fw-bold">Nossa Equipe</h2>
             <div className="mx-auto" style={{ width: "50px", height: "4px", backgroundColor: "var(--secondary-color)" }}></div>
             <p className="mt-3">
-              Conheça as pessoas por trás da Pataforma que trabalham diariamente para proporcionar
+              Conheça as pessoas por trás da Plataforma que trabalham diariamente para proporcionar
               a melhor experiência para você e seu pet.
             </p>
           </div>
         </div>
+
+        {/* Cards dos integrantes */}
         <div className="row g-4">
-          <div className="col-md-4">
+          {/* Card 1 */}
+          <div className="col-md-3 col-sm-6">
             <div className="card border-0 shadow-sm h-100">
               <div className="text-center pt-4">
                 <img
@@ -133,7 +135,7 @@ const Sobre = () => {
                 />
               </div>
               <div className="card-body text-center">
-                <h5 className="text-elements">Ana Oliveira</h5>
+                <h5 className="text-elements">Laila Nichole</h5>
                 <p className="text-muted">Fundadora e CEO</p>
                 <p>
                   Veterinária e empreendedora apaixonada por tecnologia e bem-estar animal.
@@ -141,7 +143,9 @@ const Sobre = () => {
               </div>
             </div>
           </div>
-          <div className="col-md-4">
+
+          {/* Card 2 */}
+          <div className="col-md-3 col-sm-6">
             <div className="card border-0 shadow-sm h-100">
               <div className="text-center pt-4">
                 <img
@@ -152,7 +156,7 @@ const Sobre = () => {
                 />
               </div>
               <div className="card-body text-center">
-                <h5 className="text-elements">Carlos Silva</h5>
+                <h5 className="text-elements">Eduardo Pires</h5>
                 <p className="text-muted">CTO</p>
                 <p>
                   Desenvolvedor com vasta experiência em aplicações para o setor de saúde animal.
@@ -160,7 +164,9 @@ const Sobre = () => {
               </div>
             </div>
           </div>
-          <div className="col-md-4">
+
+          {/* Card 3 */}
+          <div className="col-md-3 col-sm-6">
             <div className="card border-0 shadow-sm h-100">
               <div className="text-center pt-4">
                 <img
@@ -171,10 +177,31 @@ const Sobre = () => {
                 />
               </div>
               <div className="card-body text-center">
-                <h5 className="text-elements">Mariana Costa</h5>
-                <p className="text-muted">Diretora de Marketing</p>
+                <h5 className="text-elements">Johan Victor</h5>
+                <p className="text-muted">Diretor de Marketing</p>
                 <p>
                   Especialista em estratégias digitais e comunicação para o mercado pet.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Card 4 */}
+          <div className="col-md-3 col-sm-6">
+            <div className="card border-0 shadow-sm h-100">
+              <div className="text-center pt-4">
+                <img
+                  src={logo}
+                  alt="Membro da Equipe"
+                  className="rounded-circle"
+                  style={{ width: "150px", height: "150px", objectFit: "cover" }}
+                />
+              </div>
+              <div className="card-body text-center">
+                <h5 className="text-elements">Levi Figueredo</h5>
+                <p className="text-muted">CTO</p>
+                <p>
+                  Desenvolvedor com vasta experiência em aplicações para o setor de saúde animal.
                 </p>
               </div>
             </div>
