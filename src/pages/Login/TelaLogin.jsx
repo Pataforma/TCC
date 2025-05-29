@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import styles from './AuthPage.module.css';
+import styles from './TelaLogin.module.css';
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 
-const AuthPage = () => {
+const TelaLogin = () => {
   const [isLogin, setIsLogin] = useState(true);
 
   // Função para alternar entre os modos login e cadastro
@@ -126,4 +126,4 @@ const AuthPage = () => {
   );
 };
 
-export default AuthPage;
+export default TelaLogin; 

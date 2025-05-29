@@ -113,7 +113,7 @@ function Header() {
               padding: '8px',
               borderRadius: '50%'
             }}
-            onClick={handleAuthClick}
+            onClick={() => navigate('/TelaLogin')}
           >
             account_circle
           </span>
@@ -198,19 +198,6 @@ function Header() {
             </Link>
           </li>
         </ul>
-        <div className="px-3">
-          <Botao 
-            text="Login / Cadastro" 
-            bgColor="var(--secondary-color)" 
-            hoverColor="var(--elements-color)" 
-            textColor="white"
-            className="w-100"
-            onClick={() => {
-              handleAuthClick();
-              setMenuOpen(false);
-            }}
-          />
-        </div>
       </div>
     </header>
   );

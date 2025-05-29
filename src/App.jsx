@@ -1,8 +1,5 @@
-// src/App.jsx
-
 import { Routes, Route } from "react-router-dom";
 import ScrollToTop from "./components/ScrollToTop";
-
 import Home from './pages/Home'
 import Sobre from './pages/Sobre'
 import Veterinarios from './pages/Veterinarios'
@@ -11,9 +8,7 @@ import Produto from './pages/Produto'
 import Agenda from './pages/Agenda'
 import Contato from './pages/Contato'
 import LoadingPage from './pages/LoadingPage'
-import AuthPage from "./pages/AuthPage/AuthPage";
-
-
+import TelaLogin from "./pages/Login/TelaLogin";
 
 function App() {
   return (
@@ -27,7 +22,7 @@ function App() {
         <Route path="/produto" element={<Produto />} />
         <Route path="/agenda" element={<Agenda />} />
         <Route path="/contato" element={<Contato />} />
-        <Route path="/auth" element={<AuthPage />} />
+        <Route path="/telalogin" element={<TelaLogin />} />
         <Route path="/loading" element={<LoadingPage />} />
       </Routes>
     </>
