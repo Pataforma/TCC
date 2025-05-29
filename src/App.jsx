@@ -11,7 +11,7 @@ import Produto from './pages/Produto'
 import Agenda from './pages/Agenda'
 import Contato from './pages/Contato'
 import LoadingPage from './pages/LoadingPage'
-import AuthPage from "./components/AuthPage/AuthPage";
+import AuthPage from "./pages/AuthPage/AuthPage";
 
 
 
