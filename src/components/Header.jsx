@@ -14,7 +14,7 @@ function Header() {
   };
 
   const handleAuthClick = () => {
-    navigate('/Auth');
+    navigate('/TelaLogin');
   };
 
   const toggleMenu = () => {

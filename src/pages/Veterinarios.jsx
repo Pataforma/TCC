@@ -430,12 +430,12 @@ const Veterinarios = () => {
                         <p>
                           <i className="bi bi-geo"></i> {vet.contato.endereco}
                         </p>
-                        <Botao
+                        {/* <Botao
                           text="Agendar Consulta"
                           bgColor="var(--main-color)"
                           hoverColor="var(--bg-button)"
                           className="w-100 mt-2"
-                        />
+                        /> */}
                       </div>
                     </div>
                   </div>
@@ -501,12 +501,12 @@ const Veterinarios = () => {
                           </div>
                         ))}
 
-                        <Botao
+                        {/* <Botao
                           text="Ver todas as avaliações"
                           bgColor="var(--secondary-color)"
                           hoverColor="var(--elements-color)"
                           className="w-100 mt-2"
-                        />
+                        /> */}
                       </div>
                     </div>
                   </div>

@@ -4,6 +4,8 @@ import Footer from "../components/Footer";
 import Botao from "../components/Botao";
 import logo from "../assets/imgs/logo.png";
 import { useNavigate } from "react-router-dom";
+import Icon from "@mdi/react";
+import { mdiPaw } from "@mdi/js";
 const Sobre = () => {
   const navigate = useNavigate();
   return (
@@ -87,7 +89,7 @@ const Sobre = () => {
                     className="rounded-circle bg-main d-flex align-items-center justify-content-center mx-auto mb-3"
                     style={{ width: "80px", height: "80px" }}
                   >
-                    <i className="fas fa-user-doctor text-white fs-3"></i>
+                  <Icon path={mdiPaw} size={1.2} color="white" />
                   </div>
                   <h4 className="text-elements">Cuidado</h4>
                   <p>
@@ -279,7 +281,7 @@ const Sobre = () => {
               hoverColor="var(--elements-color)"
               textColor="white"
               className="me-3 px-4 py-2"
-              onClick={() => navigate("/Auth")}
+              onClick={() => navigate("/TelaLogin")}
             />
             <Botao
               text="Fale Conosco"

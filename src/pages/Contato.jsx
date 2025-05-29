@@ -401,29 +401,28 @@ const Contato = () => {
                   <i className="bi bi-envelope-fill text-elements me-3 fs-5"></i>
                   <div>
                     <p className="fw-bold mb-0">E-mail</p>
-                    <p className="mb-0">contato@pataforma.com.br</p>
+                    <p className="mb-0">contatopataforma@gmail.com</p>
                     <p className="small text-muted">Respondemos em até 48h úteis</p>
                   </div>
                 </div>
 
-                <div className="d-flex align-items-start mb-3">
+                {/* <div className="d-flex align-items-start mb-3">
                   <i className="bi bi-telephone-fill text-elements me-3 fs-5"></i>
                   <div>
-                    <p className="fw-bold mb-0">Telefone</p>
-                    <p className="mb-0">(75) 3622-0000</p>
-                    <p className="small text-muted">Seg-Sex, 8h às 18h</p>
+                    <p className="fw-bold mb-0">Instagram</p>
+                    <p className="mb-0">@pataformapet</p>
+                    <p className="small text-muted">Respondemos de seg-sex, 8h às 18h</p>
                   </div>
-                </div>
+                </div> */}
 
-                <div className="d-flex align-items-start mb-3">
+                {/* <div className="d-flex align-items-start mb-3">
                   <i className="bi bi-geo-alt-fill text-elements me-3 fs-5"></i>
                   <div>
-                    <p className="fw-bold mb-0">Endereço</p>
-                    <p className="mb-0">Av. Universitária, 1000</p>
-                    <p className="mb-0">Feira de Santana, BA</p>
-                    <p className="small text-muted">Visite-nos com agendamento prévio</p>
+                    <p className="fw-bold mb-0">YouTube</p>
+                    <p className="mb-0">Pataformapet</p>
+                    <p className="small text-muted">Acesse e acompanhe nossos conteúdios</p>
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
 
@@ -434,22 +433,22 @@ const Contato = () => {
                 <p className="text-muted mb-3">Siga-nos e fique por dentro de todas as novidades!</p>
 
                 <div className="d-flex flex-wrap gap-3">
-                  <a href="#" className="btn btn-light d-flex align-items-center border px-3 py-2 text-decoration-none">
+                  <a  href="https://instagram.com/pataformapet" target="_blank" className="btn btn-light d-flex align-items-center border px-3 py-2 text-decoration-none">
                     <i className="bi bi-instagram text-elements me-2 fs-5"></i>
                     <span>Instagram</span>
                   </a>
 
-                  <a href="#" className="btn btn-light d-flex align-items-center border px-3 py-2 text-decoration-none">
+                  {/* <a href="#" className="btn btn-light d-flex align-items-center border px-3 py-2 text-decoration-none">
                     <i className="bi bi-facebook text-elements me-2 fs-5"></i>
                     <span>Facebook</span>
-                  </a>
+                  </a> */}
 
-                  <a href="#" className="btn btn-light d-flex align-items-center border px-3 py-2 text-decoration-none">
+                  {/* <a href="#" className="btn btn-light d-flex align-items-center border px-3 py-2 text-decoration-none">
                     <i className="bi bi-linkedin text-elements me-2 fs-5"></i>
                     <span>LinkedIn</span>
-                  </a>
+                  </a> */}
 
-                  <a href="#" className="btn btn-light d-flex align-items-center border px-3 py-2 text-decoration-none">
+                  <a href="https://www.youtube.com/@Pataformapet" target="_blank" className="btn btn-light d-flex align-items-center border px-3 py-2 text-decoration-none">
                     <i className="bi bi-youtube text-elements me-2 fs-5"></i>
                     <span>YouTube</span>
                   </a>

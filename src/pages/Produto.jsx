@@ -94,7 +94,7 @@ const Produto = () => {
           <div className="row align-items-center">
             <div className="col-md-6">
               <h1 className="display-4 fw-bold">
-                Alimentador Inteligente PetFeed
+                Alimentador Inteligente PataChef
               </h1>
               <p className="lead my-4">
                 Revolucione a forma de alimentar seu pet com tecnologia de ponta
@@ -135,13 +135,13 @@ const Produto = () => {
               Pensado para o conforto do seu pet
             </h2>
             <p className="mb-4">
-              O Alimentador Inteligente PetFeed foi desenvolvido após anos de
+              O Alimentador Inteligente PataChef foi desenvolvido após anos de
               pesquisa sobre os hábitos alimentares de cães e gatos, criando uma
               solução que respeita o ritmo natural de alimentação dos animais
               enquanto oferece praticidade aos tutores.
             </p>
             <p>
-              Com design moderno e intuitivo, o PetFeed se encaixa perfeitamente
+              Com design moderno e intuitivo, o PataChef se encaixa perfeitamente
               na decoração da sua casa, enquanto proporciona uma experiência de
               alimentação ideal para seu pet.
             </p>
@@ -332,7 +332,7 @@ const Produto = () => {
       {/* Demonstração */}
       <section className="container-fluid py-5 bg-light">
         <div className="container text-center">
-          <h2 className="text-elements fw-bold mb-3">Veja o PetFeed em Ação</h2>
+          <h2 className="text-elements fw-bold mb-3">Veja o PataChef em Ação</h2>
           <p className="mb-5">
             Em breve disponibilizaremos vídeos demonstrativos do produto
           </p>
@@ -399,9 +399,9 @@ const Produto = () => {
         <div className="container">
           <div className="row">
             <div className="col-md-6">
-              <h2 className="fw-bold mb-4">Garanta seu PetFeed</h2>
+              <h2 className="fw-bold mb-4">Garanta seu PataChef</h2>
               <p className="mb-4">
-                O Alimentador Inteligente PetFeed é produzido sob encomenda,
+                O Alimentador Inteligente PataChef é produzido sob encomenda,
                 garantindo qualidade e atenção aos detalhes. Preencha o
                 formulário ao lado para demonstrar interesse e entraremos em
                 contato com mais informações sobre disponibilidade, preços e
@@ -475,9 +475,10 @@ const Produto = () => {
                     </div>
                     <div className="mb-3">
                       <label htmlFor="mensagem" className="form-label">
-                        Mensagem (opcional)
+                        Mensagem
                       </label>
                       <textarea
+                        placeholder="Quero adquirir um PataChef!"
                         className="form-control"
                         id="mensagem"
                         name="mensagem"

@@ -187,11 +187,11 @@ const Home = () => {
         <div className="container">
           <div className="d-flex justify-content-between align-items-center mb-4">
             <h3 className="m-0 text-elements">Nossos Carrosséis</h3>
-            <Botao 
+            {/* <Botao 
               text="Ver todos" 
               bgColor="var(--secondary-color)" 
               hoverColor="var(--elements-color)" 
-            />
+            /> */}
           </div>
           <Carousel 
             indicators={true}
@@ -394,6 +394,7 @@ const Home = () => {
                       bgColor="var(--secondary-color)" 
                       hoverColor="var(--elements-color)" 
                       className="mt-2"
+                      onClick={() => navigate(`/Agenda/`)}
                     />
                   </div>
                 </div>
@@ -414,10 +415,11 @@ const Home = () => {
           bgColor="var(--secondary-color)" 
           hoverColor="var(--elements-color)" 
           className="mt-3"
+          onClick={() => navigate(`/Produto`)}
         />
       </section>
 
-      {/* Seção Perdidos */}
+      {/* Seção Perdidos
       <section className="py-5 bg-button text-white">
         <div className="container px-5 d-flex flex-column flex-lg-row align-items-center justify-content-between">
           <div>
@@ -435,7 +437,7 @@ const Home = () => {
             style={{ maxHeight: '300px' }}
           />
         </div>
-      </section>
+      </section> */}
 
       {/* Seção CallToAction */}
       <section className="py-5 bg-dark text-white text-center">
@@ -445,16 +447,9 @@ const Home = () => {
           <Button 
             className="btn text-black me-3"
             style={{ backgroundColor: "white" }}
-            onClick={() => navigate("/cadastro")}
+            onClick={() => navigate("/TelaLogin")}
           >
-            Cadastrar como Tutor
-          </Button>
-          <Button 
-            className="btn text-black"
-            style={{ backgroundColor: "white" }}
-            onClick={() => navigate("/veterinarios?cadastro=true")}
-          >
-            Cadastrar como Veterinário
+            Quero fazer parte!
           </Button>
         </div>
       </section>
