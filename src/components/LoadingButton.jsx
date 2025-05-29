@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import Button from './Button';
+import Botao from './Botao';
 import { navigateWithLoading } from '../utils/navigation';
 
 /**
@@ -23,7 +23,7 @@ function LoadingButton({
   };
 
   return (
-    <Button
+    <Botao
       text={text}
       onClick={handleClick}
       {...buttonProps}

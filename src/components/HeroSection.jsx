@@ -1,5 +1,5 @@
 import React from "react";
-import Button from "./Button";
+import Botao from "./Botao";
 
 function HeroSection() {
   return (
@@ -7,7 +7,7 @@ function HeroSection() {
       <h2>Cuidado e amor, conectados em um só lugar!</h2>
       <p>Encontre tudo o que você precisa para o bem-estar e cuidado do seu amigo de quatro patas.</p>
       <div>
-        <Button 
+        <Botao 
           text="Cadastrar meu pet" 
           bgColor="transparent"
           hoverColor="rgba(255, 255, 255, 0.2)"
@@ -15,7 +15,7 @@ function HeroSection() {
           className="me-3"
           style={{ border: "1px solid white" }}
         />
-        <Button 
+        <Botao 
           text="Anunciar pet perdido" 
           bgColor="transparent"
           hoverColor="rgba(255, 255, 255, 0.2)"

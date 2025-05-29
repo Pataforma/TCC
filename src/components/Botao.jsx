@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 
 /**
- * Button Component
+ * Botao Component
  * 
- * @param {string} text - The text content of the button
- * @param {string} bgColor - Background color (use CSS variables from custom.css or direct color values)
- * @param {string} hoverColor - Color to change to on hover
- * @param {string} textColor - Text color (default white)
- * @param {function} onClick - Function to execute on click
- * @param {string} className - Additional CSS classes
+ * @param {string} text - O texto do botão
+ * @param {string} bgColor - Cor de fundo (use variáveis CSS de custom.css ou valores diretos)
+ * @param {string} hoverColor - Cor ao passar o mouse
+ * @param {string} textColor - Cor do texto (padrão: branco)
+ * @param {function} onClick - Função a ser executada no clique
+ * @param {string} className - Classes CSS adicionais
  */
-const Button = ({
-  text = "Button",
+const Botao = ({
+  text = "Botao",
   bgColor = "var(--main-color)",
   hoverColor = "var(--bg-button)",
   textColor = "white",
@@ -45,4 +45,4 @@ const Button = ({
   );
 };
 
-export default Button; 
+export default Botao; 

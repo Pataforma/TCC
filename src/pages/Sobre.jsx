@@ -1,7 +1,7 @@
 import React from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import Button from "../components/Button";
+import Botao from "../components/Botao";
 import logo from "../assets/imgs/logo.png";
 import { useNavigate } from "react-router-dom";
 const Sobre = () => {
@@ -273,7 +273,7 @@ const Sobre = () => {
             Pataforma
           </p>
           <div>
-            <Button
+            <Botao
               text="Quero fazer parte"
               bgColor="var(--secondary-color)"
               hoverColor="var(--elements-color)"
@@ -281,7 +281,7 @@ const Sobre = () => {
               className="me-3 px-4 py-2"
               onClick={() => navigate("/Auth")}
             />
-            <Button
+            <Botao
               text="Fale Conosco"
               bgColor="var(--secondary-color)"
               hoverColor="var(--elements-color)"

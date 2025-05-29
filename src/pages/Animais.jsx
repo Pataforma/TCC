@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react"; // Adicione useEffect aqui
 import { useSearchParams } from 'react-router-dom'; // Esta linha só deve aparecer uma vez
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import Button from "../components/Button";
+import Botao from "../components/Botao";
 import logo from "../assets/imgs/logo.png";
 import thor from "../assets/imgs/thor.webp";
 import luna from "../assets/imgs/luna.avif";
@@ -374,7 +374,7 @@ const Animais = () => {
                       </select>
                     </div>
 
-                    <Button
+                    <Botao
                       text="Limpar Filtros"
                       bgColor="var(--secondary-color)"
                       hoverColor="var(--elements-color)"
@@ -383,7 +383,7 @@ const Animais = () => {
                     />
 
                     <div className="mt-4">
-                      <Button
+                      <Botao
                         text="Registrar Pet Perdido"
                         bgColor="var(--main-color)"
                         hoverColor="var(--bg-button)"
@@ -424,7 +424,7 @@ const Animais = () => {
                                 <p className="card-text mb-2"><i className="bi bi-geo-alt"></i> {pet.desaparecido.cidade}, {pet.desaparecido.bairro}</p>
                                 <p className="card-text"><small className="text-muted">Desaparecido em: {pet.desaparecido.data}</small></p>
                                 <p className="card-text small">{pet.descricao}</p>
-                                <Button
+                                <Botao
                                   text="Entrar em Contato"
                                   bgColor="var(--main-color)"
                                   hoverColor="var(--bg-button)"
@@ -439,7 +439,7 @@ const Animais = () => {
                   ) : (
                     <div className="col-12 text-center py-5">
                       <p className="text-muted">Nenhum pet perdido encontrado com os filtros selecionados.</p>
-                      <Button
+                      <Botao
                         text="Limpar Filtros"
                         bgColor="var(--secondary-color)"
                         hoverColor="var(--elements-color)"
@@ -509,7 +509,7 @@ const Animais = () => {
                       </select>
                     </div>
 
-                    <Button
+                    <Botao
                       text="Limpar Filtros"
                       bgColor="var(--secondary-color)"
                       hoverColor="var(--elements-color)"
@@ -518,7 +518,7 @@ const Animais = () => {
                     />
 
                     <div className="mt-4">
-                      <Button
+                      <Botao
                         text="Cadastrar Pet para Adoção"
                         bgColor="var(--main-color)"
                         hoverColor="var(--bg-button)"
@@ -574,7 +574,7 @@ const Animais = () => {
                                   {pet.comportamento.ativo && <span className="badge bg-light text-dark me-1">Ativo</span>}
                                 </div>
 
-                                <Button
+                                <Botao
                                   text="Quero Adotar"
                                   bgColor="var(--main-color)"
                                   hoverColor="var(--bg-button)"
@@ -589,7 +589,7 @@ const Animais = () => {
                   ) : (
                     <div className="col-12 text-center py-5">
                       <p className="text-muted">Nenhum pet para adoção encontrado com os filtros selecionados.</p>
-                      <Button
+                      <Botao
                         text="Limpar Filtros"
                         bgColor="var(--secondary-color)"
                         hoverColor="var(--elements-color)"
@@ -662,7 +662,7 @@ const Animais = () => {
                             <small className="text-muted">{dica.data}</small>
                             <small className="text-muted">{dica.autor}</small>
                           </div>
-                          <Button
+                          <Botao
                             text="Ler Artigo"
                             bgColor="var(--secondary-color)"
                             hoverColor="var(--elements-color)"

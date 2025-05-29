@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import Button from "../components/Button";
+import Botao from "../components/Botao";
 import logo from "../assets/imgs/logo.png";
 import vetmariana from "../assets/imgs/vetmariana.jpeg";
 import vetandre from "../assets/imgs/vetandre.jpeg";
@@ -279,7 +279,7 @@ const Veterinarios = () => {
                     </select>
                   </div>
 
-                  <Button
+                  <Botao
                     text="Limpar Filtros"
                     bgColor="var(--secondary-color)"
                     hoverColor="var(--elements-color)"
@@ -337,7 +337,7 @@ const Veterinarios = () => {
                               ))}
                             </small>
                           </p>
-                          <Button
+                          <Botao
                             text="Ver Perfil"
                             bgColor="var(--main-color)"
                             hoverColor="var(--bg-button)"
@@ -352,7 +352,7 @@ const Veterinarios = () => {
                     <p className="text-muted">
                       Nenhum veterinário encontrado com os filtros selecionados.
                     </p>
-                    <Button
+                    <Botao
                       text="Limpar Filtros"
                       bgColor="var(--secondary-color)"
                       hoverColor="var(--elements-color)"
@@ -372,7 +372,7 @@ const Veterinarios = () => {
         ) : (
           /* Perfil do Veterinário */
           <div>
-            <Button
+            <Botao
               text="← Voltar para a lista"
               bgColor="var(--secondary-color)"
               hoverColor="var(--elements-color)"
@@ -430,7 +430,7 @@ const Veterinarios = () => {
                         <p>
                           <i className="bi bi-geo"></i> {vet.contato.endereco}
                         </p>
-                        <Button
+                        <Botao
                           text="Agendar Consulta"
                           bgColor="var(--main-color)"
                           hoverColor="var(--bg-button)"
@@ -501,7 +501,7 @@ const Veterinarios = () => {
                           </div>
                         ))}
 
-                        <Button
+                        <Botao
                           text="Ver todas as avaliações"
                           bgColor="var(--secondary-color)"
                           hoverColor="var(--elements-color)"

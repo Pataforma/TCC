@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import Button from "../components/Button";
+import Botao from "../components/Botao";
 import logo from "../assets/imgs/logo.png";
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
@@ -247,7 +247,7 @@ Os organizadores entrarão em contato em breve!`);
                   </select>
                 </div>
 
-                <Button
+                <Botao
                   text="Limpar Filtros"
                   bgColor="var(--secondary-color)"
                   hoverColor="var(--elements-color)"
@@ -322,13 +322,13 @@ Os organizadores entrarão em contato em breve!`);
                       </div>
 
                       <div className="d-flex justify-content-between">
-                        <Button
+                        <Botao
                           text="Voltar"
                           bgColor="var(--secondary-color)"
                           hoverColor="var(--elements-color)"
                           onClick={() => setEventoSelecionado(null)}
                         />
-                        <Button
+                        <Botao
                           text="Quero Participar"
                           bgColor="var(--main-color)"
                           hoverColor="var(--bg-button)"
@@ -361,7 +361,7 @@ Os organizadores entrarão em contato em breve!`);
                               <i className="bi bi-geo-alt me-1"></i> {evento.local}, {evento.cidade}
                             </p>
                             <p className="card-text small text-truncate mb-3">{evento.descricao}</p>
-                            <Button
+                            <Botao
                               text="Ver Detalhes"
                               bgColor="var(--main-color)"
                               hoverColor="var(--bg-button)"
@@ -409,7 +409,7 @@ Os organizadores entrarão em contato em breve!`);
                     <p className="card-text small mb-2">
                       <i className="bi bi-geo-alt me-1"></i> {evento.cidade}
                     </p>
-                    <Button
+                    <Botao
                       text="Ver Detalhes"
                       bgColor="var(--secondary-color)"
                       hoverColor="var(--elements-color)"
@@ -438,13 +438,13 @@ Os organizadores entrarão em contato em breve!`);
               o formulário e entraremos em contato para validar as informações.
             </p>
             <div className="d-flex">
-              <Button
+              <Botao
                 text="Cadastrar Evento"
                 bgColor="var(--main-color)"
                 hoverColor="var(--bg-button)"
                 className="px-4 py-2 fw-bold me-3"
               />
-              <Button
+              <Botao
                 text="Saiba Mais"
                 bgColor="white"
                 hoverColor="#f8f9fa"

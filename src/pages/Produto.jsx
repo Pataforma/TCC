@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import Button from "../components/Button";
+import Botao from "../components/Botao";
 import logo from "../assets/imgs/logo.png";
 import alimentador from "../assets/imgs/alimentador.png";
 import Icon from "@mdi/react";
@@ -101,7 +101,7 @@ const Produto = () => {
                 que garante precisão, praticidade e o melhor cuidado para seu
                 amigo de quatro patas.
               </p>
-              <Button
+              <Botao
                 text="Garanta o seu"
                 bgColor="var(--secondary-color)"
                 hoverColor="var(--elements-color)"
@@ -486,7 +486,7 @@ const Produto = () => {
                         onChange={handleInputChange}
                       ></textarea>
                     </div>
-                    <Button
+                    <Botao
                       text="Tenho Interesse"
                       bgColor="var(--secondary-color)"
                       hoverColor="var(--elements-color)"

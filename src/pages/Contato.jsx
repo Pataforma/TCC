@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import Button from "../components/Button";
+import Botao from "../components/Botao";
 import logo from "../assets/imgs/logo.png";
 
 const Contato = () => {
@@ -210,7 +210,7 @@ const Contato = () => {
                         required
                       ></textarea>
                     </div>
-                    <Button
+                    <Botao
                       text="Enviar Mensagem"
                       bgColor="var(--main-color)"
                       hoverColor="var(--bg-button)"
@@ -295,7 +295,7 @@ const Contato = () => {
                         placeholder="Conte-nos sobre sua organização e o tipo de parceria que tem interesse"
                       ></textarea>
                     </div>
-                    <Button
+                    <Botao
                       text="Solicitar Parceria"
                       bgColor="var(--main-color)"
                       hoverColor="var(--bg-button)"
@@ -379,7 +379,7 @@ const Contato = () => {
                         placeholder="Forneça detalhes sobre o problema, quando ocorre e quais passos podemos seguir para reproduzi-lo"
                       ></textarea>
                     </div>
-                    <Button
+                    <Botao
                       text="Enviar Solicitação"
                       bgColor="var(--main-color)"
                       hoverColor="var(--bg-button)"
@@ -525,7 +525,7 @@ const Contato = () => {
           </div>
 
           <div className="text-center mt-4">
-            <Button
+            <Botao
               text="Ver todas as perguntas"
               bgColor="var(--secondary-color)"
               hoverColor="var(--elements-color)"
@@ -544,7 +544,7 @@ const Contato = () => {
 
             <div className="input-group mb-3">
               <input type="email" className="form-control" placeholder="Seu melhor e-mail" aria-label="Seu melhor e-mail" />
-              <Button
+              <Botao
                 text="Inscrever-se"
                 bgColor="var(--main-color)"
                 hoverColor="var(--bg-button)"

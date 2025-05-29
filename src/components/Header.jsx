@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import logo from '../assets/imgs/logo.png';
-import Button from './Button';
+import Botao from './Botao';
 
 
 function Header() {
@@ -199,7 +199,7 @@ function Header() {
           </li>
         </ul>
         <div className="px-3">
-          <Button 
+          <Botao 
             text="Login / Cadastro" 
             bgColor="var(--secondary-color)" 
             hoverColor="var(--elements-color)" 
