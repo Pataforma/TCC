@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react"; // Adicione useEffect aqui
+import { useSearchParams } from 'react-router-dom'; // Esta linha só deve aparecer uma vez
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Button from "../components/Button";
@@ -16,11 +17,21 @@ import higiene from "../assets/imgs/higiene.jpg";
 import vacina from "../assets/imgs/vacina.jpg";
 
 const Animais = () => {
-  const [activeTab, setActiveTab] = useState("perdidos");
+  const [searchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState('perdidos');
   const [filtroPerdidos, setFiltroPerdidos] = useState({ cidade: "", bairro: "" });
   const [filtroAdocao, setFiltroAdocao] = useState({ porte: "", idade: "", cidade: "" });
   const [categoriaDicas, setCategoriaDicas] = useState("todas");
 
+  // Efeito para verificar parâmetros da URL ao carregar
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab && ['perdidos', 'adocao', 'dicas'].includes(tab)) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
+
+  // Restante do seu código...
   // Dados de exemplo para filtros
   const cidades = ["Feira de Santana", "Salvador", "Alagoinhas", "Santo Antônio de Jesus"];
   const bairros = ["Centro", "Kalilândia", "Serraria Brasil", "Cidade Nova"];

@@ -19,10 +19,9 @@ const Sobre = () => {
 
         {/* Conteúdo com z-index acima do overlay */}
         <div className="container py-4 position-relative" style={{ zIndex: 2 }}>
-          <h1 className="display-5 fw-bold">Animais</h1>
+          <h1 className="display-5 fw-bold">Sobre nós</h1>
           <p className="lead">
-            Encontre pets perdidos, adote um amigo ou aprenda mais sobre
-            cuidados com animais
+            Entenda mais um pouco sobre o que é a Pataforma
           </p>
         </div>
       </section>

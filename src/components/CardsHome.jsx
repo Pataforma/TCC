@@ -1,8 +1,11 @@
 import React from "react";
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
+import { useNavigate } from "react-router-dom";
 
 function DicaCard({ title, text }) {
+  const navigate = useNavigate();
+
   return (
     <Card
       className="shadow-sm mx-auto h-100"
@@ -42,6 +45,8 @@ const dicas = [
 ];
 
 export default function ListaDicas() {
+  const navigate = useNavigate();
+
   return (
     <section className="py-5">
       <h3
@@ -51,7 +56,7 @@ export default function ListaDicas() {
         Dicas de Cuidados
       </h3>
       <div className="container">
-        <div className="row gx-3 gy-4 justify-content-center" >
+        <div className="row gx-3 gy-4 justify-content-center">
           {dicas.map((dica, idx) => (
             <div className="col-12 col-sm-6 col-md-4 col-lg-3" key={idx}>
               <DicaCard {...dica} />
@@ -60,9 +65,8 @@ export default function ListaDicas() {
         </div>
         <div className="text-center mt-4">
           <Button
-            as="a"
-            href="/dicas"
             className="btn text-white custom-btn"
+            onClick={() => navigate("/Animais?tab=dicas")} // Adicione o parâmetro na URL
           >
             Saiba mais
           </Button>

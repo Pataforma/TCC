@@ -1,8 +1,11 @@
 import bgPata from "../assets/imgs/bg-pata.png";
 import cachorro from "../assets/imgs/original.png"
 import Button from "./Button";
+import { useNavigate } from "react-router-dom";
+
 
 const Intro = () => {
+  const navigate = useNavigate();
     return (
       <section className="container espacamento-header mb-5 pb-0" >
         <div className="row px-3 px-md-5">
@@ -27,6 +30,7 @@ const Intro = () => {
               bgColor="var(--secondary-color)" 
               hoverColor="var(--elements-color)" 
               className="mt-2"
+              onClick={() => navigate("/Sobre")}
             />
           </div>
           <div className="col-12 col-lg-6 position-relative text-center mt-4 mt-lg-0">
