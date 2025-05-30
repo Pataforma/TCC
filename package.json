@@ -17,6 +17,7 @@
     "@mdi/js": "^7.4.47",
     "@mdi/react": "^1.6.1",
     "@popperjs/core": "^2.11.8",
+    "@supabase/supabase-js": "^2.49.8",
     "bootstrap": "^5.3.5",
     "pataformaduo": "file:",
     "react": "^19.0.0",
