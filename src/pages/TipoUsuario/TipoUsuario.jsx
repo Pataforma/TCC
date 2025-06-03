@@ -30,28 +30,28 @@ const TipoUsuario = () => {
       id: "veterinario",
       titulo: "Veterinário",
       descricao: "Acesso ao blog de conteúdo e cadastro de perfil profissional",
-      icone: <MdPerson size={48} color="#4a90e2" />,
+      icone: <MdPerson size={48} color="var(--main-color)" />,
       rota: "/dashboard/veterinario",
     },
     {
       id: "tutor",
       titulo: "Tutor",
       descricao: "Cadastro de perfil e gerenciamento de pets",
-      icone: <MdPets size={48} color="#4a90e2" />,
+      icone: <MdPets size={48} color="var(--main-color)" />,
       rota: "/dashboard/tutor",
     },
     {
       id: "anunciante",
       titulo: "Anunciante de Eventos",
       descricao: "Crie e gerencie eventos relacionados a pets",
-      icone: <MdEvent size={48} color="#4a90e2" />,
+      icone: <MdEvent size={48} color="var(--main-color)" />,
       rota: "/dashboard/anunciante",
     },
     {
       id: "parceiro",
       titulo: "Parceiro",
       descricao: "Acesso a recursos especiais para parceiros",
-      icone: <MdHandshake size={48} color="#4a90e2" />,
+      icone: <MdHandshake size={48} color="var(--main-color)" />,
       rota: "/dashboard/parceiro",
     },
   ];
@@ -83,23 +83,28 @@ const TipoUsuario = () => {
   }
 
   return (
-    <div className={styles.container}>
-      <h1 className={styles.titulo}>Escolha seu perfil</h1>
-      <p className={styles.subtitulo}>
-        Selecione o tipo de conta que melhor se adequa a você
-      </p>
-      <div className={styles.cardsContainer}>
-        {tiposUsuario.map((tipo) => (
-          <div
-            key={tipo.id}
-            className={styles.card}
-            onClick={() => handleSelecaoTipo(tipo)}
-          >
-            <div className={styles.iconeContainer}>{tipo.icone}</div>
-            <h2 className={styles.cardTitulo}>{tipo.titulo}</h2>
-            <p className={styles.cardDescricao}>{tipo.descricao}</p>
-          </div>
-        ))}
+    <div
+      className="min-vh-100 d-flex align-items-center justify-content-center"
+      style={{ backgroundColor: "var(--bg-color)" }}
+    >
+      <div className={styles.container}>
+        <h1 className={styles.titulo}>Escolha seu perfil</h1>
+        <p className={styles.subtitulo}>
+          Selecione o tipo de conta que melhor se adequa a você
+        </p>
+        <div className={styles.cardsContainer}>
+          {tiposUsuario.map((tipo) => (
+            <div
+              key={tipo.id}
+              className={styles.card}
+              onClick={() => handleSelecaoTipo(tipo)}
+            >
+              <div className={styles.iconeContainer}>{tipo.icone}</div>
+              <h2 className={styles.cardTitulo}>{tipo.titulo}</h2>
+              <p className={styles.cardDescricao}>{tipo.descricao}</p>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
