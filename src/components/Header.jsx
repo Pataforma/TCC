@@ -113,7 +113,7 @@ function Header() {
               padding: '8px',
               borderRadius: '50%'
             }}
-            onClick={() => navigate('/TelaLogin')}
+            onClick={() => handleAuthClick()}
           >
             account_circle
           </span>

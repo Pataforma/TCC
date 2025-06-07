@@ -34,10 +34,7 @@ function App() {
         <Route path="/loading" element={<LoadingPage />} />
         <Route path="/tipo-usuario" element={<TipoUsuario />} />
         <Route path="/dashboard/tutor" element={<DashboardTutor />} />
-        <Route
-          path="/dashboard/veterinario"
-          element={<DashboardVeterinario />}
-        />
+        <Route path="/dashboard/veterinario" element={<DashboardVeterinario />}/>
         <Route path="/dashboard/anunciante" element={<DashboardAnunciante />} />
         <Route path="/dashboard/parceiro" element={<DashboardParceiro />} />
         <Route path="/tutor/perfil" element={<TutorPerfil />} />

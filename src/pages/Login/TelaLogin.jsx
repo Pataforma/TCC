@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./TelaLogin.module.css";
 import Header from "../../components/Header";
@@ -12,6 +12,69 @@ const TelaLogin = () => {
   const [loginPassword, setLoginPassword] = useState("");
   const [signupEmail, setSignupEmail] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
+
+  // Listener para eventos de autenticação
+  useEffect(() => {
+    const handleAuthChange = async (event, session) => {
+      if (event === "SIGNED_IN" && session) {
+        const userId = session.user.id;
+        const userEmail = session.user.email;
+        
+        // Verifica se o usuário já existe no banco
+        const { data: existingUser, error } = await supabase
+          .from("usuario")
+          .select("id_usuario")
+          .eq("id_usuario", userId)
+          .single();
+          
+        if (error && error.code !== "PGRST116") { // PGRST116 é o código para "não encontrado"
+          console.error("Erro ao verificar usuário:", error);
+          return;
+        }
+          
+        // Se o usuário não existir, insere na tabela
+        if (!existingUser) {
+          const { error: insertError } = await supabase
+            .from("usuario")
+            .insert([
+              {
+                id_usuario: userId,
+                email: userEmail,
+                status: "ativo",
+                tipo_usuario: "pendente", // Valor padrão temporário
+              },
+            ]);
+            
+          if (insertError) {
+            console.error("Erro ao inserir usuário:", insertError);
+            return;
+          }
+        }
+          
+        // Verifica o tipo de usuário
+        const { data: userData } = await supabase
+          .from("usuario")
+          .select("tipo_usuario")
+          .eq("id_usuario", userId)
+          .single();
+          
+        // Sempre usa o prefixo /TCC-oficial/ para estar consistente com a configuração do Vite
+        if (userData?.tipo_usuario && userData.tipo_usuario !== "pendente") {
+          navigate(`/TCC-oficial/dashboard/${userData.tipo_usuario}`);
+        } else {
+          navigate(`/TCC-oficial/tipo-usuario`);
+        }
+      }
+    };
+
+    const { data: authListener } = supabase.auth.onAuthStateChange(handleAuthChange);
+
+    return () => {
+      if (authListener && authListener.subscription) {
+        authListener.subscription.unsubscribe();
+      }
+    };
+  }, [navigate]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -30,11 +93,12 @@ const TelaLogin = () => {
         .eq("id_usuario", data.user.id)
         .single();
 
+      // Sempre usa o prefixo /TCC-oficial/ para estar consistente com a configuração do Vite
       if (userData?.tipo_usuario && userData.tipo_usuario !== "pendente") {
-        navigate(`/dashboard/${userData.tipo_usuario}`);
+        navigate(`/TCC-oficial/dashboard/${userData.tipo_usuario}`);
       } else {
         // Se o usuário ainda não tem tipo definido ou está pendente, redireciona para a tela de seleção
-        navigate("/tipo-usuario");
+        navigate(`/TCC-oficial/tipo-usuario`);
       }
     }
   };
@@ -70,8 +134,35 @@ const TelaLogin = () => {
       return;
     }
 
+    // Sempre usa o prefixo /TCC-oficial/ para estar consistente com a configuração do Vite
     // Redireciona para a tela de seleção de tipo de usuário
-    navigate("/tipo-usuario");
+    navigate(`/TCC-oficial/tipo-usuario`);
+  };
+
+  // Função para autenticação com Google
+  const handleGoogleLogin = async () => {
+    try {
+      // Sempre usa o prefixo /TCC-oficial/ para estar consistente com a configuração do Vite
+      const redirectUrl = `${window.location.origin}/TCC-oficial/tipo-usuario`;
+      
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: redirectUrl,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          }
+        }
+      });
+      
+      if (error) {
+        alert("Erro ao logar com Google: " + error.message);
+      }
+    } catch (error) {
+      console.error("Erro na autenticação Google:", error);
+      alert("Erro ao processar login com Google");
+    }
   };
 
   // Função para alternar entre os modos login e cadastro
@@ -124,11 +215,12 @@ const TelaLogin = () => {
               </h2>
               <div className={styles["auth-social-media"]}>
                 <ul className={styles["auth-list-social-media"]}>
-                  {["google-plus-g"].map((icon) => (
+                  {["google"].map((icon) => (
                     <a
                       key={icon}
-                      href="#"
+                      onClick={handleGoogleLogin}
                       className={styles["auth-link-social-media"]}
+                      style={{ cursor: 'pointer' }}
                     >
                       <li className={styles["auth-item-social-media"]}>
                         <i className={`fab fa-${icon}`}></i>
@@ -214,11 +306,12 @@ const TelaLogin = () => {
               </h2>
               <div className={styles["auth-social-media"]}>
                 <ul className={styles["auth-list-social-media"]}>
-                  {["google-plus-g"].map((icon) => (
+                  {["google"].map((icon) => (
                     <a
                       key={icon}
-                      href="#"
+                      onClick={handleGoogleLogin}
                       className={styles["auth-link-social-media"]}
+                      style={{ cursor: 'pointer' }}
                     >
                       <li className={styles["auth-item-social-media"]}>
                         <i className={`fab fa-${icon}`}></i>
