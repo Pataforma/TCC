@@ -12,57 +12,66 @@ const TelaLogin = () => {
   const [loginPassword, setLoginPassword] = useState("");
   const [signupEmail, setSignupEmail] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   // Listener para eventos de autenticação
   useEffect(() => {
     const handleAuthChange = async (event, session) => {
       if (event === "SIGNED_IN" && session) {
+        setLoading(true);
         const userId = session.user.id;
         const userEmail = session.user.email;
         
-        // Verifica se o usuário já existe no banco
-        const { data: existingUser, error } = await supabase
-          .from("usuario")
-          .select("id_usuario")
-          .eq("id_usuario", userId)
-          .single();
-          
-        if (error && error.code !== "PGRST116") { // PGRST116 é o código para "não encontrado"
-          console.error("Erro ao verificar usuário:", error);
-          return;
-        }
-          
-        // Se o usuário não existir, insere na tabela
-        if (!existingUser) {
-          const { error: insertError } = await supabase
+        try {
+          // Verifica se o usuário já existe na tabela usuario
+          const { data: existingUser, error: fetchError } = await supabase
             .from("usuario")
-            .insert([
-              {
-                id_usuario: userId,
-                email: userEmail,
-                status: "ativo",
-                tipo_usuario: "pendente", // Valor padrão temporário
-              },
-            ]);
+            .select("tipo_usuario")
+            .eq("email", userEmail)
+            .maybeSingle();
             
-          if (insertError) {
-            console.error("Erro ao inserir usuário:", insertError);
+          if (fetchError) {
+            console.error("Erro ao verificar usuário:", fetchError);
+            alert("Erro ao verificar dados do usuário");
+            setLoading(false);
             return;
           }
-        }
           
-        // Verifica o tipo de usuário
-        const { data: userData } = await supabase
-          .from("usuario")
-          .select("tipo_usuario")
-          .eq("id_usuario", userId)
-          .single();
-          
-        // Sempre usa o prefixo /TCC-oficial/ para estar consistente com a configuração do Vite
-        if (userData?.tipo_usuario && userData.tipo_usuario !== "pendente") {
-          navigate(`/TCC-oficial/dashboard/${userData.tipo_usuario}`);
-        } else {
-          navigate(`/TCC-oficial/tipo-usuario`);
+          // Se o usuário já existe
+          if (existingUser) {
+            // Verifica se já tem tipo definido
+            if (existingUser.tipo_usuario && existingUser.tipo_usuario !== "pendente") {
+              navigate(`/dashboard/${existingUser.tipo_usuario}`);
+            } else {
+              navigate("/tipo-usuario");
+            }
+          } else {
+            // Usuário novo - cria registro na tabela usuario
+            const { error: insertError } = await supabase
+              .from("usuario")
+              .insert([
+                {
+                  id_usuario: userId,
+                  email: userEmail,
+                  tipo_usuario: "pendente"
+                },
+              ]);
+              
+            if (insertError) {
+              console.error("Erro ao inserir usuário:", insertError);
+              alert("Erro ao criar perfil do usuário");
+              setLoading(false);
+              return;
+            }
+            
+            // Redireciona para seleção de tipo
+            navigate("/tipo-usuario");
+          }
+        } catch (error) {
+          console.error("Erro no processo de autenticação:", error);
+          alert("Erro no processo de login");
+        } finally {
+          setLoading(false);
         }
       }
     };
@@ -78,72 +87,127 @@ const TelaLogin = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: loginEmail,
-      password: loginPassword,
-    });
+    setLoading(true);
+    
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: loginEmail,
+        password: loginPassword,
+      });
 
-    if (error) {
-      alert("Erro ao logar: " + error.message);
-    } else {
-      // Redirecionar para a dashboard baseada no tipo de usuário
-      const { data: userData } = await supabase
+      if (error) {
+        if (error.message.includes("Invalid login credentials")) {
+          alert("Email ou senha incorretos");
+        } else {
+          alert("Erro ao fazer login: " + error.message);
+        }
+        setLoading(false);
+        return;
+      }
+
+      // Verifica o tipo de usuário na tabela
+      const { data: userData, error: userError } = await supabase
         .from("usuario")
         .select("tipo_usuario")
-        .eq("id_usuario", data.user.id)
-        .single();
+        .eq("email", loginEmail)
+        .maybeSingle();
 
-      // Sempre usa o prefixo /TCC-oficial/ para estar consistente com a configuração do Vite
-      if (userData?.tipo_usuario && userData.tipo_usuario !== "pendente") {
-        navigate(`/TCC-oficial/dashboard/${userData.tipo_usuario}`);
-      } else {
-        // Se o usuário ainda não tem tipo definido ou está pendente, redireciona para a tela de seleção
-        navigate(`/TCC-oficial/tipo-usuario`);
+      if (userError) {
+        console.error("Erro ao buscar dados do usuário:", userError);
+        alert("Erro ao verificar dados do usuário");
+        setLoading(false);
+        return;
       }
+
+      if (userData?.tipo_usuario && userData.tipo_usuario !== "pendente") {
+        navigate(`/dashboard/${userData.tipo_usuario}`);
+      } else {
+        navigate("/tipo-usuario");
+      }
+    } catch (error) {
+      console.error("Erro no login:", error);
+      alert("Erro inesperado no login");
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleSignup = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
-    // Cria conta de autenticação
-    const { data: authData, error: authError } = await supabase.auth.signUp({
-      email: signupEmail,
-      password: signupPassword,
-    });
+    try {
+      // Primeiro verifica se o email já existe na tabela usuario
+      const { data: existingUser, error: checkError } = await supabase
+        .from("usuario")
+        .select("email")
+        .eq("email", signupEmail)
+        .maybeSingle();
 
-    if (authError) {
-      alert("Erro ao cadastrar: " + authError.message);
-      return;
-    }
+      if (checkError) {
+        console.error("Erro ao verificar email:", checkError);
+        alert("Erro ao verificar email");
+        setLoading(false);
+        return;
+      }
 
-    const userId = authData?.user?.id;
+      if (existingUser) {
+        alert("Já existe um usuário cadastrado com este email");
+        setLoading(false);
+        return;
+      }
 
-    // Insere dados na tabela "usuario" com tipo_usuario como 'pendente'
-    const { error: insertError } = await supabase.from("usuario").insert([
-      {
-        id_usuario: userId,
+      // Cria conta de autenticação no Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.signUp({
         email: signupEmail,
-        status: "ativo",
-        tipo_usuario: "pendente", // Valor padrão temporário
-      },
-    ]);
+        password: signupPassword,
+      });
 
-    if (insertError) {
-      alert("Erro ao salvar dados adicionais: " + insertError.message);
-      return;
+      if (authError) {
+        if (authError.message.includes("User already registered")) {
+          alert("Já existe um usuário cadastrado com este email");
+        } else {
+          alert("Erro ao cadastrar: " + authError.message);
+        }
+        setLoading(false);
+        return;
+      }
+
+      const userId = authData?.user?.id;
+
+      if (userId) {
+        // Insere dados na tabela "usuario"
+        const { error: insertError } = await supabase.from("usuario").insert([
+          {
+            id_usuario: userId,
+            email: signupEmail,
+            tipo_usuario: "pendente"
+          },
+        ]);
+
+        if (insertError) {
+          console.error("Erro ao salvar dados do usuário:", insertError);
+          alert("Erro ao salvar dados do usuário: " + insertError.message);
+          setLoading(false);
+          return;
+        }
+
+        // Redireciona para a tela de seleção de tipo de usuário
+        navigate("/tipo-usuario");
+      }
+    } catch (error) {
+      console.error("Erro no cadastro:", error);
+      alert("Erro inesperado no cadastro");
+    } finally {
+      setLoading(false);
     }
-
-    // Sempre usa o prefixo /TCC-oficial/ para estar consistente com a configuração do Vite
-    // Redireciona para a tela de seleção de tipo de usuário
-    navigate(`/TCC-oficial/tipo-usuario`);
   };
 
   // Função para autenticação com Google
   const handleGoogleLogin = async () => {
+    setLoading(true);
     try {
-      // Sempre usa o prefixo /TCC-oficial/ para estar consistente com a configuração do Vite
-      const redirectUrl = `${window.location.origin}/TCC-oficial/tipo-usuario`;
+      const redirectUrl = `${window.location.origin}/tipo-usuario`;
       
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
@@ -158,16 +222,23 @@ const TelaLogin = () => {
       
       if (error) {
         alert("Erro ao logar com Google: " + error.message);
+        setLoading(false);
       }
     } catch (error) {
       console.error("Erro na autenticação Google:", error);
       alert("Erro ao processar login com Google");
+      setLoading(false);
     }
   };
 
   // Função para alternar entre os modos login e cadastro
   const toggleMode = () => {
     setIsLogin(!isLogin);
+    // Limpa os campos ao trocar de modo
+    setLoginEmail("");
+    setLoginPassword("");
+    setSignupEmail("");
+    setSignupPassword("");
   };
 
   return (
@@ -203,6 +274,7 @@ const TelaLogin = () => {
               <button
                 className={`${styles["auth-btn"]} ${styles["auth-btn-primary"]}`}
                 onClick={toggleMode}
+                disabled={loading}
               >
                 Crie sua conta
               </button>
@@ -215,18 +287,15 @@ const TelaLogin = () => {
               </h2>
               <div className={styles["auth-social-media"]}>
                 <ul className={styles["auth-list-social-media"]}>
-                  {["google"].map((icon) => (
-                    <a
-                      key={icon}
-                      onClick={handleGoogleLogin}
-                      className={styles["auth-link-social-media"]}
-                      style={{ cursor: 'pointer' }}
-                    >
-                      <li className={styles["auth-item-social-media"]}>
-                        <i className={`fab fa-${icon}`}></i>
-                      </li>
-                    </a>
-                  ))}
+                  <a
+                    onClick={handleGoogleLogin}
+                    className={styles["auth-link-social-media"]}
+                    style={{ cursor: loading ? 'not-allowed' : 'pointer' }}
+                  >
+                    <li className={styles["auth-item-social-media"]}>
+                      <i className="fab fa-google"></i>
+                    </li>
+                  </a>
                 </ul>
               </div>
               <p
@@ -244,6 +313,8 @@ const TelaLogin = () => {
                     placeholder="E-mail"
                     value={loginEmail}
                     onChange={(e) => setLoginEmail(e.target.value)}
+                    required
+                    disabled={loading}
                   />
                 </label>
                 <label className={styles["auth-label-input"]}>
@@ -255,6 +326,8 @@ const TelaLogin = () => {
                     placeholder="Senha"
                     value={loginPassword}
                     onChange={(e) => setLoginPassword(e.target.value)}
+                    required
+                    disabled={loading}
                   />
                 </label>
                 <a className={styles["auth-password"]} href="#">
@@ -263,8 +336,9 @@ const TelaLogin = () => {
                 <button
                   className={`${styles["auth-btn"]} ${styles["auth-btn-second"]}`}
                   type="submit"
+                  disabled={loading}
                 >
-                  Acessar
+                  {loading ? "Entrando..." : "Acessar"}
                 </button>
               </form>
             </div>
@@ -294,6 +368,7 @@ const TelaLogin = () => {
               <button
                 className={`${styles["auth-btn"]} ${styles["auth-btn-primary"]}`}
                 onClick={toggleMode}
+                disabled={loading}
               >
                 Entrar
               </button>
@@ -306,18 +381,15 @@ const TelaLogin = () => {
               </h2>
               <div className={styles["auth-social-media"]}>
                 <ul className={styles["auth-list-social-media"]}>
-                  {["google"].map((icon) => (
-                    <a
-                      key={icon}
-                      onClick={handleGoogleLogin}
-                      className={styles["auth-link-social-media"]}
-                      style={{ cursor: 'pointer' }}
-                    >
-                      <li className={styles["auth-item-social-media"]}>
-                        <i className={`fab fa-${icon}`}></i>
-                      </li>
-                    </a>
-                  ))}
+                  <a
+                    onClick={handleGoogleLogin}
+                    className={styles["auth-link-social-media"]}
+                    style={{ cursor: loading ? 'not-allowed' : 'pointer' }}
+                  >
+                    <li className={styles["auth-item-social-media"]}>
+                      <i className="fab fa-google"></i>
+                    </li>
+                  </a>
                 </ul>
               </div>
               <p
@@ -335,6 +407,8 @@ const TelaLogin = () => {
                     placeholder="E-mail"
                     value={signupEmail}
                     onChange={(e) => setSignupEmail(e.target.value)}
+                    required
+                    disabled={loading}
                   />
                 </label>
                 <label className={styles["auth-label-input"]}>
@@ -346,13 +420,16 @@ const TelaLogin = () => {
                     placeholder="Senha"
                     value={signupPassword}
                     onChange={(e) => setSignupPassword(e.target.value)}
+                    required
+                    disabled={loading}
                   />
                 </label>
                 <button
                   className={`${styles["auth-btn"]} ${styles["auth-btn-second"]}`}
                   type="submit"
+                  disabled={loading}
                 >
-                  Cadastrar
+                  {loading ? "Cadastrando..." : "Cadastrar"}
                 </button>
               </form>
             </div>
