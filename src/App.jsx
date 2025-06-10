@@ -17,6 +17,7 @@ import DashboardParceiro from "./pages/DashboardParceiro";
 import TutorPerfil from "./pages/TutorPerfil";
 import TutorPet from "./pages/TutorPet";
 import Termos from "./pages/Termos";
+import AuthCallback from "./pages/Login/AuthCallback";
 
 function App() {
   return (
@@ -40,6 +41,7 @@ function App() {
         <Route path="/tutor/perfil" element={<TutorPerfil />} />
         <Route path="/tutor/pet" element={<TutorPet />} />
         <Route path="/termos" element={<Termos />} />
+        <Route path="/auth/callback" element={<AuthCallback />} />
       </Routes>
     </>
   );

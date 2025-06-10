@@ -207,25 +207,18 @@ const TelaLogin = () => {
   const handleGoogleLogin = async () => {
     setLoading(true);
     try {
-      // Use a URL atual sem hardcode
-      const currentUrl = window.location.origin + window.location.pathname;
-      const baseUrl = currentUrl.includes('TCC-oficial')
-        ? window.location.origin + '/TCC-oficial'
-        : window.location.origin;
+      const redirectUrl = `${window.location.origin}/TCC-oficial/auth/callback`;
 
-      const redirectUrl = `${baseUrl}/tipo-usuario`;
 
-      console.log('Redirect URL:', redirectUrl); // Para debug
-
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: redirectUrl,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
-          }
-        }
+          },
+        },
       });
 
       if (error) {
@@ -239,6 +232,7 @@ const TelaLogin = () => {
       setLoading(false);
     }
   };
+
 
   // Função para alternar entre os modos login e cadastro
   const toggleMode = () => {
