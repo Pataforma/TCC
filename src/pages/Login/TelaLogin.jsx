@@ -21,7 +21,7 @@ const TelaLogin = () => {
         setLoading(true);
         const userId = session.user.id;
         const userEmail = session.user.email;
-        
+
         try {
           // Verifica se o usuário já existe na tabela usuario
           const { data: existingUser, error: fetchError } = await supabase
@@ -29,14 +29,14 @@ const TelaLogin = () => {
             .select("tipo_usuario")
             .eq("email", userEmail)
             .maybeSingle();
-            
+
           if (fetchError) {
             console.error("Erro ao verificar usuário:", fetchError);
             alert("Erro ao verificar dados do usuário");
             setLoading(false);
             return;
           }
-          
+
           // Se o usuário já existe
           if (existingUser) {
             // Verifica se já tem tipo definido
@@ -56,14 +56,14 @@ const TelaLogin = () => {
                   tipo_usuario: "pendente"
                 },
               ]);
-              
+
             if (insertError) {
               console.error("Erro ao inserir usuário:", insertError);
               alert("Erro ao criar perfil do usuário");
               setLoading(false);
               return;
             }
-            
+
             // Redireciona para seleção de tipo
             navigate("/tipo-usuario");
           }
@@ -88,7 +88,7 @@ const TelaLogin = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
-    
+
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email: loginEmail,
@@ -203,12 +203,20 @@ const TelaLogin = () => {
     }
   };
 
-  // Função para autenticação com Google
+  // Função para autenticação com Google - VERSÃO CORRIGIDA
   const handleGoogleLogin = async () => {
     setLoading(true);
     try {
-      const redirectUrl = `${window.location.origin}/tipo-usuario`;
-      
+      // Use a URL atual sem hardcode
+      const currentUrl = window.location.origin + window.location.pathname;
+      const baseUrl = currentUrl.includes('TCC-oficial')
+        ? window.location.origin + '/TCC-oficial'
+        : window.location.origin;
+
+      const redirectUrl = `${baseUrl}/tipo-usuario`;
+
+      console.log('Redirect URL:', redirectUrl); // Para debug
+
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -219,8 +227,9 @@ const TelaLogin = () => {
           }
         }
       });
-      
+
       if (error) {
+        console.error('Erro OAuth:', error);
         alert("Erro ao logar com Google: " + error.message);
         setLoading(false);
       }
@@ -245,9 +254,8 @@ const TelaLogin = () => {
     <>
       <Header />
       <div
-        className={`${styles["auth-container"]} ${
-          isLogin ? styles["auth-signin"] : styles["auth-signup"]
-        }`}
+        className={`${styles["auth-container"]} ${isLogin ? styles["auth-signin"] : styles["auth-signup"]
+          }`}
       >
         <div className={styles["auth-content"]}>
           {/* Visão de Login */}
