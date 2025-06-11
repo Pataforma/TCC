@@ -46,7 +46,7 @@ function Header() {
             <li className="ms-4">
               <Link 
                 to="/" 
-                className={`text-decoration-none fs-5 nav-link ${isActive('/') ? 'active' : ''}`}
+                className={`text-decoration-none fs-5 nav-link ${isActive('/home') ? 'active' : ''}`}
               >
                 Início
               </Link>
