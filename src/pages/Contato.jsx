@@ -10,7 +10,7 @@ const Contato = () => {
     nome: "",
     email: "",
     assunto: "",
-    mensagem: ""
+    mensagem: "",
   });
 
   const [formParceria, setFormParceria] = useState({
@@ -18,7 +18,7 @@ const Contato = () => {
     tipoOrganizacao: "",
     email: "",
     telefone: "",
-    descricao: ""
+    descricao: "",
   });
 
   const [formSuporte, setFormSuporte] = useState({
@@ -26,7 +26,7 @@ const Contato = () => {
     email: "",
     telefone: "",
     tipoProblema: "",
-    descricao: ""
+    descricao: "",
   });
 
   const [activeTab, setActiveTab] = useState("geral");
@@ -34,65 +34,71 @@ const Contato = () => {
   // Manipuladores de eventos para formulário geral
   const handleGeralChange = (e) => {
     const { name, value } = e.target;
-    setFormGeral(prev => ({
+    setFormGeral((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleGeralSubmit = (e) => {
     e.preventDefault();
     // Lógica para enviar o formulário geral
-    alert(`Mensagem enviada com sucesso! Em breve nossa equipe entrará em contato.`);
+    alert(
+      `Mensagem enviada com sucesso! Em breve nossa equipe entrará em contato.`
+    );
     setFormGeral({
       nome: "",
       email: "",
       assunto: "",
-      mensagem: ""
+      mensagem: "",
     });
   };
 
   // Manipuladores de eventos para formulário de parceria
   const handleParceriaChange = (e) => {
     const { name, value } = e.target;
-    setFormParceria(prev => ({
+    setFormParceria((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleParceriaSubmit = (e) => {
     e.preventDefault();
     // Lógica para enviar o formulário de parceria
-    alert(`Solicitação de parceria enviada! Analisaremos sua proposta e entraremos em contato.`);
+    alert(
+      `Solicitação de parceria enviada! Analisaremos sua proposta e entraremos em contato.`
+    );
     setFormParceria({
       nomeOrganizacao: "",
       tipoOrganizacao: "",
       email: "",
       telefone: "",
-      descricao: ""
+      descricao: "",
     });
   };
 
   // Manipuladores de eventos para formulário de suporte
   const handleSuporteChange = (e) => {
     const { name, value } = e.target;
-    setFormSuporte(prev => ({
+    setFormSuporte((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleSuporteSubmit = (e) => {
     e.preventDefault();
     // Lógica para enviar o formulário de suporte
-    alert(`Solicitação de suporte registrada! Um especialista entrará em contato em breve.`);
+    alert(
+      `Solicitação de suporte registrada! Um especialista entrará em contato em breve.`
+    );
     setFormSuporte({
       nome: "",
       email: "",
       telefone: "",
       tipoProblema: "",
-      descricao: ""
+      descricao: "",
     });
   };
 
@@ -102,13 +108,13 @@ const Contato = () => {
 
       {/* Hero Section */}
       <section className="container-fluid contato-bg text-white py-5 mt-5 position-relative">
-        <div className="position-absolute top-0 start-0 w-100 h-100" style={{ backgroundColor: 'rgba(0, 0, 0, 0.4)', zIndex: 1 }}></div>
         <div className="container py-4 position-relative" style={{ zIndex: 2 }}>
           <div className="row align-items-center">
             <div className="col-md-8">
               <h1 className="display-5 fw-bold">Fale Conosco</h1>
               <p className="lead">
-                Estamos à disposição para ouvir suas dúvidas, sugestões, propostas de parceria ou solicitações de suporte técnico.
+                Estamos à disposição para ouvir suas dúvidas, sugestões,
+                propostas de parceria ou solicitações de suporte técnico.
               </p>
             </div>
             <div className="col-md-4 text-center d-none d-md-block">
@@ -117,7 +123,6 @@ const Contato = () => {
           </div>
         </div>
       </section>
-
 
       {/* Main Content */}
       <div className="container py-5">
@@ -129,7 +134,11 @@ const Contato = () => {
                 <ul className="nav nav-tabs mb-4 ">
                   <li className="nav-item">
                     <button
-                      className={`nav-link nav-link-tab ${activeTab === "geral" ? "active text-elements fw-bold" : ""}`}
+                      className={`nav-link nav-link-tab ${
+                        activeTab === "geral"
+                          ? "active text-elements fw-bold"
+                          : ""
+                      }`}
                       onClick={() => setActiveTab("geral")}
                     >
                       Contato Geral
@@ -137,7 +146,11 @@ const Contato = () => {
                   </li>
                   <li className="nav-item">
                     <button
-                      className={`nav-link nav-link-tab ${activeTab === "parceria" ? "active text-elements fw-bold" : ""}`}
+                      className={`nav-link nav-link-tab ${
+                        activeTab === "parceria"
+                          ? "active text-elements fw-bold"
+                          : ""
+                      }`}
                       onClick={() => setActiveTab("parceria")}
                     >
                       Parcerias
@@ -145,7 +158,11 @@ const Contato = () => {
                   </li>
                   <li className="nav-item">
                     <button
-                      className={`nav-link nav-link-tab ${activeTab === "suporte" ? "active text-elements fw-bold" : ""}`}
+                      className={`nav-link nav-link-tab ${
+                        activeTab === "suporte"
+                          ? "active text-elements fw-bold"
+                          : ""
+                      }`}
                       onClick={() => setActiveTab("suporte")}
                     >
                       Suporte Técnico
@@ -158,7 +175,9 @@ const Contato = () => {
                   <form onSubmit={handleGeralSubmit}>
                     <h4 className="text-elements mb-3">Envie sua mensagem</h4>
                     <div className="mb-3">
-                      <label htmlFor="nome" className="form-label">Nome completo</label>
+                      <label htmlFor="nome" className="form-label">
+                        Nome completo
+                      </label>
                       <input
                         type="text"
                         className="form-control"
@@ -170,7 +189,9 @@ const Contato = () => {
                       />
                     </div>
                     <div className="mb-3">
-                      <label htmlFor="email" className="form-label">E-mail</label>
+                      <label htmlFor="email" className="form-label">
+                        E-mail
+                      </label>
                       <input
                         type="email"
                         className="form-control"
@@ -182,7 +203,9 @@ const Contato = () => {
                       />
                     </div>
                     <div className="mb-3">
-                      <label htmlFor="assunto" className="form-label">Assunto</label>
+                      <label htmlFor="assunto" className="form-label">
+                        Assunto
+                      </label>
                       <select
                         className="form-select"
                         id="assunto"
@@ -199,7 +222,9 @@ const Contato = () => {
                       </select>
                     </div>
                     <div className="mb-4">
-                      <label htmlFor="mensagem" className="form-label">Mensagem</label>
+                      <label htmlFor="mensagem" className="form-label">
+                        Mensagem
+                      </label>
                       <textarea
                         className="form-control"
                         id="mensagem"
@@ -222,12 +247,18 @@ const Contato = () => {
                 {/* Formulário de Parceria */}
                 {activeTab === "parceria" && (
                   <form onSubmit={handleParceriaSubmit}>
-                    <h4 className="text-elements mb-3">Torne-se nosso parceiro</h4>
+                    <h4 className="text-elements mb-3">
+                      Torne-se nosso parceiro
+                    </h4>
                     <p className="text-muted mb-4">
-                      Clínicas veterinárias, ONGs e outras organizações relacionadas a pets podem se tornar parceiras da plataforma.
+                      Clínicas veterinárias, ONGs e outras organizações
+                      relacionadas a pets podem se tornar parceiras da
+                      plataforma.
                     </p>
                     <div className="mb-3">
-                      <label htmlFor="nomeOrganizacao" className="form-label">Nome da Organização</label>
+                      <label htmlFor="nomeOrganizacao" className="form-label">
+                        Nome da Organização
+                      </label>
                       <input
                         type="text"
                         className="form-control"
@@ -239,7 +270,9 @@ const Contato = () => {
                       />
                     </div>
                     <div className="mb-3">
-                      <label htmlFor="tipoOrganizacao" className="form-label">Tipo de Organização</label>
+                      <label htmlFor="tipoOrganizacao" className="form-label">
+                        Tipo de Organização
+                      </label>
                       <select
                         className="form-select"
                         id="tipoOrganizacao"
@@ -249,7 +282,9 @@ const Contato = () => {
                         required
                       >
                         <option value="">Selecione o tipo</option>
-                        <option value="Clínica Veterinária">Clínica Veterinária</option>
+                        <option value="Clínica Veterinária">
+                          Clínica Veterinária
+                        </option>
                         <option value="Pet Shop">Pet Shop</option>
                         <option value="ONG">ONG</option>
                         <option value="Abrigo">Abrigo</option>
@@ -258,7 +293,9 @@ const Contato = () => {
                     </div>
                     <div className="row">
                       <div className="col-md-6 mb-3">
-                        <label htmlFor="emailParceria" className="form-label">E-mail institucional</label>
+                        <label htmlFor="emailParceria" className="form-label">
+                          E-mail institucional
+                        </label>
                         <input
                           type="email"
                           className="form-control"
@@ -270,7 +307,12 @@ const Contato = () => {
                         />
                       </div>
                       <div className="col-md-6 mb-3">
-                        <label htmlFor="telefoneParceria" className="form-label">Telefone</label>
+                        <label
+                          htmlFor="telefoneParceria"
+                          className="form-label"
+                        >
+                          Telefone
+                        </label>
                         <input
                           type="tel"
                           className="form-control"
@@ -283,7 +325,9 @@ const Contato = () => {
                       </div>
                     </div>
                     <div className="mb-4">
-                      <label htmlFor="descricaoParceria" className="form-label">Descreva como podemos colaborar</label>
+                      <label htmlFor="descricaoParceria" className="form-label">
+                        Descreva como podemos colaborar
+                      </label>
                       <textarea
                         className="form-control"
                         id="descricaoParceria"
@@ -309,10 +353,13 @@ const Contato = () => {
                   <form onSubmit={handleSuporteSubmit}>
                     <h4 className="text-elements mb-3">Suporte Técnico</h4>
                     <p className="text-muted mb-4">
-                      Está enfrentando problemas na plataforma? Nossa equipe de suporte técnico está pronta para ajudar.
+                      Está enfrentando problemas na plataforma? Nossa equipe de
+                      suporte técnico está pronta para ajudar.
                     </p>
                     <div className="mb-3">
-                      <label htmlFor="nomeSuporte" className="form-label">Nome completo</label>
+                      <label htmlFor="nomeSuporte" className="form-label">
+                        Nome completo
+                      </label>
                       <input
                         type="text"
                         className="form-control"
@@ -325,7 +372,9 @@ const Contato = () => {
                     </div>
                     <div className="row">
                       <div className="col-md-6 mb-3">
-                        <label htmlFor="emailSuporte" className="form-label">E-mail</label>
+                        <label htmlFor="emailSuporte" className="form-label">
+                          E-mail
+                        </label>
                         <input
                           type="email"
                           className="form-control"
@@ -337,7 +386,9 @@ const Contato = () => {
                         />
                       </div>
                       <div className="col-md-6 mb-3">
-                        <label htmlFor="telefoneSuporte" className="form-label">Telefone</label>
+                        <label htmlFor="telefoneSuporte" className="form-label">
+                          Telefone
+                        </label>
                         <input
                           type="tel"
                           className="form-control"
@@ -349,7 +400,9 @@ const Contato = () => {
                       </div>
                     </div>
                     <div className="mb-3">
-                      <label htmlFor="tipoProblema" className="form-label">Tipo de problema</label>
+                      <label htmlFor="tipoProblema" className="form-label">
+                        Tipo de problema
+                      </label>
                       <select
                         className="form-select"
                         id="tipoProblema"
@@ -359,15 +412,25 @@ const Contato = () => {
                         required
                       >
                         <option value="">Selecione o tipo</option>
-                        <option value="Acesso à conta">Problemas de acesso à conta</option>
-                        <option value="Falha no aplicativo">Falha no aplicativo</option>
-                        <option value="Erro no cadastro">Erro no cadastro</option>
-                        <option value="Problemas com pagamento">Problemas com pagamento</option>
+                        <option value="Acesso à conta">
+                          Problemas de acesso à conta
+                        </option>
+                        <option value="Falha no aplicativo">
+                          Falha no aplicativo
+                        </option>
+                        <option value="Erro no cadastro">
+                          Erro no cadastro
+                        </option>
+                        <option value="Problemas com pagamento">
+                          Problemas com pagamento
+                        </option>
                         <option value="Outro">Outro</option>
                       </select>
                     </div>
                     <div className="mb-4">
-                      <label htmlFor="descricaoSuporte" className="form-label">Descreva detalhadamente o problema</label>
+                      <label htmlFor="descricaoSuporte" className="form-label">
+                        Descreva detalhadamente o problema
+                      </label>
                       <textarea
                         className="form-control"
                         id="descricaoSuporte"
@@ -402,7 +465,9 @@ const Contato = () => {
                   <div>
                     <p className="fw-bold mb-0">E-mail</p>
                     <p className="mb-0">contatopataforma@gmail.com</p>
-                    <p className="small text-muted">Respondemos em até 48h úteis</p>
+                    <p className="small text-muted">
+                      Respondemos em até 48h úteis
+                    </p>
                   </div>
                 </div>
 
@@ -430,10 +495,16 @@ const Contato = () => {
             <div className="card border-0 shadow-sm mb-4">
               <div className="card-body p-4">
                 <h4 className="text-elements mb-3">Redes Sociais</h4>
-                <p className="text-muted mb-3">Siga-nos e fique por dentro de todas as novidades!</p>
+                <p className="text-muted mb-3">
+                  Siga-nos e fique por dentro de todas as novidades!
+                </p>
 
                 <div className="d-flex flex-wrap gap-3">
-                  <a  href="https://instagram.com/pataformapet" target="_blank" className="btn btn-light d-flex align-items-center border px-3 py-2 text-decoration-none">
+                  <a
+                    href="https://instagram.com/pataformapet"
+                    target="_blank"
+                    className="btn btn-light d-flex align-items-center border px-3 py-2 text-decoration-none"
+                  >
                     <i className="bi bi-instagram text-elements me-2 fs-5"></i>
                     <span>Instagram</span>
                   </a>
@@ -448,7 +519,11 @@ const Contato = () => {
                     <span>LinkedIn</span>
                   </a> */}
 
-                  <a href="https://www.youtube.com/@Pataformapet" target="_blank" className="btn btn-light d-flex align-items-center border px-3 py-2 text-decoration-none">
+                  <a
+                    href="https://www.youtube.com/@Pataformapet"
+                    target="_blank"
+                    className="btn btn-light d-flex align-items-center border px-3 py-2 text-decoration-none"
+                  >
                     <i className="bi bi-youtube text-elements me-2 fs-5"></i>
                     <span>YouTube</span>
                   </a>
@@ -483,14 +558,22 @@ const Contato = () => {
       {/* FAQ Section */}
       <section className="container-fluid bg-light py-5">
         <div className="container">
-          <h2 className="text-elements fw-bold mb-4 text-center">Perguntas Frequentes</h2>
+          <h2 className="text-elements fw-bold mb-4 text-center">
+            Perguntas Frequentes
+          </h2>
 
           <div className="row g-4">
             <div className="col-md-6">
               <div className="card border-0 shadow-sm h-100">
                 <div className="card-body">
-                  <h5 className="card-title text-elements">Como faço para me cadastrar na plataforma?</h5>
-                  <p className="card-text">Para se cadastrar, clique no botão "Cadastre-se" no cabeçalho do site e preencha o formulário com seus dados. É rápido e gratuito!</p>
+                  <h5 className="card-title text-elements">
+                    Como faço para me cadastrar na plataforma?
+                  </h5>
+                  <p className="card-text">
+                    Para se cadastrar, clique no botão "Cadastre-se" no
+                    cabeçalho do site e preencha o formulário com seus dados. É
+                    rápido e gratuito!
+                  </p>
                 </div>
               </div>
             </div>
@@ -498,8 +581,14 @@ const Contato = () => {
             <div className="col-md-6">
               <div className="card border-0 shadow-sm h-100">
                 <div className="card-body">
-                  <h5 className="card-title text-elements">Posso anunciar meus serviços veterinários?</h5>
-                  <p className="card-text">Sim! Veterinários podem se cadastrar e anunciar seus serviços através de uma conta profissional. Utilize o formulário de parcerias.</p>
+                  <h5 className="card-title text-elements">
+                    Posso anunciar meus serviços veterinários?
+                  </h5>
+                  <p className="card-text">
+                    Sim! Veterinários podem se cadastrar e anunciar seus
+                    serviços através de uma conta profissional. Utilize o
+                    formulário de parcerias.
+                  </p>
                 </div>
               </div>
             </div>
@@ -507,8 +596,14 @@ const Contato = () => {
             <div className="col-md-6">
               <div className="card border-0 shadow-sm h-100">
                 <div className="card-body">
-                  <h5 className="card-title text-elements">Como posso divulgar animais para adoção?</h5>
-                  <p className="card-text">Após fazer login, acesse a página "Animais" e clique em "Publicar para Adoção". Preencha os dados e adicione fotos do pet.</p>
+                  <h5 className="card-title text-elements">
+                    Como posso divulgar animais para adoção?
+                  </h5>
+                  <p className="card-text">
+                    Após fazer login, acesse a página "Animais" e clique em
+                    "Publicar para Adoção". Preencha os dados e adicione fotos
+                    do pet.
+                  </p>
                 </div>
               </div>
             </div>
@@ -516,8 +611,14 @@ const Contato = () => {
             <div className="col-md-6">
               <div className="card border-0 shadow-sm h-100">
                 <div className="card-body">
-                  <h5 className="card-title text-elements">O aplicativo é gratuito?</h5>
-                  <p className="card-text">Sim, nosso aplicativo básico é completamente gratuito. Oferecemos também planos premium com recursos adicionais para usuários e profissionais.</p>
+                  <h5 className="card-title text-elements">
+                    O aplicativo é gratuito?
+                  </h5>
+                  <p className="card-text">
+                    Sim, nosso aplicativo básico é completamente gratuito.
+                    Oferecemos também planos premium com recursos adicionais
+                    para usuários e profissionais.
+                  </p>
                 </div>
               </div>
             </div>
@@ -538,11 +639,21 @@ const Contato = () => {
       <section className="container py-5">
         <div className="row justify-content-center">
           <div className="col-md-8 text-center">
-            <h2 className="text-elements fw-bold mb-3">Fique por dentro das novidades</h2>
-            <p className="mb-4">Cadastre-se em nossa newsletter e receba conteúdos exclusivos sobre cuidados com pets, eventos e promoções.</p>
+            <h2 className="text-elements fw-bold mb-3">
+              Fique por dentro das novidades
+            </h2>
+            <p className="mb-4">
+              Cadastre-se em nossa newsletter e receba conteúdos exclusivos
+              sobre cuidados com pets, eventos e promoções.
+            </p>
 
             <div className="input-group mb-3">
-              <input type="email" className="form-control" placeholder="Seu melhor e-mail" aria-label="Seu melhor e-mail" />
+              <input
+                type="email"
+                className="form-control"
+                placeholder="Seu melhor e-mail"
+                aria-label="Seu melhor e-mail"
+              />
               <Botao
                 text="Inscrever-se"
                 bgColor="var(--main-color)"
@@ -550,7 +661,9 @@ const Contato = () => {
                 className="px-4"
               />
             </div>
-            <p className="small text-muted">Ao se inscrever, você concorda com nossa política de privacidade.</p>
+            <p className="small text-muted">
+              Ao se inscrever, você concorda com nossa política de privacidade.
+            </p>
           </div>
         </div>
       </section>

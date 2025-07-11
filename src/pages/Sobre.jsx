@@ -13,12 +13,6 @@ const Sobre = () => {
       <Header />
       {/* Hero Section */}
       <section className="container-fluid text-white py-5 mt-5 position-relative sobre-bg">
-        {/* Overlay escuro */}
-        <div
-          className="position-absolute top-0 start-0 w-100 h-100"
-          style={{ backgroundColor: "rgba(0, 0, 0, 0.5)", zIndex: 1 }}
-        ></div>
-
         {/* Conteúdo com z-index acima do overlay */}
         <div className="container py-4 position-relative" style={{ zIndex: 2 }}>
           <h1 className="display-5 fw-bold">Sobre nós</h1>
@@ -89,7 +83,7 @@ const Sobre = () => {
                     className="rounded-circle bg-main d-flex align-items-center justify-content-center mx-auto mb-3"
                     style={{ width: "80px", height: "80px" }}
                   >
-                  <Icon path={mdiPaw} size={1.2} color="white" />
+                    <Icon path={mdiPaw} size={1.2} color="white" />
                   </div>
                   <h4 className="text-elements">Cuidado</h4>
                   <p>

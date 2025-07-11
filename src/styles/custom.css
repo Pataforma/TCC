@@ -6,7 +6,7 @@
 }
 
 body {
-  font-family: 'Roboto', sans-serif; 
+  font-family: 'Inter', 'Roboto', sans-serif;
   overflow-x: hidden;
 }
 
@@ -43,6 +43,125 @@ body {
 
 .text-secondary {
   color: var(--secondary-color) !important;
+}
+
+/* Dashboard Styles */
+.hover-lift {
+  transition: all 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* Custom scrollbar for dashboard */
+.dashboard-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dashboard-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.dashboard-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--main-color);
+  border-radius: 3px;
+}
+
+.dashboard-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--bg-button);
+}
+
+/* Animation classes */
+
+/* Card hover effects */
+.card-hover {
+  transition: all 0.2s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Status badges */
+.badge-custom {
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.5rem;
+}
+
+/* Button styles */
+.btn-custom {
+  border-radius: 0.75rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn-custom:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Table styles */
+.table-custom th {
+  font-weight: 600;
+  color: #495057;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.table-custom td {
+  vertical-align: middle;
+}
+
+/* Modal styles */
+.modal-custom .modal-header {
+  border-bottom: 1px solid #e9ecef;
+  padding: 1.5rem;
+}
+
+.modal-custom .modal-footer {
+  border-top: 1px solid #e9ecef;
+  padding: 1.5rem;
+}
+
+/* Form styles */
+.form-control-custom {
+  border-radius: 0.5rem;
+  border: 1px solid #dee2e6;
+  transition: all 0.2s ease;
+}
+
+.form-control-custom:focus {
+  border-color: var(--main-color);
+  box-shadow: 0 0 0 0.2rem rgba(13, 178, 172, 0.25);
+}
+
+/* Nav tabs custom */
+.nav-tabs-custom .nav-link {
+  border: none;
+  border-radius: 0.5rem;
+  margin-right: 0.5rem;
+  font-weight: 500;
+  color: #6c757d;
+  transition: all 0.2s ease;
+}
+
+.nav-tabs-custom .nav-link:hover {
+  color: var(--main-color);
+  background-color: rgba(13, 178, 172, 0.1);
+}
+
+.nav-tabs-custom .nav-link.active {
+  background-color: var(--main-color);
+  color: white;
 }
 
 #bg-pata {
@@ -87,11 +206,11 @@ body {
   box-shadow: 0 0 12px 4px rgba(0, 0, 0, 0.6);
 }
 
-.text-hover-header{
+.text-hover-header {
   color: white;
 }
 
-.text-hover-header:hover{
+.text-hover-header:hover {
   color: var(--elements-color);
   transition: ease 150ms;
 }
@@ -198,7 +317,6 @@ body {
   margin-top: 0.5rem;
   font-weight: 500;
   border-radius: 5px;
-  transition: all 0.3s ease;
 }
 
 .btn-paleta:hover {
@@ -206,189 +324,182 @@ body {
   color: white;
 }
 
-/* Custom Carousel Styling */
 .custom-carousel .carousel-control-prev,
 .custom-carousel .carousel-control-next {
-  width: 5%;
-  opacity: 0.8;
+  width: 50px;
+  height: 50px;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .custom-carousel .carousel-control-prev-icon,
 .custom-carousel .carousel-control-next-icon {
-  background-color: var(--elements-color);
-  padding: 20px;
-  border-radius: 50%;
-  background-size: 50%;
+  width: 20px;
+  height: 20px;
 }
 
 @media (max-width: 576px) {
+
   .custom-carousel .carousel-control-prev-icon,
   .custom-carousel .carousel-control-next-icon {
-    padding: 12px;
+    width: 15px;
+    height: 15px;
   }
 }
 
 .custom-carousel .carousel-control-prev {
-  left: -10px;
+  left: 10px;
 }
 
 .custom-carousel .carousel-control-next {
-  right: -10px;
+  right: 10px;
 }
 
 .custom-carousel .carousel-control-prev:hover,
 .custom-carousel .carousel-control-next:hover {
-  opacity: 1;
+  background-color: rgba(0, 0, 0, 0.7);
 }
 
-/* Ensure the carousel arrows are always visible */
 .custom-carousel:hover .carousel-control-prev,
 .custom-carousel:hover .carousel-control-next {
   opacity: 1;
 }
 
-/* Nova estrutura de legenda para o carrossel */
 .carousel-caption-container {
-  margin-top: 1.5rem;
-  text-align: center;
-  padding: 0 2rem;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+  padding: 2rem 1rem 1rem;
 }
 
 @media (max-width: 576px) {
   .carousel-caption-container {
-    padding: 0 1rem;
-    margin-top: 1rem;
+    padding: 1rem 0.5rem 0.5rem;
   }
 }
 
 .carousel-caption-custom {
-  background-color: #fff;
-  border-radius: 8px;
-  padding: 1.2rem 2rem;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  display: inline-block;
-  margin: 0 auto;
-  min-width: 50%;
+  position: static;
+  text-align: center;
+  color: white;
+  padding: 0;
+  margin: 0;
 }
 
 .carousel-caption-custom h3 {
-  color: var(--elements-color);
-  font-weight: 600;
-  margin-bottom: 0.5rem;
   font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
 }
 
 .carousel-caption-custom p {
-  color: #555;
-  margin-bottom: 0;
+  font-size: 1rem;
+  margin-bottom: 1rem;
 }
 
-/* Melhorar a visibilidade dos indicadores do carrossel */
 .custom-carousel .carousel-indicators {
-  position: absolute;
-  bottom: -50px;
+  bottom: 20px;
   margin-bottom: 0;
-  z-index: 5;
 }
 
 .custom-carousel .carousel-indicators [data-bs-target] {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background-color: var(--elements-color);
-  opacity: 0.5;
-  margin: 0 6px;
+  background-color: rgba(255, 255, 255, 0.5);
   border: none;
+  margin: 0 4px;
 }
 
 .custom-carousel .carousel-indicators .active {
-  opacity: 1;
-  background-color: var(--elements-color);
-  width: 14px;
-  height: 14px;
+  background-color: white;
 }
 
-/* Reorganizar elementos para evitar sobreposição */
 .custom-carousel .carousel-inner {
-  margin-bottom: 3.5rem;
-}
-
-.animais-bg {
-  background-image: url('src/assets/imgs/animais-bg.jpg');
-  height: 500px;
-  display: flex;
-  align-items: center;
-  background-size:cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  
-}
-
-.sobre-bg {
-  background-image: url('src/assets/imgs/sobre-bg.jpg');
-  height: 500px;
-  display: flex;
-  align-items: center;
-  background-size:cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  
-}
-
-.veterinarios-bg {
-  background-image: url('src/assets/imgs/veterinarios-bg.jpg');
-  height: 500px;
-  display: flex;
-  align-items: center;
-  background-size:cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-.contato-bg {
-  background-image: url('src/assets/imgs/contato-bg.jpg');
-  height: 500px;
-  display: flex;
-  align-items: center;
-  background-size:cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  border-radius: 12px;
 }
 
 .agenda-bg {
-  background-image: url('src/assets/imgs/agenda-bg.jpg');
-  height: 500px;
-  display: flex;
-  align-items: center;
-  background-size:cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  background-image: url("../assets/imgs/agenda-bg.jpg");
 }
 
-/* Estilos para os links de navegação */
-.nav-link {
-  color: white;
+.animais-bg {
+  background-image: url("../assets/imgs/animais-bg.jpg");
+}
+
+.sobre-bg {
+  background-image: url("../assets/imgs/sobre-bg.jpg");
+}
+
+.contato-bg {
+  background-image: url("../assets/imgs/contato-bg.jpg");
+}
+
+.veterinarios-bg {
+  background-image: url("../assets/imgs/veterinarios-bg.jpg");
+}
+
+.agenda-bg,
+.animais-bg,
+.sobre-bg,
+.contato-bg,
+.veterinarios-bg {
+  background-size: cover;
+  background-position: center 30%;
+  background-attachment: local;
   position: relative;
-  padding-bottom: 3px;
-  border-color: var(--bs-nav-tabs-link-active-border-color);
+  min-height: 500px;
+  padding-top: 60px;
+  padding-bottom: 60px;
+  display: flex;
+  align-items: center;
+}
+
+.agenda-bg::before,
+.animais-bg::before,
+.sobre-bg::before,
+.contato-bg::before,
+.veterinarios-bg::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.35);
+  z-index: 1;
+}
+
+@media (max-width: 768px) {
+  .animais-bg {
+    min-height: 220px;
+    background-attachment: scroll;
+  }
+}
+
+.nav-link {
+  color: var(--main-color);
+  font-weight: 500;
+  transition: color 0.3s ease;
 }
 
 .nav-link-tab {
-  color: #aaaaaa;
-  position: relative;
-  padding-bottom: 3px;
-  border: 0;
-  background-color: transparent;
-  border-color: var(--bs-nav-tabs-link-active-border-color) !important;
+  color: var(--main-color);
+  font-weight: 500;
+  transition: color 0.3s ease;
 }
 
-.nav-link:hover, .nav-link-tab:hover {
+.nav-link:hover,
+.nav-link-tab:hover {
   color: var(--elements-color);
-  transition: color ease 150ms; 
 }
 
-/* Efeito de sublinhado para os links ativos e hover */
-.nav-link::after, .nav-link-tab::after {
+.nav-link::after,
+.nav-link-tab::after {
   content: '';
   position: absolute;
   width: 0;
@@ -396,186 +507,207 @@ body {
   bottom: 0;
   left: 50%;
   background-color: var(--elements-color);
+  transition: all 0.3s ease;
   transform: translateX(-50%);
-  transition: width 0.3s ease;
 }
 
-/* Quando o link está com hover, o sublinhado se expande */
-.nav-link:hover::after, .nav-link-tab:hover::after {
+.nav-link:hover::after,
+.nav-link-tab:hover::after {
   width: 100%;
 }
 
-/* Link ativo sempre mostra sublinhado */
-.nav-link.active, .nav-link-tab.active {
-  color: var(--secondary-color);
+.nav-link.active,
+.nav-link-tab.active {
+  color: var(--elements-color);
 }
 
-.nav-link.active::after, .nav-link-tab.active::after {
+.nav-link.active::after,
+.nav-link-tab.active::after {
   width: 100%;
-  background-color: var(--secondary-color);
 }
 
-/* Estilos do Loader e Loading Transition */
-
-/* Container do loader */
 .loader-container {
   display: flex;
   justify-content: center;
   align-items: center;
+  height: 100vh;
 }
 
-/* Tamanhos do loader */
 .loader-sm {
-  transform: scale(0.6);
+  width: 20px;
+  height: 20px;
 }
 
 .loader-md {
-  transform: scale(1);
+  width: 40px;
+  height: 40px;
 }
 
 .loader-lg {
-  transform: scale(1.5);
+  width: 60px;
+  height: 60px;
 }
 
-/* Cores do loader */
 .loader-primary {
-  --loader-color: var(--main-color);
+  border-color: var(--main-color);
 }
 
 .loader-secondary {
-  --loader-color: var(--secondary-color);
+  border-color: var(--secondary-color);
 }
 
 .loader-elements {
-  --loader-color: var(--elements-color);
+  border-color: var(--elements-color);
 }
 
-/* Animação da pata */
 .loader-paw {
+  width: 40px;
+  height: 40px;
   position: relative;
-  width: 120px;
-  height: 120px;
 }
 
 .paw-print {
-  position: absolute;
-  background-color: var(--loader-color, var(--main-color));
+  width: 100%;
+  height: 100%;
+  background: var(--main-color);
   border-radius: 50%;
-  animation: pulse 1.5s ease-in-out infinite;
+  animation: pulse 1.5s infinite;
 }
 
 .paw-main {
-  width: 60px;
-  height: 60px;
-  top: 30px;
-  left: 30px;
-  animation-delay: 0s;
-  opacity: 0.9;
+  width: 20px;
+  height: 20px;
+  background: var(--elements-color);
+  border-radius: 50%;
+  position: absolute;
+  top: 5px;
+  left: 10px;
+  animation: pulse 1.5s infinite 0.2s;
 }
 
 .paw-pad1 {
-  width: 25px;
-  height: 25px;
-  top: 10px;
-  left: 30px;
-  animation-delay: 0.1s;
+  width: 12px;
+  height: 12px;
+  background: var(--secondary-color);
+  border-radius: 50%;
+  position: absolute;
+  top: 15px;
+  left: 5px;
+  animation: pulse 1.5s infinite 0.4s;
 }
 
 .paw-pad2 {
-  width: 25px;
-  height: 25px;
-  top: 10px;
-  right: 30px;
-  animation-delay: 0.2s;
+  width: 12px;
+  height: 12px;
+  background: var(--secondary-color);
+  border-radius: 50%;
+  position: absolute;
+  top: 15px;
+  right: 5px;
+  animation: pulse 1.5s infinite 0.6s;
 }
 
 .paw-pad3 {
-  width: 25px;
-  height: 25px;
-  bottom: 10px;
-  left: 10px;
-  animation-delay: 0.3s;
+  width: 10px;
+  height: 10px;
+  background: var(--secondary-color);
+  border-radius: 50%;
+  position: absolute;
+  bottom: 5px;
+  left: 8px;
+  animation: pulse 1.5s infinite 0.8s;
 }
 
 .paw-pad4 {
-  width: 25px;
-  height: 25px;
-  bottom: 10px;
-  right: 10px;
-  animation-delay: 0.4s;
+  width: 10px;
+  height: 10px;
+  background: var(--secondary-color);
+  border-radius: 50%;
+  position: absolute;
+  bottom: 5px;
+  right: 8px;
+  animation: pulse 1.5s infinite 1s;
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0% {
     transform: scale(1);
+    opacity: 1;
   }
+
   50% {
     transform: scale(1.1);
+    opacity: 0.7;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
   }
 }
 
-/* Página de transição */
 .loading-transition {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(255, 255, 255, 0.95);
+  background: linear-gradient(135deg, var(--main-color) 0%, var(--bg-button) 100%);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 2000;
+  z-index: 9999;
+  transition: opacity 0.5s ease;
 }
 
 .loading-content {
   text-align: center;
-  padding: 2rem;
-  max-width: 500px;
-  width: 80%;
+  color: white;
 }
 
 .loading-message {
-  margin: 1.5rem 0;
-  color: var(--main-color);
-  font-size: 1.8rem;
+  margin-top: 20px;
+  font-size: 18px;
+  font-weight: 500;
 }
 
 .progress-container {
-  width: 100%;
-  height: 12px;
-  background-color: #f0f0f0;
-  border-radius: 6px;
+  width: 300px;
+  height: 6px;
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+  margin: 20px auto;
   overflow: hidden;
-  margin: 1rem 0;
 }
 
 .progress-bar {
   height: 100%;
-  background-color: var(--secondary-color);
-  border-radius: 6px;
+  background-color: white;
+  border-radius: 3px;
   transition: width 0.3s ease;
+  animation: progress 2s ease-in-out infinite;
 }
 
 .progress-text {
-  font-size: 1rem;
-  font-weight: bold;
-  color: var(--main-color);
+  font-size: 14px;
+  margin-top: 10px;
+  opacity: 0.8;
 }
 
-/* Animação de entrada e saída */
 .loading-transition {
-  animation: fadeIn 0.5s ease forwards;
+  animation: fadeIn 0.5s ease;
 }
 
 .loading-transition.hide {
-  animation: fadeOut 0.5s ease forwards;
+  opacity: 0;
+  pointer-events: none;
 }
 
 @keyframes fadeIn {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -585,8 +717,8 @@ body {
   from {
     opacity: 1;
   }
+
   to {
     opacity: 0;
   }
 }
-

@@ -328,11 +328,6 @@ const Animais = () => {
     <>
       <Header />
       <section className="container-fluid animais-bg text-white py-5 mt-5 position-relative">
-        {/* Overlay escuro */}
-        <div
-          className="position-absolute top-0 start-0 w-100 h-100"
-          style={{ backgroundColor: "rgba(0, 0, 0, 0.4)", zIndex: 1 }}
-        ></div>
         {/* Conteúdo com z-index acima do overlay */}
         <div className="container py-4 position-relative" style={{ zIndex: 2 }}>
           <h1 className="display-5 fw-bold">Animais</h1>

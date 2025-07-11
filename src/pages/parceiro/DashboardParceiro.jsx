@@ -1,18 +1,15 @@
 import React from "react";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
-import DashboardBase from "../components/Dashboard/DashboardBase";
+import Header from "../../components/Header";
+import Footer from "../../components/Footer";
+import DashboardBase from "../../components/Dashboard/DashboardBase";
 import { useNavigate } from "react-router-dom";
 
-const DashboardAnunciante = () => {
+const DashboardParceiro = () => {
   const navigate = useNavigate();
   return (
     <div className="d-flex flex-column min-vh-100">
       <Header />
-      <DashboardBase
-        titulo="Área do Anunciante de Eventos"
-        tipoUsuario="anunciante"
-      >
+      <DashboardBase titulo="Área do Parceiro" tipoUsuario="parceiro">
         <div
           className="container d-flex flex-column align-items-center justify-content-center flex-grow-1"
           style={{ minHeight: "50vh" }}
@@ -24,12 +21,9 @@ const DashboardAnunciante = () => {
             >
               <i className="fas fa-arrow-left me-2"></i> Voltar
             </button>
-            <h2>Bem-vindo(a) à sua área de Anunciante de Eventos!</h2>
-            <p>
-              Aqui você poderá cadastrar e gerenciar eventos relacionados a
-              pets.
-            </p>
-            {/* Aqui você pode adicionar o formulário de cadastro e gerenciamento de eventos */}
+            <h2>Bem-vindo(a) à sua área de Parceiro!</h2>
+            <p>Aqui você terá acesso a recursos especiais para parceiros.</p>
+            {/* Aqui você pode adicionar recursos e funcionalidades para parceiros */}
           </div>
         </div>
       </DashboardBase>
@@ -38,4 +32,4 @@ const DashboardAnunciante = () => {
   );
 };
 
-export default DashboardAnunciante;
+export default DashboardParceiro;
