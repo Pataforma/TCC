@@ -3,6 +3,7 @@ import { Row, Col, Card, Badge, Button } from "react-bootstrap";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import StatCard from "../../components/Dashboard/StatCard";
 import SimpleChart from "../../components/Dashboard/SimpleChart";
+import UpgradeToProBanner from "../../components/UpgradeToProBanner";
 import {
   FaCalendarAlt,
   FaUsers,
@@ -166,6 +167,7 @@ const DashboardVeterinario = () => {
             </Button>
           </div>
         </div>
+        <UpgradeToProBanner />
 
         {/* Cards de Estatísticas */}
         <Row className="g-4 mb-4">

@@ -40,7 +40,10 @@ const TelaLogin = () => {
           // Se o usuário já existe
           if (existingUser) {
             // Verifica se já tem tipo definido
-            if (existingUser.tipo_usuario && existingUser.tipo_usuario !== "pendente") {
+            if (
+              existingUser.tipo_usuario &&
+              existingUser.tipo_usuario !== "pendente"
+            ) {
               navigate(`/dashboard/${existingUser.tipo_usuario}`);
             } else {
               navigate("/tipo-usuario");
@@ -53,7 +56,7 @@ const TelaLogin = () => {
                 {
                   id_usuario: userId,
                   email: userEmail,
-                  tipo_usuario: "pendente"
+                  tipo_usuario: "pendente",
                 },
               ]);
 
@@ -76,7 +79,8 @@ const TelaLogin = () => {
       }
     };
 
-    const { data: authListener } = supabase.auth.onAuthStateChange(handleAuthChange);
+    const { data: authListener } =
+      supabase.auth.onAuthStateChange(handleAuthChange);
 
     return () => {
       if (authListener && authListener.subscription) {
@@ -87,43 +91,38 @@ const TelaLogin = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    console.log("Tentando login com:", loginEmail, loginPassword);
     setLoading(true);
-
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email: loginEmail,
         password: loginPassword,
       });
-
+      console.log("Resposta do Supabase:", { data, error });
       if (error) {
         if (error.message.includes("Invalid login credentials")) {
-          alert("Email ou senha incorretos");
+          alert("Credenciais inválidas. Verifique seu e-mail e senha.");
         } else {
           alert("Erro ao fazer login: " + error.message);
         }
         setLoading(false);
         return;
       }
-
-      // Verifica o tipo de usuário na tabela
+      // Buscar dados do usuário no banco
       const { data: userData, error: userError } = await supabase
         .from("usuario")
-        .select("tipo_usuario")
+        .select("*")
         .eq("email", loginEmail)
         .maybeSingle();
-
-      if (userError) {
-        console.error("Erro ao buscar dados do usuário:", userError);
-        alert("Erro ao verificar dados do usuário");
+      console.log("Dados do usuário após login:", userData);
+      if (userError || !userData) {
+        alert("Erro ao buscar dados do usuário após login.");
         setLoading(false);
         return;
       }
-
-      if (userData?.tipo_usuario && userData.tipo_usuario !== "pendente") {
-        navigate(`/dashboard/${userData.tipo_usuario}`);
-      } else {
-        navigate("/tipo-usuario");
-      }
+      // Redirecionar sempre para a tela de tipo de usuário após login
+      console.log("Redirecionando para: /tipo-usuario");
+      navigate("/tipo-usuario", { replace: true });
     } catch (error) {
       console.error("Erro no login:", error);
       alert("Erro inesperado no login");
@@ -181,7 +180,7 @@ const TelaLogin = () => {
           {
             id_usuario: userId,
             email: signupEmail,
-            tipo_usuario: "pendente"
+            tipo_usuario: "pendente",
           },
         ]);
 
@@ -209,20 +208,19 @@ const TelaLogin = () => {
     try {
       const redirectUrl = `${window.location.origin}/TCC-oficial/auth/callback`;
 
-
       const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
+        provider: "google",
         options: {
           redirectTo: redirectUrl,
           queryParams: {
-            access_type: 'offline',
-            prompt: 'consent',
+            access_type: "offline",
+            prompt: "consent",
           },
         },
       });
 
       if (error) {
-        console.error('Erro OAuth:', error);
+        console.error("Erro OAuth:", error);
         alert("Erro ao logar com Google: " + error.message);
         setLoading(false);
       }
@@ -232,7 +230,6 @@ const TelaLogin = () => {
       setLoading(false);
     }
   };
-
 
   // Função para alternar entre os modos login e cadastro
   const toggleMode = () => {
@@ -248,8 +245,9 @@ const TelaLogin = () => {
     <>
       <Header />
       <div
-        className={`${styles["auth-container"]} ${isLogin ? styles["auth-signin"] : styles["auth-signup"]
-          }`}
+        className={`${styles["auth-container"]} ${
+          isLogin ? styles["auth-signin"] : styles["auth-signup"]
+        }`}
       >
         <div className={styles["auth-content"]}>
           {/* Visão de Login */}
@@ -292,7 +290,7 @@ const TelaLogin = () => {
                   <a
                     onClick={handleGoogleLogin}
                     className={styles["auth-link-social-media"]}
-                    style={{ cursor: loading ? 'not-allowed' : 'pointer' }}
+                    style={{ cursor: loading ? "not-allowed" : "pointer" }}
                   >
                     <li className={styles["auth-item-social-media"]}>
                       <i className="fab fa-google"></i>
@@ -386,7 +384,7 @@ const TelaLogin = () => {
                   <a
                     onClick={handleGoogleLogin}
                     className={styles["auth-link-social-media"]}
-                    style={{ cursor: loading ? 'not-allowed' : 'pointer' }}
+                    style={{ cursor: loading ? "not-allowed" : "pointer" }}
                   >
                     <li className={styles["auth-item-social-media"]}>
                       <i className="fab fa-google"></i>

@@ -34,11 +34,13 @@ import {
   FaChartBar,
   FaFilter,
 } from "react-icons/fa";
+import { useSubscription } from "../../context/SubscriptionContext";
 
 const DashboardVeterinarioFinanceiro = () => {
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState("receita");
   const [activeTab, setActiveTab] = useState("visao-geral");
+  const { plan } = useSubscription();
 
   // Dados mockados financeiros
   const [stats] = useState({
@@ -561,6 +563,37 @@ const DashboardVeterinarioFinanceiro = () => {
             </Tab.Content>
           </Card.Body>
         </Card>
+
+        {plan === "advanced" && (
+          <section
+            style={{
+              marginTop: "2rem",
+              padding: "1rem",
+              background: "#e3f2fd",
+              borderRadius: 8,
+            }}
+          >
+            <h3>Relatórios Financeiros Avançados</h3>
+            <p>
+              Visualize análises detalhadas, exporte relatórios e acesse
+              previsões exclusivas.
+            </p>
+            <button
+              style={{
+                background: "#1976d2",
+                color: "#fff",
+                border: "none",
+                borderRadius: 6,
+                padding: "0.6rem 1.2rem",
+                marginTop: 8,
+                fontWeight: "bold",
+                cursor: "pointer",
+              }}
+            >
+              Exportar Relatório
+            </button>
+          </section>
+        )}
       </div>
 
       {/* Modal para Nova Receita/Despesa/Serviço */}

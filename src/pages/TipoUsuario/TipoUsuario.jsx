@@ -120,6 +120,29 @@ const TipoUsuario = () => {
         overflow: "hidden",
       }}
     >
+      {/* Botão de voltar para Home */}
+      <button
+        className="btn btn-outline-secondary position-absolute"
+        style={{
+          top: 24,
+          left: 24,
+          zIndex: 10,
+          opacity: 0.85,
+          borderRadius: 24,
+          padding: "6px 18px",
+          fontWeight: 500,
+          fontSize: 16,
+          boxShadow: "0 2px 8px 0 #0001",
+          transition: "background 0.2s, color 0.2s, box-shadow 0.2s",
+        }}
+        onClick={() => navigate("/")}
+        title="Voltar para a Home"
+      >
+        <span className="me-2" style={{ fontSize: 18 }}>
+          🏠
+        </span>
+        Home
+      </button>
       {/* Background decorativo de pata */}
       <img
         src={bgPata}

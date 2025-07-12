@@ -1,42 +1,85 @@
-import { Routes, Route, useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { Routes, Route, useLocation, Navigate } from "react-router-dom";
+import { useEffect, Suspense, lazy } from "react";
 import ScrollToTop from "./components/ScrollToTop";
-import Home from "./pages/Home";
-import Sobre from "./pages/Sobre";
-import Veterinarios from "./pages/Veterinarios";
-import Animais from "./pages/Animais";
-import Produto from "./pages/Produto";
-import Agenda from "./pages/Agenda";
-import Contato from "./pages/Contato";
 import LoadingPage from "./pages/LoadingPage";
-import TelaLogin from "./pages/Login/TelaLogin";
-import TipoUsuario from "./pages/TipoUsuario/TipoUsuario";
-import DashboardTutor from "./pages/tutor/DashboardTutor";
-import DashboardVeterinario from "./pages/veterinario/DashboardVeterinario";
-import DashboardVeterinarioAgenda from "./pages/veterinario/DashboardVeterinarioAgenda";
-import DashboardVeterinarioPacientes from "./pages/veterinario/DashboardVeterinarioPacientes";
+import TransitionWrapper from "./components/TransitionWrapper";
+import LoadingTransition from "./components/LoadingTransition";
+import {
+  TutorRoute,
+  VeterinarioRoute,
+  AnuncianteRoute,
+  ParceiroRoute,
+  CompleteProfileRoute,
+  PublicRoute,
+} from "./components/AuthGuard";
+import { SubscriptionProvider } from "./context/SubscriptionContext";
 
-import DashboardAnunciante from "./pages/anunciante/DashboardAnunciante";
-import DashboardParceiro from "./pages/parceiro/DashboardParceiro";
-import DashboardTutorPerfil from "./pages/tutor/DashboardTutorPerfil";
-import DashboardTutorPet from "./pages/tutor/DashboardTutorPet";
-import Termos from "./pages/Termos";
-import AuthCallback from "./pages/Login/AuthCallback";
-import VeterinarioPerfil from "./pages/veterinario/VeterinarioPerfil";
-import DashboardTutorFinanceiro from "./pages/tutor/DashboardTutorFinanceiro";
-import DashboardTutorPetPerdido from "./pages/tutor/DashboardTutorPetPerdido";
-import DashboardTutorAdotarPet from "./pages/tutor/DashboardTutorAdotarPet";
-import ProntuarioPage from "./pages/veterinario/ProntuarioPage";
-import EstoquePage from "./pages/veterinario/EstoquePage";
-import FinanceiroPage from "./pages/veterinario/FinanceiroPage";
-import MarketingPage from "./pages/veterinario/MarketingPage";
-import ChatPage from "./pages/veterinario/ChatPage";
+// Lazy loading para todas as páginas
+const Home = lazy(() => import("./pages/Home"));
+const Sobre = lazy(() => import("./pages/Sobre"));
+const Veterinarios = lazy(() => import("./pages/Veterinarios"));
+const Animais = lazy(() => import("./pages/Animais"));
+const Produto = lazy(() => import("./pages/Produto"));
+const Agenda = lazy(() => import("./pages/Agenda"));
+const Contato = lazy(() => import("./pages/Contato"));
+const TelaLogin = lazy(() => import("./pages/Login/TelaLogin"));
+const TipoUsuario = lazy(() => import("./pages/TipoUsuario/TipoUsuario"));
+const DashboardTutor = lazy(() => import("./pages/tutor/DashboardTutor"));
+const DashboardVeterinario = lazy(() =>
+  import("./pages/veterinario/DashboardVeterinario")
+);
+const DashboardVeterinarioAgenda = lazy(() =>
+  import("./pages/veterinario/DashboardVeterinarioAgenda")
+);
+const DashboardVeterinarioPacientes = lazy(() =>
+  import("./pages/veterinario/DashboardVeterinarioPacientes")
+);
+const DashboardAnunciante = lazy(() =>
+  import("./pages/anunciante/DashboardAnunciante")
+);
+const DashboardParceiro = lazy(() =>
+  import("./pages/parceiro/DashboardParceiro")
+);
+const DashboardTutorPerfil = lazy(() =>
+  import("./pages/tutor/DashboardTutorPerfil")
+);
+const DashboardTutorPet = lazy(() => import("./pages/tutor/DashboardTutorPet"));
+const Termos = lazy(() => import("./pages/Termos"));
+const AuthCallback = lazy(() => import("./pages/Login/AuthCallback"));
+const VeterinarioPerfil = lazy(() =>
+  import("./pages/veterinario/VeterinarioPerfil")
+);
+const DashboardTutorFinanceiro = lazy(() =>
+  import("./pages/tutor/DashboardTutorFinanceiro")
+);
+const DashboardTutorPetPerdido = lazy(() =>
+  import("./pages/tutor/DashboardTutorPetPerdido")
+);
+const DashboardTutorAdotarPet = lazy(() =>
+  import("./pages/tutor/DashboardTutorAdotarPet")
+);
+const ProntuarioPage = lazy(() => import("./pages/veterinario/ProntuarioPage"));
+const EstoquePage = lazy(() => import("./pages/veterinario/EstoquePage"));
+const FinanceiroPage = lazy(() => import("./pages/veterinario/FinanceiroPage"));
+const MarketingPage = lazy(() => import("./pages/veterinario/MarketingPage"));
+const ChatPage = lazy(() => import("./pages/veterinario/ChatPage"));
+const AgendamentosPage = lazy(() => import("./pages/tutor/AgendamentosPage"));
+const VacinasPage = lazy(() => import("./pages/tutor/VacinasPage"));
+const ServicosPage = lazy(() => import("./pages/tutor/ServicosPage"));
+const MensagensPage = lazy(() => import("./pages/tutor/MensagensPage"));
+const UnauthorizedPage = lazy(() => import("./pages/UnauthorizedPage"));
+const PlanosPage = lazy(() => import("./pages/PlanosPage"));
+const DuvidasPage = lazy(() => import("./pages/DuvidasPage"));
 
-// Novas páginas do Tutor Portal
-import AgendamentosPage from "./pages/tutor/AgendamentosPage";
-import VacinasPage from "./pages/tutor/VacinasPage";
-import ServicosPage from "./pages/tutor/ServicosPage";
-import MensagensPage from "./pages/tutor/MensagensPage";
+// Componente de fallback para loading
+const PageLoader = () => (
+  <LoadingTransition
+    timeout={1000}
+    message="Carregando página..."
+    color="primary"
+    size="large"
+  />
+);
 
 function App() {
   const location = useLocation();
@@ -45,73 +88,253 @@ function App() {
   }, [location]);
 
   return (
-    <>
+    <SubscriptionProvider>
       <ScrollToTop />
-      <div key={location.pathname} className="fade-in">
-        <Routes location={location}>
-          <Route path="/" element={<Home />} />
-          <Route path="/sobre" element={<Sobre />} />
-          <Route path="/veterinarios" element={<Veterinarios />} />
-          <Route path="/animais" element={<Animais />} />
-          <Route path="/produto" element={<Produto />} />
-          <Route path="/agenda" element={<Agenda />} />
-          <Route path="/contato" element={<Contato />} />
-          <Route path="/telalogin" element={<TelaLogin />} />
-          <Route path="/loading" element={<LoadingPage />} />
-          <Route path="/tipo-usuario" element={<TipoUsuario />} />
-          <Route path="/dashboard/tutor" element={<DashboardTutor />} />
-          <Route
-            path="/dashboard/veterinario"
-            element={<DashboardVeterinario />}
-          />
-          <Route
-            path="/dashboard/veterinario/agenda"
-            element={<DashboardVeterinarioAgenda />}
-          />
-          <Route
-            path="/dashboard/veterinario/pacientes"
-            element={<DashboardVeterinarioPacientes />}
-          />
+      <TransitionWrapper>
+        <div key={location.pathname} className="fade-in">
+          <Suspense fallback={<PageLoader />}>
+            <Routes location={location}>
+              {/* Rotas Públicas */}
+              <Route
+                path="/"
+                element={
+                  <PublicRoute>
+                    <Home />
+                  </PublicRoute>
+                }
+              />
+              <Route path="/sobre" element={<Sobre />} />
+              <Route path="/veterinarios" element={<Veterinarios />} />
+              <Route path="/animais" element={<Animais />} />
+              <Route path="/produto" element={<Produto />} />
+              <Route path="/planos" element={<PlanosPage />} />
+              <Route path="/duvidas" element={<DuvidasPage />} />
+              <Route path="/agenda" element={<Agenda />} />
+              <Route path="/contato" element={<Contato />} />
+              <Route
+                path="/telalogin"
+                element={
+                  <PublicRoute>
+                    <TelaLogin />
+                  </PublicRoute>
+                }
+              />
+              <Route path="/loading" element={<LoadingPage />} />
+              <Route path="/tipo-usuario" element={<TipoUsuario />} />
+              <Route path="/termos" element={<Termos />} />
+              <Route path="/auth/callback" element={<AuthCallback />} />
+              <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
-          <Route
-            path="/dashboard/anunciante"
-            element={<DashboardAnunciante />}
-          />
-          <Route path="/dashboard/parceiro" element={<DashboardParceiro />} />
-          <Route path="/tutor/perfil" element={<DashboardTutorPerfil />} />
-          <Route path="/tutor/pet" element={<DashboardTutorPet />} />
-          <Route path="/termos" element={<Termos />} />
-          <Route path="/auth/callback" element={<AuthCallback />} />
-          <Route path="/veterinario/perfil" element={<VeterinarioPerfil />} />
-          <Route
-            path="/dashboard/tutor/financeiro"
-            element={<DashboardTutorFinanceiro />}
-          />
-          <Route
-            path="/tutor/pet-perdido"
-            element={<DashboardTutorPetPerdido />}
-          />
-          <Route
-            path="/tutor/adotar-pet"
-            element={<DashboardTutorAdotarPet />}
-          />
+              {/* Rotas Protegidas - Tutor */}
+              <Route
+                path="/dashboard/tutor"
+                element={
+                  <TutorRoute>
+                    <DashboardTutor />
+                  </TutorRoute>
+                }
+              />
+              <Route
+                path="/tutor/perfil"
+                element={
+                  <TutorRoute>
+                    <DashboardTutorPerfil />
+                  </TutorRoute>
+                }
+              />
+              <Route
+                path="/tutor/pet"
+                element={
+                  <TutorRoute>
+                    <DashboardTutorPet />
+                  </TutorRoute>
+                }
+              />
+              <Route
+                path="/dashboard/tutor/financeiro"
+                element={
+                  <TutorRoute>
+                    <DashboardTutorFinanceiro />
+                  </TutorRoute>
+                }
+              />
+              <Route
+                path="/tutor/pet-perdido"
+                element={
+                  <TutorRoute>
+                    <DashboardTutorPetPerdido />
+                  </TutorRoute>
+                }
+              />
+              <Route
+                path="/tutor/adotar-pet"
+                element={
+                  <TutorRoute>
+                    <DashboardTutorAdotarPet />
+                  </TutorRoute>
+                }
+              />
+              <Route
+                path="/tutor/agendamentos"
+                element={
+                  <TutorRoute>
+                    <AgendamentosPage />
+                  </TutorRoute>
+                }
+              />
+              <Route
+                path="/tutor/vacinas"
+                element={
+                  <TutorRoute>
+                    <VacinasPage />
+                  </TutorRoute>
+                }
+              />
+              <Route
+                path="/tutor/servicos"
+                element={
+                  <TutorRoute>
+                    <ServicosPage />
+                  </TutorRoute>
+                }
+              />
+              <Route
+                path="/tutor/mensagens"
+                element={
+                  <TutorRoute>
+                    <MensagensPage />
+                  </TutorRoute>
+                }
+              />
 
-          {/* Novas rotas do Tutor Portal */}
-          <Route path="/tutor/agendamentos" element={<AgendamentosPage />} />
-          <Route path="/tutor/vacinas" element={<VacinasPage />} />
-          <Route path="/tutor/servicos" element={<ServicosPage />} />
-          <Route path="/tutor/mensagens" element={<MensagensPage />} />
+              {/* Rotas Protegidas - Veterinário */}
+              <Route
+                path="/dashboard/veterinario"
+                element={
+                  <VeterinarioRoute>
+                    <DashboardVeterinario />
+                  </VeterinarioRoute>
+                }
+              />
+              <Route
+                path="/dashboard/veterinario/agenda"
+                element={
+                  <VeterinarioRoute>
+                    <DashboardVeterinarioAgenda />
+                  </VeterinarioRoute>
+                }
+              />
+              <Route
+                path="/dashboard/veterinario/pacientes"
+                element={
+                  <VeterinarioRoute>
+                    <DashboardVeterinarioPacientes />
+                  </VeterinarioRoute>
+                }
+              />
+              <Route
+                path="/veterinario/perfil"
+                element={
+                  <VeterinarioRoute>
+                    <VeterinarioPerfil />
+                  </VeterinarioRoute>
+                }
+              />
+              <Route
+                path="/patients/:id"
+                element={
+                  <VeterinarioRoute>
+                    <ProntuarioPage />
+                  </VeterinarioRoute>
+                }
+              />
+              <Route
+                path="/prontuario/:id"
+                element={
+                  <VeterinarioRoute>
+                    <ProntuarioPage />
+                  </VeterinarioRoute>
+                }
+              />
+              <Route
+                path="/inventory"
+                element={
+                  <VeterinarioRoute>
+                    <EstoquePage />
+                  </VeterinarioRoute>
+                }
+              />
+              <Route
+                path="/finance"
+                element={
+                  <VeterinarioRoute>
+                    <FinanceiroPage />
+                  </VeterinarioRoute>
+                }
+              />
+              <Route
+                path="/marketing"
+                element={
+                  <VeterinarioRoute>
+                    <MarketingPage />
+                  </VeterinarioRoute>
+                }
+              />
+              <Route
+                path="/chat"
+                element={
+                  <VeterinarioRoute>
+                    <ChatPage />
+                  </VeterinarioRoute>
+                }
+              />
+              <Route
+                path="/messages"
+                element={
+                  <VeterinarioRoute>
+                    <ChatPage />
+                  </VeterinarioRoute>
+                }
+              />
 
-          <Route path="/patients/:id" element={<ProntuarioPage />} />
-          <Route path="/prontuario/:id" element={<ProntuarioPage />} />
-          <Route path="/inventory" element={<EstoquePage />} />
-          <Route path="/finance" element={<FinanceiroPage />} />
-          <Route path="/marketing" element={<MarketingPage />} />
-          <Route path="/chat" element={<ChatPage />} />
-          <Route path="/messages" element={<ChatPage />} />
-        </Routes>
-      </div>
-    </>
+              {/* Rotas Protegidas - Anunciante */}
+              <Route
+                path="/dashboard/anunciante"
+                element={
+                  <AnuncianteRoute>
+                    <DashboardAnunciante />
+                  </AnuncianteRoute>
+                }
+              />
+
+              {/* Rotas Protegidas - Parceiro */}
+              <Route
+                path="/dashboard/parceiro"
+                element={
+                  <ParceiroRoute>
+                    <DashboardParceiro />
+                  </ParceiroRoute>
+                }
+              />
+
+              {/* Rota 404 - Página não encontrada */}
+              <Route
+                path="*"
+                element={
+                  <div className="container text-center py-5">
+                    <h1>404 - Página não encontrada</h1>
+                    <p>A página que você está procurando não existe.</p>
+                    <a href="/" className="btn btn-primary">
+                      Voltar ao Início
+                    </a>
+                  </div>
+                }
+              />
+            </Routes>
+          </Suspense>
+        </div>
+      </TransitionWrapper>
+    </SubscriptionProvider>
   );
 }
 

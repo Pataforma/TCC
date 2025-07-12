@@ -56,7 +56,9 @@ function Header() {
               { to: "/sobre", label: "Sobre" },
               { to: "/veterinarios", label: "Veterinários" },
               { to: "/animais", label: "Animais" },
-              { to: "/produto", label: "Nosso Produto" },
+              // { to: "/produto", label: "Nosso Produto" },
+              { to: "/planos", label: "Planos" },
+              { to: "/duvidas", label: "Dúvidas" },
               { to: "/agenda", label: "Agenda" },
               { to: "/contato", label: "Contato" },
             ].map((item) => (
@@ -101,6 +103,8 @@ function Header() {
               { to: "/veterinarios", label: "Veterinários" },
               { to: "/animais", label: "Animais" },
               { to: "/produto", label: "Nosso Produto" },
+              { to: "/planos", label: "Planos" },
+              { to: "/duvidas", label: "Dúvidas" },
               { to: "/agenda", label: "Agenda" },
               { to: "/contato", label: "Contato" },
             ].map((item) => (

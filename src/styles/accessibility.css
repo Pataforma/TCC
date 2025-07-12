@@ -1,0 +1,562 @@
+/* Estilos para acessibilidade */
+
+/* Foco visível para navegação por teclado */
+*:focus {
+    outline: 2px solid var(--main-color) !important;
+    outline-offset: 2px !important;
+}
+
+/* Melhorar contraste de texto */
+.text-muted {
+    color: #6c757d !important;
+}
+
+/* Classes para leitores de tela */
+.sr-only {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+.sr-only-focusable:focus {
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+    clip: auto !important;
+    white-space: normal !important;
+}
+
+/* Melhorar contraste de botões */
+.btn {
+    font-weight: 500;
+    border-width: 2px;
+}
+
+.btn-primary {
+    background-color: var(--main-color);
+    border-color: var(--main-color);
+    color: white;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: var(--bg-button);
+    border-color: var(--bg-button);
+    color: white;
+}
+
+.btn-secondary {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+    color: #333;
+}
+
+.btn-secondary:hover,
+.btn-secondary:focus {
+    background-color: #e6a800;
+    border-color: #e6a800;
+    color: #333;
+}
+
+/* Melhorar contraste de links */
+a {
+    color: var(--main-color);
+    text-decoration: underline;
+}
+
+a:hover,
+a:focus {
+    color: var(--bg-button);
+    text-decoration: underline;
+}
+
+/* Melhorar contraste de formulários */
+.form-control:focus {
+    border-color: var(--main-color);
+    box-shadow: 0 0 0 0.2rem rgba(13, 178, 172, 0.25);
+}
+
+.form-label {
+    font-weight: 500;
+    color: #333;
+}
+
+/* Melhorar contraste de badges */
+.badge {
+    font-weight: 500;
+    padding: 0.5em 0.75em;
+}
+
+.badge-primary {
+    background-color: var(--main-color);
+    color: white;
+}
+
+.badge-secondary {
+    background-color: var(--secondary-color);
+    color: #333;
+}
+
+.badge-success {
+    background-color: #28a745;
+    color: white;
+}
+
+.badge-warning {
+    background-color: #ffc107;
+    color: #333;
+}
+
+.badge-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.badge-info {
+    background-color: #17a2b8;
+    color: white;
+}
+
+/* Melhorar contraste de cards */
+.card {
+    border: 1px solid #dee2e6;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    font-weight: 600;
+}
+
+/* Melhorar contraste de tabelas */
+.table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: #333;
+}
+
+.table td {
+    color: #333;
+}
+
+/* Melhorar contraste de navegação */
+.nav-link {
+    color: #333;
+    font-weight: 500;
+}
+
+.nav-link:hover,
+.nav-link:focus {
+    color: var(--main-color);
+    background-color: rgba(13, 178, 172, 0.1);
+}
+
+.nav-link.active {
+    background-color: var(--main-color);
+    color: white;
+}
+
+/* Melhorar contraste de dropdown */
+.dropdown-menu {
+    border: 1px solid #dee2e6;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.dropdown-item {
+    color: #333;
+    font-weight: 500;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+    background-color: var(--main-color);
+    color: white;
+}
+
+/* Melhorar contraste de modais */
+.modal-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.modal-title {
+    font-weight: 600;
+    color: #333;
+}
+
+/* Melhorar contraste de alerts */
+.alert {
+    border-width: 2px;
+    font-weight: 500;
+}
+
+.alert-primary {
+    background-color: rgba(13, 178, 172, 0.1);
+    border-color: var(--main-color);
+    color: #0d5a57;
+}
+
+.alert-success {
+    background-color: rgba(40, 167, 69, 0.1);
+    border-color: #28a745;
+    color: #155724;
+}
+
+.alert-warning {
+    background-color: rgba(255, 193, 7, 0.1);
+    border-color: #ffc107;
+    color: #856404;
+}
+
+.alert-danger {
+    background-color: rgba(220, 53, 69, 0.1);
+    border-color: #dc3545;
+    color: #721c24;
+}
+
+.alert-info {
+    background-color: rgba(23, 162, 184, 0.1);
+    border-color: #17a2b8;
+    color: #0c5460;
+}
+
+/* Melhorar contraste de progress bars */
+.progress {
+    background-color: #e9ecef;
+    border: 1px solid #dee2e6;
+}
+
+.progress-bar {
+    font-weight: 500;
+    color: white;
+}
+
+/* Melhorar contraste de pagination */
+.page-link {
+    color: var(--main-color);
+    border-color: #dee2e6;
+    font-weight: 500;
+}
+
+.page-link:hover,
+.page-link:focus {
+    color: var(--bg-button);
+    background-color: #e9ecef;
+    border-color: #dee2e6;
+}
+
+.page-item.active .page-link {
+    background-color: var(--main-color);
+    border-color: var(--main-color);
+    color: white;
+}
+
+/* Melhorar contraste de tooltips */
+.tooltip {
+    font-weight: 500;
+}
+
+.tooltip-inner {
+    background-color: #333;
+    color: white;
+}
+
+/* Melhorar contraste de popovers */
+.popover {
+    border: 1px solid #dee2e6;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.popover-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    font-weight: 600;
+    color: #333;
+}
+
+/* Melhorar contraste de spinners */
+.spinner-border {
+    border-width: 0.25em;
+}
+
+.spinner-border-sm {
+    border-width: 0.2em;
+}
+
+/* Melhorar contraste de list groups */
+.list-group-item {
+    border-color: #dee2e6;
+    color: #333;
+}
+
+.list-group-item:hover {
+    background-color: #f8f9fa;
+}
+
+.list-group-item.active {
+    background-color: var(--main-color);
+    border-color: var(--main-color);
+    color: white;
+}
+
+/* Melhorar contraste de breadcrumbs */
+.breadcrumb-item+.breadcrumb-item::before {
+    color: #6c757d;
+}
+
+.breadcrumb-item.active {
+    color: #333;
+    font-weight: 500;
+}
+
+/* Melhorar contraste de carousel */
+.carousel-control-prev,
+.carousel-control-next {
+    background-color: rgba(0, 0, 0, 0.5);
+    border: none;
+}
+
+.carousel-indicators li {
+    background-color: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.carousel-indicators .active {
+    background-color: white;
+}
+
+/* Melhorar contraste de accordion */
+.accordion-button {
+    background-color: #f8f9fa;
+    color: #333;
+    font-weight: 500;
+}
+
+.accordion-button:hover,
+.accordion-button:focus {
+    background-color: #e9ecef;
+    color: #333;
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: var(--main-color);
+    color: white;
+}
+
+/* Melhorar contraste de tabs */
+.nav-tabs .nav-link {
+    color: #6c757d;
+    border-color: #dee2e6;
+}
+
+.nav-tabs .nav-link:hover,
+.nav-tabs .nav-link:focus {
+    color: var(--main-color);
+    border-color: #dee2e6;
+}
+
+.nav-tabs .nav-link.active {
+    color: var(--main-color);
+    background-color: white;
+    border-color: #dee2e6 #dee2e6 white;
+}
+
+/* Melhorar contraste de sidebar */
+.sidebar {
+    background-color: #f8f9fa;
+    border-right: 1px solid #dee2e6;
+}
+
+.sidebar .nav-link {
+    color: #333;
+    font-weight: 500;
+}
+
+.sidebar .nav-link:hover,
+.sidebar .nav-link:focus {
+    background-color: rgba(13, 178, 172, 0.1);
+    color: var(--main-color);
+}
+
+.sidebar .nav-link.active {
+    background-color: var(--main-color);
+    color: white;
+}
+
+/* Melhorar contraste de header */
+.header {
+    background-color: var(--main-color);
+    color: white;
+}
+
+.header .nav-link {
+    color: white;
+    font-weight: 500;
+}
+
+.header .nav-link:hover,
+.header .nav-link:focus {
+    color: var(--secondary-color);
+}
+
+/* Melhorar contraste de footer */
+.footer {
+    background-color: #333;
+    color: white;
+}
+
+.footer a {
+    color: #ccc;
+}
+
+.footer a:hover,
+.footer a:focus {
+    color: white;
+}
+
+/* Melhorar contraste de ícones */
+.icon {
+    color: var(--main-color);
+}
+
+.icon:hover,
+.icon:focus {
+    color: var(--bg-button);
+}
+
+/* Melhorar contraste de status */
+.status-success {
+    color: #28a745;
+}
+
+.status-warning {
+    color: #ffc107;
+}
+
+.status-danger {
+    color: #dc3545;
+}
+
+.status-info {
+    color: #17a2b8;
+}
+
+/* Melhorar contraste de loading */
+.loading {
+    color: var(--main-color);
+}
+
+/* Melhorar contraste de empty states */
+.empty-state {
+    color: #6c757d;
+    text-align: center;
+    padding: 2rem;
+}
+
+.empty-state .icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+/* Melhorar contraste de skeleton loading */
+.skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* Melhorar contraste de scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Melhorar contraste de seleção de texto */
+::selection {
+    background-color: var(--main-color);
+    color: white;
+}
+
+::-moz-selection {
+    background-color: var(--main-color);
+    color: white;
+}
+
+/* Melhorar contraste de placeholder */
+::placeholder {
+    color: #6c757d;
+    opacity: 1;
+}
+
+/* Melhorar contraste de disabled */
+:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Melhorar contraste de required fields */
+.required::after {
+    content: " *";
+    color: #dc3545;
+    font-weight: bold;
+}
+
+/* Melhorar contraste de error states */
+.has-error {
+    border-color: #dc3545;
+}
+
+.has-error:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+/* Melhorar contraste de success states */
+.has-success {
+    border-color: #28a745;
+}
+
+.has-success:focus {
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+/* Melhorar contraste de warning states */
+.has-warning {
+    border-color: #ffc107;
+}
+
+.has-warning:focus {
+    border-color: #ffc107;
+    box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+}
