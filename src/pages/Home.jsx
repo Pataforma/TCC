@@ -1,8 +1,8 @@
 // src/pages/Home.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
+import Header from "../components/ui/Header";
+import Footer from "../components/ui/Footer";
 import Carousel from "react-bootstrap/Carousel";
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
@@ -12,10 +12,15 @@ import bgPata from "../assets/imgs/bg-pata.png";
 import cachorro from "../assets/imgs/original.png";
 import banner from "../assets/imgs/banneredit.png";
 import perdido from "../assets/imgs/perdido.png";
+import perdido1 from "../assets/imgs/perdido1.webp";
+import perdido2 from "../assets/imgs/perdido2.webp";
+import perdido3 from "../assets/imgs/perdido3.webp";
+import vetparceiro3 from "../assets/imgs/vetparceiro3.webp";
+import OptimizedImage from "../components/ui/OptimizedImage";
 
 const Home = () => {
   const navigate = useNavigate();
-  
+
   // Componente Botao
   const Botao = ({
     text = "Botao",
@@ -23,20 +28,22 @@ const Home = () => {
     hoverColor = "var(--bg-button)",
     textColor = "white",
     onClick,
-    className = ""
+    className = "",
   }) => {
     const [isHover, setIsHover] = useState(false);
-    
+
     const buttonStyle = {
       backgroundColor: isHover ? hoverColor : bgColor,
       color: textColor,
-      padding: '0.5rem 1.2rem',
-      border: 'none',
-      borderRadius: '5px',
-      cursor: 'pointer',
-      fontWeight: '500',
-      transition: 'background-color 0.3s ease',
-      borderBottom: isHover ? `3px solid ${bgColor}` : `3px solid ${hoverColor}`
+      padding: "0.5rem 1.2rem",
+      border: "none",
+      borderRadius: "5px",
+      cursor: "pointer",
+      fontWeight: "500",
+      transition: "background-color 0.3s ease",
+      borderBottom: isHover
+        ? `3px solid ${bgColor}`
+        : `3px solid ${hoverColor}`,
     };
 
     return (
@@ -98,7 +105,8 @@ const Home = () => {
       titulo: "Feira de Adoção de Pets",
       data: "27 de Abril",
       local: "Praça Central, Feira de Santana",
-      descricao: "Adote um amigo! Evento com veterinários, ONGs e muita fofura.",
+      descricao:
+        "Adote um amigo! Evento com veterinários, ONGs e muita fofura.",
     },
     {
       titulo: "Campanha de Vacinação Gratuita",
@@ -111,48 +119,54 @@ const Home = () => {
   return (
     <>
       <Header />
-      
+
       {/* Seção Intro */}
-      <section className="container espacamento-header mb-5 pb-0" >
+      <section className="container espacamento-header mb-5 pb-0">
         <div className="row px-3 px-md-5">
           <div className="col-12 col-lg-6 mb-5 mb-lg-0">
-            <h1 className="text-elements mb-4 mb-md-5" 
-                style={{ 
-                  fontSize: "clamp(3rem, 8vw, 5rem)", 
-                  textShadow: "3px 3px ##fa745a;" 
-                }}>
+            <h1
+              className="text-elements mb-4 mb-md-5"
+              style={{
+                fontSize: "clamp(3rem, 8vw, 5rem)",
+                textShadow: "3px 3px ##fa745a;",
+              }}
+            >
               Pataforma
             </h1>
             <h3 className="mb-4 mb-md-5 fs-4">
-              Descubra um novo jeito de <span className="fw-bold">cuidar 
-              do seu amigo de quatro patas</span> com a Pataforma.
+              Descubra um novo jeito de{" "}
+              <span className="fw-bold">
+                cuidar do seu amigo de quatro patas
+              </span>{" "}
+              com a Pataforma.
             </h3>
             <p className="mb-4 mb-md-5">
-              <span className="fw-bold">Cuide da saúde:</span> agende consultas veterinárias, 
-              vacinas e exames diretamente pela nossa plataforma, com <span className="fw-bold">total confiança.</span>
+              <span className="fw-bold">Cuide da saúde:</span> agende consultas
+              veterinárias, vacinas e exames diretamente pela nossa plataforma,
+              com <span className="fw-bold">total confiança.</span>
             </p>
-            <Botao 
-              text="Saiba mais" 
-              bgColor="var(--secondary-color)" 
-              hoverColor="var(--elements-color)" 
+            <Botao
+              text="Saiba mais"
+              bgColor="var(--secondary-color)"
+              hoverColor="var(--elements-color)"
               className="mt-2"
               onClick={() => navigate("/Sobre")}
             />
           </div>
           <div className="col-12 col-lg-6 position-relative text-center mt-4 mt-lg-0">
-            <img 
-              src={bgPata} 
-              alt="Background" 
-              id="bg-pata" 
+            <img
+              src={bgPata}
+              alt="Background"
+              id="bg-pata"
               className="d-none d-md-block"
               style={{
                 maxWidth: "100%",
                 height: "auto",
               }}
             />
-            <img 
-              src={cachorro} 
-              alt="Cachorro" 
+            <img
+              src={cachorro}
+              alt="Cachorro"
               className="img-fluid intro-dog mt-2"
               style={{
                 maxWidth: "80%",
@@ -170,10 +184,12 @@ const Home = () => {
             src={banner}
             alt="Banner"
             className="img-fluid"
-            style={{ maxHeight: '350px'}}
+            style={{ maxHeight: "350px" }}
           />
           <div className="text-white mb-4 mb-lg-0 w-100 w-lg-50 d-flex flex-column gap-4">
-            <h3 className="fw-bold fs-1">Cuidado e amor conectados em um só lugar!</h3>
+            <h3 className="fw-bold fs-1">
+              Cuidado e amor conectados em um só lugar!
+            </h3>
             <p className="fs-5">
               Uma plataforma inovadora criada para reunir informações e serviços
               essenciais para o cuidado e bem-estar dos animais.
@@ -193,7 +209,7 @@ const Home = () => {
               hoverColor="var(--elements-color)" 
             /> */}
           </div>
-          <Carousel 
+          <Carousel
             indicators={true}
             controls={true}
             className="custom-carousel"
@@ -203,39 +219,39 @@ const Home = () => {
               <div className="d-flex flex-column flex-md-row justify-content-center gap-3">
                 <img
                   className="img-fluid mb-3 mb-md-0 mx-auto"
-                  style={{ 
-                    width: "100%", 
-                    maxWidth: "300px", 
-                    height: "auto", 
+                  style={{
+                    width: "100%",
+                    maxWidth: "300px",
+                    height: "auto",
                     aspectRatio: "1/1",
-                    borderRadius: "5px", 
-                    objectFit: "cover" 
+                    borderRadius: "5px",
+                    objectFit: "cover",
                   }}
                   src="src\assets\imgs\petadocao1.jpg"
                   alt="Anúncio de pet perdido 1"
                 />
                 <img
                   className="img-fluid mb-3 mb-md-0 mx-auto d-none d-sm-block"
-                  style={{ 
-                    width: "100%", 
-                    maxWidth: "300px", 
-                    height: "auto", 
+                  style={{
+                    width: "100%",
+                    maxWidth: "300px",
+                    height: "auto",
                     aspectRatio: "1/1",
-                    borderRadius: "5px", 
-                    objectFit: "cover" 
+                    borderRadius: "5px",
+                    objectFit: "cover",
                   }}
                   src="src\assets\imgs\petadocao2.jpg"
                   alt="Anúncio de pet perdido 2"
                 />
                 <img
                   className="img-fluid mb-3 mb-md-0 mx-auto d-none d-md-block"
-                  style={{ 
-                    width: "100%", 
-                    maxWidth: "300px", 
-                    height: "auto", 
+                  style={{
+                    width: "100%",
+                    maxWidth: "300px",
+                    height: "auto",
                     aspectRatio: "1/1",
-                    borderRadius: "5px", 
-                    objectFit: "cover" 
+                    borderRadius: "5px",
+                    objectFit: "cover",
                   }}
                   src="src\assets\imgs\petadocao3.avif"
                   alt="Anúncio de pet perdido 3"
@@ -252,41 +268,41 @@ const Home = () => {
               <div className="d-flex flex-column flex-md-row justify-content-center gap-3">
                 <img
                   className="img-fluid mb-3 mb-md-0 mx-auto"
-                  style={{ 
-                    width: "100%", 
-                    maxWidth: "300px", 
-                    height: "auto", 
+                  style={{
+                    width: "100%",
+                    maxWidth: "300px",
+                    height: "auto",
                     aspectRatio: "1/1",
-                    borderRadius: "5px", 
-                    objectFit: "cover" 
+                    borderRadius: "5px",
+                    objectFit: "cover",
                   }}
                   src="src\assets\imgs\vetparceiro.jpg"
                   alt="Veterinário 1"
                 />
                 <img
                   className="img-fluid mb-3 mb-md-0 mx-auto d-none d-sm-block"
-                  style={{ 
-                    width: "100%", 
-                    maxWidth: "300px", 
-                    height: "auto", 
+                  style={{
+                    width: "100%",
+                    maxWidth: "300px",
+                    height: "auto",
                     aspectRatio: "1/1",
-                    borderRadius: "5px", 
-                    objectFit: "cover" 
+                    borderRadius: "5px",
+                    objectFit: "cover",
                   }}
                   src="src\assets\imgs\vetparceiro2.jpg"
                   alt="Veterinário 2"
                 />
                 <img
                   className="img-fluid mb-3 mb-md-0 mx-auto d-none d-md-block"
-                  style={{ 
-                    width: "100%", 
-                    maxWidth: "300px", 
-                    height: "auto", 
+                  style={{
+                    width: "100%",
+                    maxWidth: "300px",
+                    height: "auto",
                     aspectRatio: "1/1",
-                    borderRadius: "5px", 
-                    objectFit: "cover" 
+                    borderRadius: "5px",
+                    objectFit: "cover",
                   }}
-                  src="src\assets\imgs\vetparceiro3.png"
+                  src={vetparceiro3}
                   alt="Veterinário 3"
                 />
               </div>
@@ -301,41 +317,41 @@ const Home = () => {
               <div className="d-flex flex-column flex-md-row justify-content-center gap-3">
                 <img
                   className="img-fluid mb-3 mb-md-0 mx-auto"
-                  style={{ 
-                    width: "100%", 
-                    maxWidth: "300px", 
-                    height: "auto", 
+                  style={{
+                    width: "100%",
+                    maxWidth: "300px",
+                    height: "auto",
                     aspectRatio: "1/1",
-                    borderRadius: "5px", 
-                    objectFit: "contain"
+                    borderRadius: "5px",
+                    objectFit: "contain",
                   }}
-                  src="src\assets\imgs\perdido1.png"
+                  src={perdido1}
                   alt="Anúncio de pet perdido 1"
                 />
                 <img
                   className="img-fluid mb-3 mb-md-0 mx-auto d-none d-sm-block"
-                  style={{ 
-                    width: "100%", 
-                    maxWidth: "300px", 
-                    height: "auto", 
+                  style={{
+                    width: "100%",
+                    maxWidth: "300px",
+                    height: "auto",
                     aspectRatio: "1/1",
-                    borderRadius: "5px", 
-                    objectFit: "contain" 
+                    borderRadius: "5px",
+                    objectFit: "contain",
                   }}
-                  src="src\assets\imgs\perdido2.png"
+                  src={perdido2}
                   alt="Anúncio de pet perdido 2"
                 />
                 <img
                   className="img-fluid mb-3 mb-md-0 mx-auto d-none d-md-block"
-                  style={{ 
-                    width: "100%", 
-                    maxWidth: "300px", 
-                    height: "auto", 
+                  style={{
+                    width: "100%",
+                    maxWidth: "300px",
+                    height: "auto",
                     aspectRatio: "1/1",
-                    borderRadius: "5px", 
-                    objectFit: "contain" 
+                    borderRadius: "5px",
+                    objectFit: "contain",
                   }}
-                  src="src\assets\imgs\perdido3.png"
+                  src={perdido3}
                   alt="Anúncio de pet perdido 3"
                 />
               </div>
@@ -386,13 +402,17 @@ const Home = () => {
               <div key={index} className="col-md-6 mb-4">
                 <div className="card h-100 shadow rounded-4">
                   <div className="card-body">
-                    <h5 className="card-title text-elements">{evento.titulo}</h5>
-                    <h6 className="card-subtitle mb-2 text-muted">{evento.data} - {evento.local}</h6>
+                    <h5 className="card-title text-elements">
+                      {evento.titulo}
+                    </h5>
+                    <h6 className="card-subtitle mb-2 text-muted">
+                      {evento.data} - {evento.local}
+                    </h6>
                     <p className="card-text">{evento.descricao}</p>
-                    <Botao 
-                      text="Saiba mais" 
-                      bgColor="var(--secondary-color)" 
-                      hoverColor="var(--elements-color)" 
+                    <Botao
+                      text="Saiba mais"
+                      bgColor="var(--secondary-color)"
+                      hoverColor="var(--elements-color)"
                       className="mt-2"
                       onClick={() => navigate(`/Agenda/`)}
                     />
@@ -407,13 +427,20 @@ const Home = () => {
       {/* Seção ProductHighlight */}
       <section className="py-5 bg-light text-center">
         <h3>Alimentador Inteligente</h3>
-        <p>Descubra como o nosso alimentador pode transformar a alimentação do seu pet.</p>
-        <img src="src\assets\imgs\alimentador.png" alt="Alimentador" width={"300px"}  />
+        <p>
+          Descubra como o nosso alimentador pode transformar a alimentação do
+          seu pet.
+        </p>
+        <img
+          src="src\assets\imgs\alimentador.png"
+          alt="Alimentador"
+          width={"300px"}
+        />
         <br />
-        <Botao 
-          text="Saiba mais" 
-          bgColor="var(--secondary-color)" 
-          hoverColor="var(--elements-color)" 
+        <Botao
+          text="Saiba mais"
+          bgColor="var(--secondary-color)"
+          hoverColor="var(--elements-color)"
           className="mt-3"
           onClick={() => navigate(`/Produto`)}
         />
@@ -444,7 +471,7 @@ const Home = () => {
         <h3>Junte-se à comunidade!</h3>
         <p>Cadastre-se como tutor ou veterinário e faça a diferença!</p>
         <div>
-          <Button 
+          <Button
             className="btn text-black me-3"
             style={{ backgroundColor: "white" }}
             onClick={() => navigate("/TelaLogin")}

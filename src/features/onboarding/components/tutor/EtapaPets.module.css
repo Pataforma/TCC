@@ -1,0 +1,342 @@
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.header h2 {
+    color: #2c3e50;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.header p {
+    color: #6c757d;
+    font-size: 1.1rem;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.petsList {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 1.5rem;
+    border-left: 4px solid #FABA32;
+}
+
+.petsList h3 {
+    color: #2c3e50;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.petsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.petCard {
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.petCard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.petInfo h4 {
+    color: #2c3e50;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+    font-size: 1.1rem;
+}
+
+.petInfo p {
+    color: #6c757d;
+    margin-bottom: 0.2rem;
+    font-size: 0.9rem;
+}
+
+.birthDate {
+    color: #FABA32 !important;
+    font-size: 0.8rem !important;
+    font-weight: 500;
+}
+
+.removePetBtn {
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.removePetBtn:hover {
+    background: #c82333;
+    transform: scale(1.1);
+}
+
+.addPetSection {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 2px solid #e9ecef;
+}
+
+.addPetSection h3 {
+    color: #2c3e50;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    font-size: 1.2rem;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+}
+
+.label {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.input {
+    padding: 0.8rem 1rem;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.input:focus {
+    outline: none;
+    border-color: #FABA32;
+    box-shadow: 0 0 0 3px rgba(250, 186, 50, 0.1);
+}
+
+.input.error {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+}
+
+.input:disabled {
+    background: #f8f9fa;
+    color: #6c757d;
+    cursor: not-allowed;
+}
+
+.errorText {
+    color: #dc3545;
+    font-size: 0.85rem;
+    margin-top: 0.3rem;
+}
+
+.row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.addPetActions {
+    display: flex;
+    justify-content: center;
+}
+
+.btnAddPet {
+    background: linear-gradient(135deg, #FABA32, #ffb300);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btnAddPet:hover:not(:disabled) {
+    background: linear-gradient(135deg, #ffb300, #ff8f00);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(250, 186, 50, 0.3);
+}
+
+.btnAddPet:disabled {
+    background: #e9ecef;
+    color: #6c757d;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.skipSection {
+    margin-top: 1rem;
+}
+
+.skipCard {
+    background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border-left: 4px solid #1976d2;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.skipCard i {
+    font-size: 2rem;
+    color: #1976d2;
+}
+
+.skipContent h4 {
+    color: #1976d2;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.skipContent p {
+    color: #424242;
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2rem;
+    gap: 1rem;
+}
+
+.btnSkip {
+    background: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btnSkip:hover {
+    background: #5a6268;
+    transform: translateY(-1px);
+}
+
+.btnNext {
+    background: linear-gradient(135deg, #FABA32, #ffb300);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.8rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btnNext:hover:not(:disabled) {
+    background: linear-gradient(135deg, #ffb300, #ff8f00);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(250, 186, 50, 0.3);
+}
+
+.btnNext:disabled {
+    background: #e9ecef;
+    color: #6c757d;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 0 1rem;
+    }
+
+    .header h2 {
+        font-size: 1.5rem;
+    }
+
+    .header p {
+        font-size: 1rem;
+    }
+
+    .row {
+        grid-template-columns: 1fr;
+    }
+
+    .petsGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .actions {
+        flex-direction: column;
+    }
+
+    .btnSkip,
+    .btnNext {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .skipCard {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .petCard {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+
+    .removePetBtn {
+        align-self: center;
+    }
+}

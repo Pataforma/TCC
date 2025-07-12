@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
-import Botao from "../components/Botao";
+import Header from "../components/ui/Header";
+import Footer from "../components/ui/Footer";
+import Botao from "../components/ui/Botao";
 import logo from "../assets/imgs/logo.png";
 import vetmariana from "../assets/imgs/vetmariana.jpeg";
 import vetandre from "../assets/imgs/vetandre.jpeg";

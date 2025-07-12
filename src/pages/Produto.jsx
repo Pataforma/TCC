@@ -1,11 +1,23 @@
 import React, { useState } from "react";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
-import Botao from "../components/Botao";
+import Header from "../components/ui/Header";
+import Footer from "../components/ui/Footer";
+import Botao from "../components/ui/Botao";
 import logo from "../assets/imgs/logo.png";
 import alimentador from "../assets/imgs/alimentador.png";
 import Icon from "@mdi/react";
-import { mdiBadgeAccount, mdiBatteryHigh, mdiCellphoneCheck, mdiCellphoneCog, mdiCellphoneNfc, mdiFoodForkDrink, mdiLightningBolt, mdiScale, mdiScaleBalance, mdiScaleOff, mdiScaleUnbalanced } from "@mdi/js";
+import {
+  mdiBadgeAccount,
+  mdiBatteryHigh,
+  mdiCellphoneCheck,
+  mdiCellphoneCog,
+  mdiCellphoneNfc,
+  mdiFoodForkDrink,
+  mdiLightningBolt,
+  mdiScale,
+  mdiScaleBalance,
+  mdiScaleOff,
+  mdiScaleUnbalanced,
+} from "@mdi/js";
 
 const Produto = () => {
   const [faqOpen, setFaqOpen] = useState({});
@@ -141,9 +153,9 @@ const Produto = () => {
               enquanto oferece praticidade aos tutores.
             </p>
             <p>
-              Com design moderno e intuitivo, o PataChef se encaixa perfeitamente
-              na decoração da sua casa, enquanto proporciona uma experiência de
-              alimentação ideal para seu pet.
+              Com design moderno e intuitivo, o PataChef se encaixa
+              perfeitamente na decoração da sua casa, enquanto proporciona uma
+              experiência de alimentação ideal para seu pet.
             </p>
           </div>
           <div className="col-md-6 order-md-1 text-center mb-4 mb-md-0">
@@ -242,11 +254,11 @@ const Produto = () => {
               <div className="card-body">
                 <div className="d-flex align-items-center mb-3">
                   <div
-                      className="bg-main rounded-circle d-flex align-items-center justify-content-center"
-                      style={{ width: "50px", height: "50px" }}
-                    >
-                      <Icon path={mdiCellphoneCog} size={1.2} color="white" />
-                    </div>
+                    className="bg-main rounded-circle d-flex align-items-center justify-content-center"
+                    style={{ width: "50px", height: "50px" }}
+                  >
+                    <Icon path={mdiCellphoneCog} size={1.2} color="white" />
+                  </div>
                   <h4 className="ms-3 mb-0 text-elements">
                     Controle via Chatbot
                   </h4>
@@ -265,11 +277,11 @@ const Produto = () => {
               <div className="card-body">
                 <div className="d-flex align-items-center mb-3">
                   <div
-                      className="bg-main rounded-circle d-flex align-items-center justify-content-center"
-                      style={{ width: "50px", height: "50px" }}
-                    >
-                      <Icon path={mdiScaleBalance} size={1.2} color="white" />
-                    </div>
+                    className="bg-main rounded-circle d-flex align-items-center justify-content-center"
+                    style={{ width: "50px", height: "50px" }}
+                  >
+                    <Icon path={mdiScaleBalance} size={1.2} color="white" />
+                  </div>
                   <h4 className="ms-3 mb-0 text-elements">Medição por Peso</h4>
                 </div>
                 <p className="card-text">
@@ -287,11 +299,11 @@ const Produto = () => {
               <div className="card-body">
                 <div className="d-flex align-items-center mb-3">
                   <div
-                      className="bg-main rounded-circle d-flex align-items-center justify-content-center"
-                      style={{ width: "50px", height: "50px" }}
-                    >
-                      <Icon path={mdiCellphoneCheck} size={1.2} color="white" />
-                    </div>
+                    className="bg-main rounded-circle d-flex align-items-center justify-content-center"
+                    style={{ width: "50px", height: "50px" }}
+                  >
+                    <Icon path={mdiCellphoneCheck} size={1.2} color="white" />
+                  </div>
                   <h4 className="ms-3 mb-0 text-elements">Registro via NFC</h4>
                 </div>
                 <p className="card-text">
@@ -308,11 +320,11 @@ const Produto = () => {
               <div className="card-body">
                 <div className="d-flex align-items-center mb-3">
                   <div
-                      className="bg-main rounded-circle d-flex align-items-center justify-content-center"
-                      style={{ width: "50px", height: "50px" }}
-                    >
-                      <Icon path={mdiBadgeAccount} size={1.2} color="white" />
-                    </div>
+                    className="bg-main rounded-circle d-flex align-items-center justify-content-center"
+                    style={{ width: "50px", height: "50px" }}
+                  >
+                    <Icon path={mdiBadgeAccount} size={1.2} color="white" />
+                  </div>
                   <h4 className="ms-3 mb-0 text-elements">
                     Integração com Perfil
                   </h4>
@@ -332,7 +344,9 @@ const Produto = () => {
       {/* Demonstração */}
       <section className="container-fluid py-5 bg-light">
         <div className="container text-center">
-          <h2 className="text-elements fw-bold mb-3">Veja o PataChef em Ação</h2>
+          <h2 className="text-elements fw-bold mb-3">
+            Veja o PataChef em Ação
+          </h2>
           <p className="mb-5">
             Em breve disponibilizaremos vídeos demonstrativos do produto
           </p>
