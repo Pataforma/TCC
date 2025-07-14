@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import DashboardLayout from "../../layouts/DashboardLayout";
-import nina from "../../assets/imgs/nina.jpeg";
-import simba from "../../assets/imgs/simba.jpg";
-import rex from "../../assets/imgs/rex.jpg";
+import DashboardLayout from "../../../layouts/DashboardLayout";
+import nina from "../../../assets/imgs/nina.jpeg";
+import simba from "../../../assets/imgs/simba.jpg";
+import rex from "../../../assets/imgs/rex.jpg";
 
 const petsAdocao = [
   {

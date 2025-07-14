@@ -16,10 +16,10 @@ import {
   FaClipboardList,
 } from "react-icons/fa";
 import DashboardLayout from "../../../layouts/DashboardLayout";
-import StatCard from "../../components/Dashboard/StatCard";
-import AnimalCard from "../../components/parceiro/AnimalCard";
-import EventoCard from "../../components/parceiro/EventoCard";
-import CandidaturaCard from "../../components/parceiro/CandidaturaCard";
+import StatCard from "../../../components/Dashboard/StatCard";
+import AnimalCard from "../../../components/parceiro/AnimalCard";
+import EventoCard from "../../../components/parceiro/EventoCard";
+import CandidaturaCard from "../../../components/parceiro/CandidaturaCard";
 
 const DashboardParceiro = () => {
   const navigate = useNavigate();

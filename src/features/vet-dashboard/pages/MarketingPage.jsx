@@ -53,7 +53,7 @@ import {
   FaBell,
   FaLock,
 } from "react-icons/fa";
-import DashboardLayout from "../../layouts/DashboardLayout";
+import DashboardLayout from "../../../layouts/DashboardLayout";
 
 const MarketingPage = () => {
   const [activeTab, setActiveTab] = useState("perfil");

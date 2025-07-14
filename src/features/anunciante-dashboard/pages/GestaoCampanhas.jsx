@@ -14,8 +14,8 @@ import {
   FaDollarSign,
   FaMousePointer,
 } from "react-icons/fa";
-import DashboardLayout from "../../layouts/DashboardLayout";
-import CriarCampanhaModal from "../../components/anunciante/CriarCampanhaModal";
+import DashboardLayout from "../../../layouts/DashboardLayout";
+import CriarCampanhaModal from "../../../components/anunciante/CriarCampanhaModal";
 
 const GestaoCampanhas = () => {
   const navigate = useNavigate();

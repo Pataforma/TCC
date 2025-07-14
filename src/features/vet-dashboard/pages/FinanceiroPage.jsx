@@ -11,7 +11,7 @@ import {
   FaChartBar,
   FaPlus,
 } from "react-icons/fa";
-import DashboardLayout from "../../layouts/DashboardLayout";
+import DashboardLayout from "../../../layouts/DashboardLayout";
 
 const FinanceiroPage = () => {
   return (

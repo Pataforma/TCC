@@ -15,11 +15,11 @@ import {
   FaPause,
   FaPlay,
 } from "react-icons/fa";
-import DashboardLayout from "../../layouts/DashboardLayout";
-import StatCard from "../../components/Dashboard/StatCard";
-import SimpleChart from "../../components/Dashboard/SimpleChart";
-import CampanhaCard from "../../components/anunciante/CampanhaCard";
-import CriarCampanhaModal from "../../components/anunciante/CriarCampanhaModal";
+import DashboardLayout from "../../../layouts/DashboardLayout";
+import StatCard from "../../../components/Dashboard/StatCard";
+import SimpleChart from "../../../components/Dashboard/SimpleChart";
+import CampanhaCard from "../../../components/anunciante/CampanhaCard";
+import CriarCampanhaModal from "../../../components/anunciante/CriarCampanhaModal";
 
 const DashboardAnunciante = () => {
   const navigate = useNavigate();

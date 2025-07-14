@@ -40,8 +40,8 @@ import {
   FaClock,
   FaCut,
 } from "react-icons/fa";
-import DashboardLayout from "../../layouts/DashboardLayout";
-import SimpleChart from "../../components/Dashboard/SimpleChart";
+import DashboardLayout from "../../../layouts/DashboardLayout";
+import SimpleChart from "../../../components/Dashboard/SimpleChart";
 
 const DashboardTutorFinanceiro = () => {
   const [nomeUsuario, setNomeUsuario] = useState("");

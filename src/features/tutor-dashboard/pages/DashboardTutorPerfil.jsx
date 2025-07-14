@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import Footer from "../../components/ui/Footer";
-import { supabase } from "../../utils/supabase";
+import Footer from "../../../components/ui/Footer";
+import { supabase } from "../../../utils/supabase";
 import { useNavigate } from "react-router-dom";
 import { FaUser } from "react-icons/fa";
-import DashboardLayout from "../../layouts/DashboardLayout";
-import StatCard from "../../components/Dashboard/StatCard";
-import SimpleChart from "../../components/Dashboard/SimpleChart";
+import DashboardLayout from "../../../layouts/DashboardLayout";
+import StatCard from "../../../components/Dashboard/StatCard";
+import SimpleChart from "../../../components/Dashboard/SimpleChart";
 
 const DashboardTutorPerfil = () => {
   const [nome, setNome] = useState("");

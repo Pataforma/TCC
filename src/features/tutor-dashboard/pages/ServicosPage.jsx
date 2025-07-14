@@ -33,7 +33,7 @@ import {
   FaShieldAlt,
   FaMoneyBill,
 } from "react-icons/fa";
-import DashboardLayout from "../../layouts/DashboardLayout";
+import DashboardLayout from "../../../layouts/DashboardLayout";
 
 const ServicosPage = () => {
   const [nomeUsuario, setNomeUsuario] = useState("");

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import DashboardLayout from "../../layouts/DashboardLayout";
-import { supabase } from "../../utils/supabase";
+import DashboardLayout from "../../../layouts/DashboardLayout";
+import { supabase } from "../../../utils/supabase";
 import {
   FaUserMd,
   FaEnvelope,

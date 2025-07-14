@@ -24,16 +24,16 @@ import {
   FaNewspaper,
   FaHandHoldingHeart,
 } from "react-icons/fa";
-import DashboardLayout from "../../layouts/DashboardLayout";
-import StatCard from "../../components/Dashboard/StatCard";
-import SimpleChart from "../../components/Dashboard/SimpleChart";
-import PetCard from "../../components/PetCard";
-import { useUser } from "../../contexts/UserContext";
+import DashboardLayout from "../../../layouts/DashboardLayout";
+import StatCard from "../../../components/Dashboard/StatCard";
+import SimpleChart from "../../../components/Dashboard/SimpleChart";
+import PetCard from "../../../features/pets/components/PetCard";
+import { useUser } from "../../../contexts/UserContext";
 import {
   useErrorHandler,
   showSuccessNotification,
   showErrorNotification,
-} from "../../utils/errorHandler.jsx";
+} from "../../../utils/errorHandler.jsx";
 
 const DashboardTutor = () => {
   const navigate = useNavigate();

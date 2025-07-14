@@ -13,9 +13,9 @@ import {
   FaClock,
   FaImage,
 } from "react-icons/fa";
-import DashboardLayout from "../../layouts/DashboardLayout";
-import AnimalCard from "../../components/parceiro/AnimalCard";
-import AnimalModal from "../../components/parceiro/AnimalModal";
+import DashboardLayout from "../../../layouts/DashboardLayout";
+import AnimalCard from "../../../components/parceiro/AnimalCard";
+import AnimalModal from "../../../components/parceiro/AnimalModal";
 
 const GestaoAnimais = () => {
   const navigate = useNavigate();

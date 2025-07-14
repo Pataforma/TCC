@@ -31,7 +31,7 @@ import {
   FaBell,
   FaFileMedical,
 } from "react-icons/fa";
-import DashboardLayout from "../../layouts/DashboardLayout";
+import DashboardLayout from "../../../layouts/DashboardLayout";
 
 const VacinasPage = () => {
   const [nomeUsuario, setNomeUsuario] = useState("");

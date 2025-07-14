@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Row, Col, Card, Badge, Button } from "react-bootstrap";
 import DashboardLayout from "../../../layouts/DashboardLayout";
-import StatCard from "../../components/Dashboard/StatCard";
-import SimpleChart from "../../components/Dashboard/SimpleChart";
-import UpgradeToProBanner from "../../components/UpgradeToProBanner";
+import StatCard from "../../../components/Dashboard/StatCard";
+import SimpleChart from "../../../components/Dashboard/SimpleChart";
+import UpgradeToProBanner from "../../plans/components/UpgradeToProBanner";
 import {
   FaCalendarAlt,
   FaUsers,

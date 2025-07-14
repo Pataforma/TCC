@@ -12,9 +12,9 @@ import {
   Tab,
   InputGroup,
 } from "react-bootstrap";
-import DashboardLayout from "../../layouts/DashboardLayout";
-import StatCard from "../../components/Dashboard/StatCard";
-import SimpleChart from "../../components/Dashboard/SimpleChart";
+import DashboardLayout from "../../../layouts/DashboardLayout";
+import StatCard from "../../../components/Dashboard/StatCard";
+import SimpleChart from "../../../components/Dashboard/SimpleChart";
 import {
   FaMoneyBill,
   FaChartBar,

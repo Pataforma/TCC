@@ -14,7 +14,7 @@ import {
   ListGroup,
   Image,
 } from "react-bootstrap";
-import DashboardLayout from "../../layouts/DashboardLayout";
+import DashboardLayout from "../../../layouts/DashboardLayout";
 import {
   FaPaw,
   FaUser,

@@ -11,7 +11,7 @@ import {
   Nav,
   Tab,
 } from "react-bootstrap";
-import DashboardLayout from "../../layouts/DashboardLayout";
+import DashboardLayout from "../../../layouts/DashboardLayout";
 import {
   FaCalendarAlt,
   FaClock,

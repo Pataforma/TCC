@@ -35,7 +35,7 @@ import {
   FaWarehouse,
   FaChartBar,
 } from "react-icons/fa";
-import DashboardLayout from "../../layouts/DashboardLayout";
+import DashboardLayout from "../../../layouts/DashboardLayout";
 
 const EstoquePage = () => {
   const [showAddModal, setShowAddModal] = useState(false);

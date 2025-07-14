@@ -13,7 +13,7 @@ import {
   InputGroup,
   Dropdown,
 } from "react-bootstrap";
-import DashboardLayout from "../../layouts/DashboardLayout";
+import DashboardLayout from "../../../layouts/DashboardLayout";
 import {
   FaSearch,
   FaFilter,

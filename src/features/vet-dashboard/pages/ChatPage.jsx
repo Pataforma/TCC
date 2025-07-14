@@ -34,7 +34,7 @@ import {
   FaSmile,
   FaMicrophone,
 } from "react-icons/fa";
-import DashboardLayout from "../../layouts/DashboardLayout";
+import DashboardLayout from "../../../layouts/DashboardLayout";
 
 const ChatPage = () => {
   const [selectedConversation, setSelectedConversation] = useState(null);

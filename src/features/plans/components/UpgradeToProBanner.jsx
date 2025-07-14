@@ -1,6 +1,6 @@
 import React from "react";
-import { useSubscription } from "../contexts/SubscriptionContext";
-import styles from "./UpgradeToProBanner.module.css";
+import { useSubscription } from "../../../contexts/SubscriptionContext";
+import styles from "../../../components/UpgradeToProBanner.module.css";
 
 export default function UpgradeToProBanner() {
   const { plan, upgradeToAdvanced } = useSubscription();
