@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styles from "./EtapaIdentificacao.module.css";
 
-export default function EtapaIdentificacao({ data, onUpdate, onNext }) {
+export default function EtapaIdentificacao({ data, onUpdate, onNext, onBack }) {
   const [formData, setFormData] = useState({
     nomeONG: data?.nomeONG || "",
     cnpj: data?.cnpj || "",

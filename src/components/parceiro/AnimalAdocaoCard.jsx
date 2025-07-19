@@ -9,7 +9,7 @@ import {
   FaClock,
 } from "react-icons/fa";
 
-const AnimalCard = ({ animal, onEdit, onView }) => {
+const AnimalAdocaoCard = ({ animal, onEdit, onView }) => {
   const getStatusColor = (status) => {
     switch (status) {
       case "disponivel":
@@ -109,4 +109,4 @@ const AnimalCard = ({ animal, onEdit, onView }) => {
   );
 };
 
-export default AnimalCard;
+export default AnimalAdocaoCard;

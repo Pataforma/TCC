@@ -17,11 +17,11 @@ import {
 } from "react-icons/fa";
 import DashboardLayout from "../../../layouts/DashboardLayout";
 import StatCard from "../../../components/Dashboard/StatCard";
-import AnimalCard from "../../../components/parceiro/AnimalCard";
-import EventoCard from "../../../components/parceiro/EventoCard";
+import AnimalAdocaoCard from "../../../components/parceiro/AnimalAdocaoCard";
+import EventoCausaCard from "../../../components/parceiro/EventoCausaCard";
 import CandidaturaCard from "../../../components/parceiro/CandidaturaCard";
 
-const DashboardParceiro = () => {
+const DashboardParceiroCausa = () => {
   const navigate = useNavigate();
 
   // Dados mockados para KPIs
@@ -276,7 +276,7 @@ const DashboardParceiro = () => {
                 <div className="row">
                   {animais.slice(0, 4).map((animal) => (
                     <div key={animal.id} className="col-md-3 mb-3">
-                      <AnimalCard
+                      <AnimalAdocaoCard
                         animal={animal}
                         onEdit={() =>
                           navigate(`/parceiro/animais/${animal.id}/editar`)
@@ -316,7 +316,7 @@ const DashboardParceiro = () => {
                     .slice(0, 2)
                     .map((evento) => (
                       <div key={evento.id} className="col-md-6 mb-3">
-                        <EventoCard
+                        <EventoCausaCard
                           evento={evento}
                           onEdit={() =>
                             navigate(`/parceiro/eventos/${evento.id}/editar`)
@@ -511,4 +511,4 @@ const DashboardParceiro = () => {
   );
 };
 
-export default DashboardParceiro;
+export default DashboardParceiroCausa;

@@ -85,7 +85,7 @@ export default function OnboardingWizard({
                   index + 1
                 )}
               </div>
-              <span className={styles.stepLabel}>{step.label}</span>
+              <span className={styles.stepLabel}>{step.title}</span>
             </div>
           ))}
         </div>
@@ -96,6 +96,7 @@ export default function OnboardingWizard({
             data={formData}
             onUpdate={updateFormData}
             onNext={nextStep}
+            onBack={prevStep}
             onComplete={handleComplete}
             isSubmitting={isSubmitting}
           />

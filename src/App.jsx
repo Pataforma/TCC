@@ -122,13 +122,41 @@ const DashboardAnunciante = lazy(() =>
 const GestaoCampanhas = lazy(() =>
   import("./features/anunciante-dashboard/pages/GestaoCampanhas")
 );
+const CriacaoAnuncio = lazy(() =>
+  import("./features/anunciante-dashboard/pages/CriacaoAnuncio")
+);
+const CriacaoAnuncioDemo = lazy(() =>
+  import("./features/anunciante-dashboard/pages/CriacaoAnuncioDemo")
+);
+const OrcamentoDuracao = lazy(() =>
+  import("./features/anunciante-dashboard/pages/OrcamentoDuracao")
+);
+const OrcamentoDuracaoDemo = lazy(() =>
+  import("./features/anunciante-dashboard/pages/OrcamentoDuracaoDemo")
+);
 
 // 7. Feature: Dashboard do Parceiro (ONG)
-const DashboardParceiro = lazy(() =>
-  import("./features/parceiro-dashboard/pages/DashboardParceiro")
+const DashboardParceiroCausa = lazy(() =>
+  import("./features/parceiro-dashboard/pages/DashboardParceiroCausa")
 );
-const GestaoAnimais = lazy(() =>
-  import("./features/parceiro-dashboard/pages/GestaoAnimais")
+const GestaoAnimaisCausa = lazy(() =>
+  import("./features/parceiro-dashboard/pages/GestaoAnimaisCausa")
+);
+
+// 8. Feature: Dashboard do Parceiro de Serviço
+const DashboardParceiroServico = lazy(() =>
+  import("./features/parceiro-dashboard/pages/DashboardParceiroServico")
+);
+const GestaoServicos = lazy(() =>
+  import("./features/parceiro-dashboard/pages/GestaoServicos")
+);
+const GestaoAvaliacoes = lazy(() =>
+  import("./features/parceiro-dashboard/pages/GestaoAvaliacoes")
+);
+
+// 9. Roteador de Dashboards do Parceiro
+const DashboardParceiroRouter = lazy(() =>
+  import("./features/parceiro-dashboard/pages/DashboardParceiroRouter")
 );
 
 // 8. Outras Features Públicas
@@ -371,6 +399,14 @@ function App() {
                 }
               />
               <Route
+                path="/dashboard-anunciante"
+                element={
+                  <AnuncianteRoute>
+                    <DashboardAnunciante />
+                  </AnuncianteRoute>
+                }
+              />
+              <Route
                 path="/anunciante/campanhas"
                 element={
                   <AnuncianteRoute>
@@ -378,13 +414,37 @@ function App() {
                   </AnuncianteRoute>
                 }
               />
+              <Route
+                path="/dashboard/anunciante/novo-evento"
+                element={
+                  <AnuncianteRoute>
+                    <CriacaoAnuncio />
+                  </AnuncianteRoute>
+                }
+              />
+              <Route
+                path="/demo/criacao-anuncio"
+                element={<CriacaoAnuncioDemo />}
+              />
+              <Route
+                path="/dashboard/anunciante/orcamento-duracao"
+                element={
+                  <AnuncianteRoute>
+                    <OrcamentoDuracao />
+                  </AnuncianteRoute>
+                }
+              />
+              <Route
+                path="/demo/orcamento-duracao"
+                element={<OrcamentoDuracaoDemo />}
+              />
 
               {/* --- ROTAS PROTEGIDAS - PARCEIRO --- */}
               <Route
                 path="/dashboard/parceiro"
                 element={
                   <ParceiroRoute>
-                    <DashboardParceiro />
+                    <DashboardParceiroRouter />
                   </ParceiroRoute>
                 }
               />
@@ -392,7 +452,23 @@ function App() {
                 path="/parceiro/animais"
                 element={
                   <ParceiroRoute>
-                    <GestaoAnimais />
+                    <GestaoAnimaisCausa />
+                  </ParceiroRoute>
+                }
+              />
+              <Route
+                path="/parceiro/servicos"
+                element={
+                  <ParceiroRoute>
+                    <GestaoServicos />
+                  </ParceiroRoute>
+                }
+              />
+              <Route
+                path="/parceiro/avaliacoes"
+                element={
+                  <ParceiroRoute>
+                    <GestaoAvaliacoes />
                   </ParceiroRoute>
                 }
               />

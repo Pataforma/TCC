@@ -10,7 +10,7 @@ import {
   FaExclamationTriangle,
 } from "react-icons/fa";
 
-const EventoCard = ({ evento, onEdit, onView }) => {
+const EventoCausaCard = ({ evento, onEdit, onView }) => {
   const getStatusColor = (status) => {
     switch (status) {
       case "agendado":
@@ -147,4 +147,4 @@ const EventoCard = ({ evento, onEdit, onView }) => {
   );
 };
 
-export default EventoCard;
+export default EventoCausaCard;

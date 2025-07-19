@@ -14,10 +14,10 @@ import {
   FaImage,
 } from "react-icons/fa";
 import DashboardLayout from "../../../layouts/DashboardLayout";
-import AnimalCard from "../../../components/parceiro/AnimalCard";
+import AnimalAdocaoCard from "../../../components/parceiro/AnimalAdocaoCard";
 import AnimalModal from "../../../components/parceiro/AnimalModal";
 
-const GestaoAnimais = () => {
+const GestaoAnimaisCausa = () => {
   const navigate = useNavigate();
   const [showAnimalModal, setShowAnimalModal] = useState(false);
   const [editingAnimal, setEditingAnimal] = useState(null);
@@ -340,7 +340,7 @@ const GestaoAnimais = () => {
               <div className="row">
                 {filteredAnimais.map((animal) => (
                   <div key={animal.id} className="col-md-3 mb-4">
-                    <AnimalCard
+                    <AnimalAdocaoCard
                       animal={animal}
                       onEdit={() => handleEditarAnimal(animal)}
                       onView={() => handleVerDetalhes(animal.id)}
@@ -367,4 +367,4 @@ const GestaoAnimais = () => {
   );
 };
 
-export default GestaoAnimais;
+export default GestaoAnimaisCausa;

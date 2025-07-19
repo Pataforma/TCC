@@ -1,8 +1,8 @@
 import React from "react";
 import OnboardingWizard from "../../components/OnboardingWizard";
-import EtapaInformacoesEmpresa from "../../components/onboarding/anunciante/EtapaInformacoesEmpresa";
-import EtapaServicosLocalizacao from "../../components/onboarding/anunciante/EtapaServicosLocalizacao";
-import EtapaContato from "../../components/onboarding/anunciante/EtapaContato";
+import EtapaInformacoesEmpresa from "./components/anunciante/EtapaInformacoesEmpresa";
+import EtapaServicosLocalizacao from "./components/anunciante/EtapaServicosLocalizacao";
+import EtapaContato from "./components/anunciante/EtapaContato";
 import styles from "./OnboardingAnunciante.module.css";
 
 const OnboardingAnunciante = () => {

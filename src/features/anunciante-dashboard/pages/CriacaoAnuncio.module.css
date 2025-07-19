@@ -1,0 +1,463 @@
+/* Estilos para a página de criação de anúncio */
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.header {
+    margin-bottom: 2rem;
+}
+
+.header h2 {
+    color: #333;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.header p {
+    color: #666;
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+.progressInfo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.progressInfo .badge {
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+}
+
+.progressInfo .progress {
+    width: 120px;
+    height: 8px;
+    border-radius: 4px;
+}
+
+/* Formulário */
+.formCard {
+    height: 100%;
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+}
+
+.formCard .cardHeader {
+    background: white;
+    border: none;
+    padding: 1.5rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.formCard .cardHeader h5 {
+    color: #333;
+    font-weight: 600;
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.formCard .cardBody {
+    padding: 2rem;
+}
+
+.formLabel {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.charCount {
+    color: #6c757d;
+    font-size: 0.875rem;
+    font-weight: normal;
+}
+
+.formControl {
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 0.75rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.formControl:focus {
+    outline: none;
+    border-color: #0DB2AC;
+    box-shadow: 0 0 0 3px rgba(13, 178, 172, 0.1);
+}
+
+.formControl.isInvalid {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+}
+
+.textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+/* Upload de arquivo */
+.uploadArea {
+    border: 2px dashed #dee2e6;
+    border-radius: 8px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    background: #f8f9fa;
+}
+
+.uploadArea:hover {
+    border-color: #0DB2AC;
+    background: rgba(13, 178, 172, 0.05);
+}
+
+.uploadArea input[type="file"] {
+    display: none;
+}
+
+.uploadIcon {
+    color: #6c757d;
+    margin-bottom: 1rem;
+}
+
+.uploadText {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.uploadSubtext {
+    color: #6c757d;
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+.mediaPreview {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.mediaPreview img,
+.mediaPreview video {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.removeButton {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+}
+
+.mediaPlaceholder {
+    height: 200px;
+    background: #f8f9fa;
+    border: 2px dashed #dee2e6;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+}
+
+.mediaPlaceholder .icon {
+    margin-bottom: 0.5rem;
+}
+
+.mediaPlaceholder p {
+    margin: 0;
+    font-size: 0.875rem;
+}
+
+/* Pré-visualização */
+.previewCard {
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    padding: 1.5rem;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.previewTitle {
+    color: #333;
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 0.75rem;
+}
+
+.previewText {
+    color: #666;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+}
+
+.previewButton {
+    width: 100%;
+    padding: 0.75rem 1.5rem;
+    background: #0DB2AC;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.previewButton:hover {
+    background: #089691;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(13, 178, 172, 0.3);
+}
+
+.previewInfo {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e9ecef;
+}
+
+.previewInfo h6 {
+    color: #333;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.infoRow {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+}
+
+.infoLabel {
+    color: #6c757d;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.infoValue {
+    color: #333;
+    font-weight: 500;
+    text-align: right;
+    max-width: 60%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Botões de navegação */
+.navigationButtons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 2rem;
+    border-top: 1px solid #e9ecef;
+    margin-top: 2rem;
+}
+
+.navButton {
+    padding: 0.75rem 2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.navButton.primary {
+    background: #0DB2AC;
+    color: white;
+    border: none;
+}
+
+.navButton.primary:hover {
+    background: #089691;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(13, 178, 172, 0.3);
+}
+
+.navButton.secondary {
+    background: #6c757d;
+    color: white;
+    border: none;
+}
+
+.navButton.secondary:hover {
+    background: #5a6268;
+    transform: translateY(-1px);
+}
+
+.navButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Responsividade */
+@media (max-width: 1200px) {
+    .container {
+        padding: 1.5rem;
+    }
+
+    .formCard .cardBody {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .header h2 {
+        font-size: 1.5rem;
+    }
+
+    .header p {
+        font-size: 1rem;
+    }
+
+    .progressInfo {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .formCard .cardBody {
+        padding: 1rem;
+    }
+
+    .previewCard {
+        padding: 1rem;
+    }
+
+    .navigationButtons {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .navButton {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .header {
+        text-align: center;
+    }
+
+    .uploadArea {
+        padding: 1.5rem;
+    }
+
+    .previewTitle {
+        font-size: 1.1rem;
+    }
+
+    .previewText {
+        font-size: 0.9rem;
+    }
+}
+
+/* Animações */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.previewCard {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Estados de loading */
+.uploading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.progressBar {
+    height: 6px;
+    border-radius: 3px;
+    background: #e9ecef;
+    overflow: hidden;
+}
+
+.progressBarFill {
+    height: 100%;
+    background: #0DB2AC;
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+/* Validação visual */
+.invalidField {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1) !important;
+}
+
+.validField {
+    border-color: #28a745 !important;
+    box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1) !important;
+}
+
+/* Tooltips e feedback */
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip .tooltipText {
+    visibility: hidden;
+    width: 200px;
+    background-color: #333;
+    color: white;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -100px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 0.875rem;
+}
+
+.tooltip:hover .tooltipText {
+    visibility: visible;
+    opacity: 1;
+}

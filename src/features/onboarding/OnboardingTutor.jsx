@@ -1,7 +1,7 @@
 import React from "react";
 import OnboardingWizard from "../../components/OnboardingWizard";
-import EtapaInformacoesBasicas from "../../components/onboarding/tutor/EtapaInformacoesBasicas";
-import EtapaPets from "../../components/onboarding/tutor/EtapaPets";
+import EtapaInformacoesBasicas from "./components/tutor/EtapaInformacoesBasicas";
+import EtapaPets from "./components/tutor/EtapaPets";
 import styles from "./OnboardingTutor.module.css";
 
 const OnboardingTutor = () => {
