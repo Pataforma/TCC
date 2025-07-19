@@ -119,6 +119,12 @@ const ChatPage = lazy(() => import("./features/vet-dashboard/pages/ChatPage"));
 const DashboardAnunciante = lazy(() =>
   import("./features/anunciante-dashboard/pages/DashboardAnunciante")
 );
+const FinanceiroAnunciante = lazy(() =>
+  import("./features/anunciante-dashboard/pages/FinanceiroAnunciante")
+);
+const MeusEventos = lazy(() =>
+  import("./features/anunciante-dashboard/pages/MeusEventos")
+);
 const GestaoCampanhas = lazy(() =>
   import("./features/anunciante-dashboard/pages/GestaoCampanhas")
 );
@@ -399,18 +405,18 @@ function App() {
                 }
               />
               <Route
-                path="/dashboard-anunciante"
+                path="/dashboard/anunciante/financeiro"
                 element={
                   <AnuncianteRoute>
-                    <DashboardAnunciante />
+                    <FinanceiroAnunciante />
                   </AnuncianteRoute>
                 }
               />
               <Route
-                path="/anunciante/campanhas"
+                path="/dashboard/anunciante/meus-eventos"
                 element={
                   <AnuncianteRoute>
-                    <GestaoCampanhas />
+                    <MeusEventos />
                   </AnuncianteRoute>
                 }
               />
@@ -419,6 +425,14 @@ function App() {
                 element={
                   <AnuncianteRoute>
                     <CriacaoAnuncio />
+                  </AnuncianteRoute>
+                }
+              />
+              <Route
+                path="/anunciante/campanhas"
+                element={
+                  <AnuncianteRoute>
+                    <GestaoCampanhas />
                   </AnuncianteRoute>
                 }
               />
@@ -441,7 +455,7 @@ function App() {
 
               {/* --- ROTAS PROTEGIDAS - PARCEIRO --- */}
               <Route
-                path="/dashboard/parceiro"
+                path="/dashboard/parceiro/*"
                 element={
                   <ParceiroRoute>
                     <DashboardParceiroRouter />
@@ -478,11 +492,30 @@ function App() {
                 path="*"
                 element={
                   <div className="container text-center py-5">
-                    <h1>404 - Página não encontrada</h1>
-                    <p>A página que você está procurando não existe.</p>
-                    <a href="/" className="btn btn-primary">
-                      Voltar ao Início
-                    </a>
+                    <div className="alert alert-info" role="alert">
+                      <h4 className="alert-heading">
+                        <i className="fas fa-search me-2"></i>
+                        404 - Página não encontrada
+                      </h4>
+                      <p className="mb-3">
+                        A página que você está procurando não existe ou foi
+                        movida.
+                      </p>
+                      <hr />
+                      <div className="d-flex justify-content-center gap-2">
+                        <a href="/" className="btn btn-primary">
+                          <i className="fas fa-home me-2"></i>
+                          Voltar ao Início
+                        </a>
+                        <button
+                          className="btn btn-outline-secondary"
+                          onClick={() => window.history.back()}
+                        >
+                          <i className="fas fa-arrow-left me-2"></i>
+                          Voltar
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 }
               />

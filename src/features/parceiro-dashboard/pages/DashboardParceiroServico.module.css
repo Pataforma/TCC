@@ -1,0 +1,183 @@
+/* Activity Feed Styles */
+.activityFeed {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.activityItem {
+    display: flex;
+    align-items: flex-start;
+    padding: 1rem;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.2s ease;
+}
+
+.activityItem:hover {
+    background-color: #f8f9fa;
+}
+
+.activityItem:last-child {
+    border-bottom: none;
+}
+
+.activityIcon {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+}
+
+.activityContent {
+    flex: 1;
+    min-width: 0;
+}
+
+.activityMessage {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+    color: #333;
+}
+
+.activityTime {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+.activityRating {
+    display: flex;
+    gap: 2px;
+    margin-left: 0.5rem;
+}
+
+/* Services List Styles */
+.servicesList {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.serviceItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.2s ease;
+}
+
+.serviceItem:hover {
+    background-color: #f8f9fa;
+}
+
+.serviceItem:last-child {
+    border-bottom: none;
+}
+
+.serviceInfo {
+    flex: 1;
+}
+
+.serviceStats {
+    text-align: right;
+}
+
+.conversionRate {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+/* Notifications Styles */
+.notificationsList {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.notificationItem {
+    display: flex;
+    align-items: flex-start;
+    padding: 1rem;
+    border-bottom: 1px solid #f0f0f0;
+    position: relative;
+    transition: background-color 0.2s ease;
+}
+
+.notificationItem:hover {
+    background-color: #f8f9fa;
+}
+
+.notificationItem:last-child {
+    border-bottom: none;
+}
+
+.notificationItem.unread {
+    background-color: #f0f8ff;
+}
+
+.notificationItem.unread:hover {
+    background-color: #e6f3ff;
+}
+
+.notificationContent {
+    flex: 1;
+}
+
+.unreadIndicator {
+    width: 8px;
+    height: 8px;
+    background-color: #007bff;
+    border-radius: 50%;
+    margin-left: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .activityItem {
+        padding: 0.75rem;
+    }
+
+    .activityIcon {
+        width: 32px;
+        height: 32px;
+        margin-right: 0.75rem;
+    }
+
+    .serviceItem {
+        padding: 0.75rem;
+    }
+
+    .notificationItem {
+        padding: 0.75rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .activityItem {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .activityIcon {
+        margin-bottom: 0.5rem;
+        margin-right: 0;
+    }
+
+    .serviceItem {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .serviceStats {
+        margin-top: 0.5rem;
+        text-align: left;
+    }
+
+    .conversionRate {
+        align-items: flex-start;
+    }
+}

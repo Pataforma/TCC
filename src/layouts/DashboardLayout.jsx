@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "../utils/supabase";
 import logo from "../assets/imgs/logo.png";
+import HeaderActions from "../components/ui/HeaderActions";
 import {
   FaBars,
   FaTimes,
@@ -33,7 +34,7 @@ const DashboardLayout = ({ children, tipoUsuario, nomeUsuario }) => {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Menus dinâmicos por tipo de usuário
+  // Menus dinâmicos por tipo de usuário (removido "Meu Perfil" da sidebar)
   const menus = {
     veterinario: [
       { label: "Dashboard", to: "/dashboard/veterinario", icon: FaHome },
@@ -78,7 +79,6 @@ const DashboardLayout = ({ children, tipoUsuario, nomeUsuario }) => {
         badge: "3",
         badgeVariant: "primary",
       },
-      { label: "Meu Perfil", to: "/veterinario/perfil", icon: FaUser },
     ],
     tutor: [
       { label: "Dashboard", to: "/dashboard/tutor", icon: FaHome },
@@ -98,7 +98,6 @@ const DashboardLayout = ({ children, tipoUsuario, nomeUsuario }) => {
         badge: "3",
         badgeVariant: "danger",
       },
-      { label: "Meu Perfil", to: "/tutor/perfil", icon: FaUser },
       {
         label: "Cadastrar Pet Perdido",
         to: "/tutor/pet-perdido",
@@ -110,32 +109,48 @@ const DashboardLayout = ({ children, tipoUsuario, nomeUsuario }) => {
       { label: "Dashboard", to: "/dashboard/anunciante", icon: FaHome },
       {
         label: "Meus Eventos",
-        to: "/dashboard/anunciante/eventos",
-        icon: FaList,
+        to: "/dashboard/anunciante/meus-eventos",
+        icon: FaCalendarAlt,
       },
       {
         label: "Novo Evento",
         to: "/dashboard/anunciante/novo-evento",
         icon: FaPlus,
       },
-      { label: "Meu Perfil", to: "/anunciante/perfil", icon: FaUser },
+      {
+        label: "Financeiro",
+        to: "/dashboard/anunciante/financeiro",
+        icon: FaMoneyBill,
+      },
     ],
     parceiro: [
       { label: "Dashboard", to: "/dashboard/parceiro", icon: FaHome },
       {
-        label: "E-commerce",
-        to: "/dashboard/parceiro/ecommerce",
+        label: "Meu Perfil Público",
+        to: "/dashboard/parceiro/perfil",
+        icon: FaUser,
+      },
+      {
+        label: "Meus Serviços",
+        to: "/dashboard/parceiro/servicos",
+        icon: FaList,
+      },
+      {
+        label: "Meus Produtos",
+        to: "/dashboard/parceiro/produtos",
         icon: FaStore,
       },
-      { label: "Adoções", to: "/dashboard/parceiro/adocoes", icon: FaHeart },
-      { label: "Recursos", to: "/dashboard/parceiro/recursos", icon: FaCog },
-      { label: "Meu Perfil", to: "/parceiro/perfil", icon: FaUser },
+      {
+        label: "Avaliações",
+        to: "/dashboard/parceiro/avaliacoes",
+        icon: FaChartBar,
+      },
+      {
+        label: "Financeiro",
+        to: "/dashboard/parceiro/financeiro",
+        icon: FaMoneyBill,
+      },
     ],
-  };
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate("/telalogin");
   };
 
   const toggleSidebar = () => {
@@ -228,52 +243,6 @@ const DashboardLayout = ({ children, tipoUsuario, nomeUsuario }) => {
             })}
           </div>
         </div>
-
-        {/* Perfil do Usuário */}
-        <div className="p-3 border-top bg-light">
-          <div className="d-flex align-items-center gap-3 p-3 rounded-3 bg-white shadow-sm">
-            <div
-              className="bg-main d-flex align-items-center justify-content-center text-white"
-              style={{
-                width: 40,
-                height: 40,
-                borderRadius: "50%",
-                fontSize: 16,
-                fontWeight: 600,
-              }}
-            >
-              {nomeUsuario?.charAt(0)?.toUpperCase() || "U"}
-            </div>
-            <div className="flex-grow-1">
-              <div className="fw-semibold text-dark" style={{ fontSize: 14 }}>
-                {nomeUsuario || "Usuário"}
-              </div>
-              <div className="text-muted" style={{ fontSize: 12 }}>
-                {tipoUsuario?.charAt(0).toUpperCase() + tipoUsuario?.slice(1)}
-              </div>
-              <div className="d-flex align-items-center gap-1 mt-1">
-                <div
-                  className="bg-success"
-                  style={{
-                    width: 8,
-                    height: 8,
-                    borderRadius: "50%",
-                  }}
-                ></div>
-                <small className="text-success" style={{ fontSize: 10 }}>
-                  Online
-                </small>
-              </div>
-            </div>
-            <button
-              className="btn btn-link text-muted p-0"
-              onClick={handleLogout}
-              title="Sair"
-            >
-              <FaSignOutAlt size={16} />
-            </button>
-          </div>
-        </div>
       </nav>
 
       {/* Sidebar Mobile */}
@@ -334,39 +303,6 @@ const DashboardLayout = ({ children, tipoUsuario, nomeUsuario }) => {
             })}
           </div>
         </div>
-
-        {/* Perfil Mobile */}
-        <div className="p-3 border-top bg-light">
-          <div className="d-flex align-items-center gap-3 p-3 rounded-3 bg-white shadow-sm">
-            <div
-              className="bg-main d-flex align-items-center justify-content-center text-white"
-              style={{
-                width: 40,
-                height: 40,
-                borderRadius: "50%",
-                fontSize: 16,
-                fontWeight: 600,
-              }}
-            >
-              {nomeUsuario?.charAt(0)?.toUpperCase() || "U"}
-            </div>
-            <div className="flex-grow-1">
-              <div className="fw-semibold text-dark" style={{ fontSize: 14 }}>
-                {nomeUsuario || "Usuário"}
-              </div>
-              <div className="text-muted" style={{ fontSize: 12 }}>
-                {tipoUsuario?.charAt(0).toUpperCase() + tipoUsuario?.slice(1)}
-              </div>
-            </div>
-            <button
-              className="btn btn-link text-muted p-0"
-              onClick={handleLogout}
-              title="Sair"
-            >
-              <FaSignOutAlt size={16} />
-            </button>
-          </div>
-        </div>
       </nav>
 
       {/* Overlay Mobile */}
@@ -383,20 +319,37 @@ const DashboardLayout = ({ children, tipoUsuario, nomeUsuario }) => {
         className="flex-grow-1"
         style={{ marginLeft: 280, minHeight: "100vh" }}
       >
-        {/* Header Mobile e Botão Voltar */}
-        <div
-          className="d-flex align-items-center gap-2 p-3 bg-white shadow-sm sticky-top"
+        {/* Header Principal */}
+        <header
+          className="d-flex align-items-center justify-content-between p-3 bg-white shadow-sm sticky-top"
           style={{ zIndex: 1050 }}
         >
-          <button
-            className="btn btn-outline-secondary d-flex align-items-center gap-2"
-            onClick={() => navigate("/tipo-usuario")}
-            style={{ fontSize: 15 }}
-          >
-            <FaArrowLeft /> Voltar para escolha de perfil
-          </button>
-          <span className="fw-bold ms-2 d-lg-none">Pataforma</span>
-        </div>
+          {/* Lado esquerdo - Botão menu mobile e título */}
+          <div className="d-flex align-items-center gap-3">
+            <button
+              className="btn btn-outline-secondary d-lg-none d-flex align-items-center gap-2"
+              onClick={toggleSidebar}
+              style={{ fontSize: 15 }}
+            >
+              <FaBars />
+            </button>
+
+            <button
+              className="btn btn-outline-secondary d-none d-lg-flex align-items-center gap-2"
+              onClick={() => navigate("/tipo-usuario")}
+              style={{ fontSize: 15 }}
+            >
+              <FaArrowLeft /> Voltar para escolha de perfil
+            </button>
+
+            <span className="fw-bold d-lg-none">Pataforma</span>
+          </div>
+
+          {/* Lado direito - Ações do header */}
+          <HeaderActions tipoUsuario={tipoUsuario} nomeUsuario={nomeUsuario} />
+        </header>
+
+        {/* Conteúdo da página */}
         <main className="p-4">{children}</main>
       </div>
     </div>

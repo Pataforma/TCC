@@ -1,77 +1,96 @@
 import React from "react";
 import { Card } from "react-bootstrap";
+import { FaArrowUp, FaArrowDown } from "react-icons/fa";
 
 const StatCard = ({
   title,
   value,
   icon: Icon,
   color = "primary",
-  trend,
-  trendValue,
-  onClick,
+  trend = null,
+  trendLabel = "",
+  subtitle = "",
+  className = "",
 }) => {
-  const colorMap = {
-    primary: "#0DB2AC",
-    secondary: "#FABA32",
-    danger: "#FC694D",
-    success: "#28a745",
-    info: "#17a2b8",
-    warning: "#ffc107",
+  const getColorClass = (color) => {
+    const colorMap = {
+      primary: "text-primary",
+      success: "text-success",
+      danger: "text-danger",
+      warning: "text-warning",
+      info: "text-info",
+      secondary: "text-secondary",
+      dark: "text-dark",
+    };
+    return colorMap[color] || "text-primary";
   };
 
-  const bgColor = colorMap[color] || colorMap.primary;
+  const getTrendIcon = (trend) => {
+    if (trend === null || trend === 0) return null;
+    return trend > 0 ? <FaArrowUp /> : <FaArrowDown />;
+  };
+
+  const getTrendColor = (trend) => {
+    if (trend === null || trend === 0) return "text-muted";
+    return trend > 0 ? "text-success" : "text-danger";
+  };
+
+  const formatTrend = (trend) => {
+    if (trend === null || trend === 0) return "";
+    const sign = trend > 0 ? "+" : "";
+    return `${sign}${trend}%`;
+  };
 
   return (
-    <Card
-      className="h-100 border-0 shadow-sm hover-lift cursor-pointer"
-      style={{
-        borderRadius: 16,
-        transition: "all 0.3s ease",
-        cursor: onClick ? "pointer" : "default",
-      }}
-      onClick={onClick}
-    >
+    <Card className={`border-0 shadow-sm h-100 ${className}`}>
       <Card.Body className="p-4">
         <div className="d-flex justify-content-between align-items-start">
           <div className="flex-grow-1">
-            <h6
-              className="text-muted mb-2 fw-semibold"
-              style={{ fontSize: 14 }}
-            >
-              {title}
-            </h6>
-            <h3
-              className="mb-2 fw-bold"
-              style={{ color: bgColor, fontSize: 28 }}
-            >
+            <div className="d-flex align-items-center mb-2">
+              <div className={`${getColorClass(color)} me-2`}>
+                {Icon && <Icon size={20} />}
+              </div>
+              <h6
+                className="text-muted mb-0 fw-semibold"
+                style={{ fontSize: "14px" }}
+              >
+                {title}
+              </h6>
+            </div>
+
+            <h3 className="fw-bold mb-2" style={{ fontSize: "28px" }}>
               {value}
             </h3>
-            {trend && (
-              <div className="d-flex align-items-center gap-1">
-                <span
-                  className={`fw-semibold ${
-                    trend === "up" ? "text-success" : "text-danger"
-                  }`}
-                  style={{ fontSize: 13 }}
-                >
-                  {trend === "up" ? "↗" : "↘"} {trendValue}
-                </span>
-                <span className="text-muted" style={{ fontSize: 12 }}>
-                  vs mês anterior
-                </span>
+
+            {subtitle && (
+              <p className="text-muted mb-2" style={{ fontSize: "13px" }}>
+                {subtitle}
+              </p>
+            )}
+
+            {/* Tendência/Comparativo */}
+            {(trend !== null || trendLabel) && (
+              <div className="d-flex align-items-center">
+                {trend !== null && (
+                  <span
+                    className={`${getTrendColor(
+                      trend
+                    )} me-2 d-flex align-items-center`}
+                    style={{ fontSize: "13px" }}
+                  >
+                    {getTrendIcon(trend)}
+                    <span className="ms-1 fw-semibold">
+                      {formatTrend(trend)}
+                    </span>
+                  </span>
+                )}
+                {trendLabel && (
+                  <small className="text-muted" style={{ fontSize: "12px" }}>
+                    {trendLabel}
+                  </small>
+                )}
               </div>
             )}
-          </div>
-          <div
-            className="d-flex align-items-center justify-content-center rounded-3"
-            style={{
-              width: 48,
-              height: 48,
-              backgroundColor: `${bgColor}15`,
-              color: bgColor,
-            }}
-          >
-            <Icon size={20} />
           </div>
         </div>
       </Card.Body>
