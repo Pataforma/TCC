@@ -10,10 +10,11 @@ import {
   FaArrowRight,
   FaCheck,
 } from "react-icons/fa";
-import EtapaObjetivoFormato from "./wizard/EtapaObjetivoFormato";
-import EtapaSegmentacao from "./wizard/EtapaSegmentacao";
-import EtapaOrcamentoDuracao from "./wizard/EtapaOrcamentoDuracao";
-import EtapaCriativo from "./wizard/EtapaCriativo";
+// Importações temporariamente comentadas - componentes wizard não implementados
+// import EtapaObjetivoFormato from "./wizard/EtapaObjetivoFormato";
+// import EtapaSegmentacao from "./wizard/EtapaSegmentacao";
+// import EtapaOrcamentoDuracao from "./wizard/EtapaOrcamentoDuracao";
+// import EtapaCriativo from "./wizard/EtapaCriativo";
 
 const CriarCampanhaModal = ({ show, onHide, onCampanhaCriada }) => {
   const [currentStep, setCurrentStep] = useState(0);
@@ -37,25 +38,25 @@ const CriarCampanhaModal = ({ show, onHide, onCampanhaCriada }) => {
     {
       id: "objetivo-formato",
       title: "Objetivo e Formato",
-      component: EtapaObjetivoFormato,
+      component: () => <div>Componente não implementado</div>,
       icon: FaBullhorn,
     },
     {
       id: "segmentacao",
       title: "Segmentação",
-      component: EtapaSegmentacao,
+      component: () => <div>Componente não implementado</div>,
       icon: FaUsers,
     },
     {
       id: "orcamento-duracao",
       title: "Orçamento e Duração",
-      component: EtapaOrcamentoDuracao,
+      component: () => <div>Componente não implementado</div>,
       icon: FaDollarSign,
     },
     {
       id: "criativo",
       title: "Criativo do Anúncio",
-      component: EtapaCriativo,
+      component: () => <div>Componente não implementado</div>,
       icon: FaImage,
     },
   ];

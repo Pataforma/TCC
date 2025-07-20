@@ -27,6 +27,7 @@
     "react-hook-form": "^7.60.0",
     "react-icons": "^5.5.0",
     "react-router-dom": "^7.6.3",
+    "react-window": "^1.8.11",
     "yup": "^1.6.1"
   },
   "devDependencies": {

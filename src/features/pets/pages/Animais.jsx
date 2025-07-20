@@ -361,10 +361,6 @@ const Animais = () => {
               }`}
               onClick={() => setActiveTab("perdidos")}
               style={{
-                borderBottom:
-                  activeTab === "perdidos"
-                    ? "3px solid var(--secondary-color)"
-                    : "none",
                 opacity: activeTab === "perdidos" ? 1 : 0.7,
               }}
             >
@@ -380,10 +376,6 @@ const Animais = () => {
               }`}
               onClick={() => setActiveTab("adocao")}
               style={{
-                borderBottom:
-                  activeTab === "adocao"
-                    ? "3px solid var(--secondary-color)"
-                    : "none",
                 opacity: activeTab === "adocao" ? 1 : 0.7,
               }}
             >
@@ -399,10 +391,6 @@ const Animais = () => {
               }`}
               onClick={() => setActiveTab("dicas")}
               style={{
-                borderBottom:
-                  activeTab === "dicas"
-                    ? "3px solid var(--secondary-color)"
-                    : "none",
                 opacity: activeTab === "dicas" ? 1 : 0.7,
               }}
             >

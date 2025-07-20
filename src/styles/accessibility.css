@@ -367,6 +367,7 @@ a:focus {
     color: var(--main-color);
     background-color: white;
     border-color: #dee2e6 #dee2e6 white;
+    border-bottom: none !important;
 }
 
 /* Melhorar contraste de sidebar */

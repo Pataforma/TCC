@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
-import { supabase } from '../utils/supabase';
+import React, { createContext, useContext, useReducer, useEffect } from "react";
+import { supabase } from "../utils/supabase";
 
 // Estado inicial
 const initialState = {
@@ -14,17 +14,17 @@ const initialState = {
 
 // Tipos de ações
 const ACTIONS = {
-  SET_LOADING: 'SET_LOADING',
-  SET_USER: 'SET_USER',
-  SET_PETS: 'SET_PETS',
-  SET_CONSULTAS: 'SET_CONSULTAS',
-  SET_LEMBRETES: 'SET_LEMBRETES',
-  SET_ERROR: 'SET_ERROR',
-  SET_PERFIL_COMPLETO: 'SET_PERFIL_COMPLETO',
-  ADD_PET: 'ADD_PET',
-  UPDATE_PET: 'UPDATE_PET',
-  DELETE_PET: 'DELETE_PET',
-  CLEAR_DATA: 'CLEAR_DATA',
+  SET_LOADING: "SET_LOADING",
+  SET_USER: "SET_USER",
+  SET_PETS: "SET_PETS",
+  SET_CONSULTAS: "SET_CONSULTAS",
+  SET_LEMBRETES: "SET_LEMBRETES",
+  SET_ERROR: "SET_ERROR",
+  SET_PERFIL_COMPLETO: "SET_PERFIL_COMPLETO",
+  ADD_PET: "ADD_PET",
+  UPDATE_PET: "UPDATE_PET",
+  DELETE_PET: "DELETE_PET",
+  CLEAR_DATA: "CLEAR_DATA",
 };
 
 // Reducer
@@ -32,45 +32,45 @@ const userReducer = (state, action) => {
   switch (action.type) {
     case ACTIONS.SET_LOADING:
       return { ...state, loading: action.payload };
-    
+
     case ACTIONS.SET_USER:
       return { ...state, user: action.payload };
-    
+
     case ACTIONS.SET_PETS:
       return { ...state, pets: action.payload };
-    
+
     case ACTIONS.SET_CONSULTAS:
       return { ...state, consultas: action.payload };
-    
+
     case ACTIONS.SET_LEMBRETES:
       return { ...state, lembretes: action.payload };
-    
+
     case ACTIONS.SET_ERROR:
       return { ...state, error: action.payload };
-    
+
     case ACTIONS.SET_PERFIL_COMPLETO:
       return { ...state, perfilCompleto: action.payload };
-    
+
     case ACTIONS.ADD_PET:
       return { ...state, pets: [...state.pets, action.payload] };
-    
+
     case ACTIONS.UPDATE_PET:
       return {
         ...state,
-        pets: state.pets.map(pet => 
+        pets: state.pets.map((pet) =>
           pet.id === action.payload.id ? action.payload : pet
-        )
+        ),
       };
-    
+
     case ACTIONS.DELETE_PET:
       return {
         ...state,
-        pets: state.pets.filter(pet => pet.id !== action.payload)
+        pets: state.pets.filter((pet) => pet.id !== action.payload),
       };
-    
+
     case ACTIONS.CLEAR_DATA:
       return initialState;
-    
+
     default:
       return state;
   }
@@ -86,12 +86,15 @@ export const UserProvider = ({ children }) => {
   // Buscar dados do usuário
   const fetchUserData = async () => {
     dispatch({ type: ACTIONS.SET_LOADING, payload: true });
-    
+
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
       if (!session) {
         dispatch({ type: ACTIONS.SET_USER, payload: null });
+        dispatch({ type: ACTIONS.SET_LOADING, payload: false });
         return;
       }
 
@@ -109,18 +112,19 @@ export const UserProvider = ({ children }) => {
 
       const user = userData || { email: session.user.email };
       dispatch({ type: ACTIONS.SET_USER, payload: user });
-      
+
       // Verificar se perfil está completo
       const perfilCompleto = !!(userData?.nome && userData?.telefone);
       dispatch({ type: ACTIONS.SET_PERFIL_COMPLETO, payload: perfilCompleto });
 
-      // Se usuário existe, buscar pets
+      // Se usuário existe, buscar dados em paralelo para melhor performance
       if (userData?.id_usuario) {
-        await fetchPets(userData.id_usuario);
-        await fetchConsultas(userData.id_usuario);
-        await fetchLembretes(userData.id_usuario);
+        await Promise.all([
+          fetchPets(userData.id_usuario),
+          fetchConsultas(userData.id_usuario),
+          fetchLembretes(userData.id_usuario),
+        ]);
       }
-
     } catch (error) {
       console.error("Erro ao buscar dados do usuário:", error);
       dispatch({ type: ACTIONS.SET_ERROR, payload: error.message });
@@ -161,7 +165,7 @@ export const UserProvider = ({ children }) => {
           tipo: "Consulta de Rotina",
           valor: "R$ 120,00",
           isTelemedicina: true,
-        }
+        },
       ];
       dispatch({ type: ACTIONS.SET_CONSULTAS, payload: consultasMock });
     } catch (error) {
@@ -182,7 +186,7 @@ export const UserProvider = ({ children }) => {
           data: "2024-01-20",
           urgente: true,
           descricao: "Vacina antirrábica está pendente há 5 dias",
-        }
+        },
       ];
       dispatch({ type: ACTIONS.SET_LEMBRETES, payload: lembretesMock });
     } catch (error) {
@@ -232,10 +236,7 @@ export const UserProvider = ({ children }) => {
   // Deletar pet
   const deletePet = async (petId) => {
     try {
-      const { error } = await supabase
-        .from("pets")
-        .delete()
-        .eq("id", petId);
+      const { error } = await supabase.from("pets").delete().eq("id", petId);
 
       if (error) throw error;
       dispatch({ type: ACTIONS.DELETE_PET, payload: petId });
@@ -254,7 +255,9 @@ export const UserProvider = ({ children }) => {
   // Atualizar perfil do usuário
   const updateUserProfile = async (profileData) => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (!session) throw new Error("Usuário não autenticado");
 
       const { data, error } = await supabase
@@ -265,10 +268,13 @@ export const UserProvider = ({ children }) => {
         .single();
 
       if (error) throw error;
-      
+
       dispatch({ type: ACTIONS.SET_USER, payload: data });
-      dispatch({ type: ACTIONS.SET_PERFIL_COMPLETO, payload: !!(data.nome && data.telefone) });
-      
+      dispatch({
+        type: ACTIONS.SET_PERFIL_COMPLETO,
+        payload: !!(data.nome && data.telefone),
+      });
+
       return data;
     } catch (error) {
       console.error("Erro ao atualizar perfil:", error);
@@ -295,18 +301,14 @@ export const UserProvider = ({ children }) => {
     clearData,
   };
 
-  return (
-    <UserContext.Provider value={value}>
-      {children}
-    </UserContext.Provider>
-  );
+  return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };
 
 // Hook personalizado
 export const useUser = () => {
   const context = useContext(UserContext);
   if (!context) {
-    throw new Error('useUser deve ser usado dentro de um UserProvider');
+    throw new Error("useUser deve ser usado dentro de um UserProvider");
   }
   return context;
-}; 
+};

@@ -56,7 +56,7 @@ export default function PlanosPage() {
       <Header />
 
       {/* Hero Section */}
-      <section className="container-fluid text-white py-5 mt-5 position-relative planos-bg">
+      <section className="container-fluid text-white py-5 position-relative planos-bg">
         <div className="container py-4 position-relative" style={{ zIndex: 2 }}>
           <h1 className="display-5 fw-bold">Escolha o plano ideal para você</h1>
           <p className="lead">
@@ -100,7 +100,16 @@ export default function PlanosPage() {
       {/* Call To Action */}
       <section className="container-fluid py-5 bg-main text-white text-center">
         <div className="container py-3">
-          <h2 className="fw-bold mb-4">Precisa de um plano personalizado?</h2>
+          <h2
+            className="fw-bold mb-4"
+            style={{
+              fontFamily:
+                "Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif",
+              fontSize: "2.5rem",
+            }}
+          >
+            Precisa de um plano personalizado?
+          </h2>
           <p className="lead mb-4">
             Entre em contato conosco e descubra como podemos criar uma solução
             sob medida para sua clínica

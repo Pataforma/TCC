@@ -16,9 +16,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: url('../assets/imgs/auth-bg.jpg');
-  background-size: cover;
-  background-position: center;
+  background: linear-gradient(135deg, var(--main-color) 0%, var(--bg-button) 100%);
   opacity: 0.1;
   z-index: -1;
 }
@@ -33,12 +31,14 @@
   overflow: hidden;
 }
 
-.auth-first-content, .auth-second-content {
+.auth-first-content,
+.auth-second-content {
   display: flex;
   width: 100%;
 }
 
-.auth-first-column, .auth-second-column {
+.auth-first-column,
+.auth-second-column {
   width: 50%;
   padding: 40px;
   display: flex;
@@ -62,10 +62,8 @@
   left: 50%;
   width: 500px;
   height: 500px;
-  background-image: url('../assets/imgs/pata-icon.png');
-  background-size: contain;
-  background-repeat: no-repeat;
-  opacity: 0.1;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  opacity: 0.3;
   transform: translate(-50%, -50%) rotate(15deg);
   z-index: 0;
 }
@@ -279,31 +277,34 @@
 
 /* Responsividade */
 @media (max-width: 768px) {
-  .auth-first-content, .auth-second-content {
+
+  .auth-first-content,
+  .auth-second-content {
     flex-direction: column;
   }
-  
-  .auth-first-column, .auth-second-column {
+
+  .auth-first-column,
+  .auth-second-column {
     width: 100%;
     padding: 30px;
   }
-  
+
   .auth-first-column {
     padding-bottom: 50px;
   }
-  
+
   .auth-second-column {
     padding-top: 50px;
   }
-  
+
   .auth-title {
     font-size: 24px;
   }
-  
+
   .auth-description {
     font-size: 14px;
   }
-  
+
   .auth-btn {
     padding: 10px 30px;
     font-size: 14px;

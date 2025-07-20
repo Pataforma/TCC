@@ -61,7 +61,8 @@ const DashboardTutor = () => {
       idade: "2 anos",
       localizacao: "São Paulo, SP",
       foto: "https://images.unsplash.com/photo-1552053831-71594a27632d?w=300",
-      descricao: "Luna é uma cachorrinha muito carinhosa e brincalhona. Adora crianças e passeios no parque."
+      descricao:
+        "Luna é uma cachorrinha muito carinhosa e brincalhona. Adora crianças e passeios no parque.",
     },
     {
       id: 2,
@@ -71,7 +72,8 @@ const DashboardTutor = () => {
       idade: "1 ano",
       localizacao: "Rio de Janeiro, RJ",
       foto: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=300",
-      descricao: "Thor é um gato muito inteligente e curioso. Gosta de carinho e brincadeiras com bolinhas."
+      descricao:
+        "Thor é um gato muito inteligente e curioso. Gosta de carinho e brincadeiras com bolinhas.",
     },
     {
       id: 3,
@@ -81,8 +83,9 @@ const DashboardTutor = () => {
       idade: "3 anos",
       localizacao: "Belo Horizonte, MG",
       foto: "https://images.unsplash.com/photo-1552053831-71594a27632d?w=300",
-      descricao: "Max é um cão muito leal e protetor. Perfeito para famílias que buscam um companheiro fiel."
-    }
+      descricao:
+        "Max é um cão muito leal e protetor. Perfeito para famílias que buscam um companheiro fiel.",
+    },
   ];
 
   const eventosAdocao = [
@@ -92,7 +95,8 @@ const DashboardTutor = () => {
       data: "15/12/2024",
       horario: "10h às 16h",
       local: "Parque Ibirapuera, São Paulo",
-      descricao: "Venha conhecer nossos amigos de 4 patas que estão procurando um lar amoroso."
+      descricao:
+        "Venha conhecer nossos amigos de 4 patas que estão procurando um lar amoroso.",
     },
     {
       id: 2,
@@ -100,32 +104,36 @@ const DashboardTutor = () => {
       data: "20/12/2024",
       horario: "14h às 18h",
       local: "Shopping Center, Rio de Janeiro",
-      descricao: "Evento especial para adoção de gatos. Todos vacinados e castrados."
-    }
+      descricao:
+        "Evento especial para adoção de gatos. Todos vacinados e castrados.",
+    },
   ];
 
   const artigosAdocao = [
     {
       id: 1,
       titulo: "O que saber antes de adotar um pet?",
-      resumo: "Guia completo com tudo que você precisa saber antes de trazer um novo membro para a família.",
+      resumo:
+        "Guia completo com tudo que você precisa saber antes de trazer um novo membro para a família.",
       tempoLeitura: "5 min",
-      categoria: "Guia"
+      categoria: "Guia",
     },
     {
       id: 2,
       titulo: "Como preparar sua casa para um novo pet",
-      resumo: "Dicas essenciais para adaptar seu espaço e garantir a segurança do seu novo companheiro.",
+      resumo:
+        "Dicas essenciais para adaptar seu espaço e garantir a segurança do seu novo companheiro.",
       tempoLeitura: "3 min",
-      categoria: "Preparação"
+      categoria: "Preparação",
     },
     {
       id: 3,
       titulo: "Benefícios da adoção responsável",
-      resumo: "Descubra como a adoção pode transformar não só a vida do pet, mas também a sua.",
+      resumo:
+        "Descubra como a adoção pode transformar não só a vida do pet, mas também a sua.",
       tempoLeitura: "4 min",
-      categoria: "Benefícios"
-    }
+      categoria: "Benefícios",
+    },
   ];
 
   const formatDate = (dateString) => {
@@ -232,7 +240,8 @@ const DashboardTutor = () => {
                   <FaHandHoldingHeart size={48} className="mb-3" />
                   <h2 className="mb-2">Bem-vindo à sua jornada pet!</h2>
                   <p className="lead mb-3">
-                    Você ainda não tem pets cadastrados. Que tal começar sua aventura?
+                    Você ainda não tem pets cadastrados. Que tal começar sua
+                    aventura?
                   </p>
                   <button
                     className="btn btn-light btn-lg"
@@ -258,6 +267,7 @@ const DashboardTutor = () => {
                   <button
                     className="btn btn-primary btn-sm"
                     onClick={() => navigate("/tutor/adotar-pet")}
+                    aria-label="Ver todos os pets para adoção"
                   >
                     Ver todos
                   </button>
@@ -283,7 +293,10 @@ const DashboardTutor = () => {
                               {pet.localizacao}
                             </p>
                             <p className="card-text small">{pet.descricao}</p>
-                            <button className="btn btn-outline-primary btn-sm w-100">
+                            <button
+                              className="btn btn-outline-primary btn-sm w-100"
+                              aria-label={`Quero adotar ${pet.nome}, ${pet.especie} ${pet.raca}`}
+                            >
                               <FaHeart className="me-1" />
                               Quero adotar
                             </button>
@@ -313,7 +326,9 @@ const DashboardTutor = () => {
                       <div key={evento.id} className="col-md-6 mb-3">
                         <div className="card border-success">
                           <div className="card-body">
-                            <h6 className="card-title text-success">{evento.titulo}</h6>
+                            <h6 className="card-title text-success">
+                              {evento.titulo}
+                            </h6>
                             <p className="card-text small">
                               <FaCalendarAlt className="me-1" />
                               {evento.data} às {evento.horario}
@@ -322,7 +337,9 @@ const DashboardTutor = () => {
                               <FaMapMarkerAlt className="me-1" />
                               {evento.local}
                             </p>
-                            <p className="card-text small">{evento.descricao}</p>
+                            <p className="card-text small">
+                              {evento.descricao}
+                            </p>
                             <button className="btn btn-success btn-sm">
                               Participar
                             </button>
@@ -352,7 +369,9 @@ const DashboardTutor = () => {
                       <div key={artigo.id} className="col-md-4 mb-3">
                         <div className="card h-100">
                           <div className="card-body">
-                            <span className="badge bg-info mb-2">{artigo.categoria}</span>
+                            <span className="badge bg-info mb-2">
+                              {artigo.categoria}
+                            </span>
                             <h6 className="card-title">{artigo.titulo}</h6>
                             <p className="card-text small">{artigo.resumo}</p>
                             <div className="d-flex justify-content-between align-items-center">
@@ -381,7 +400,8 @@ const DashboardTutor = () => {
                 <div className="card-body py-4">
                   <h4 className="mb-3">Pronto para começar sua jornada?</h4>
                   <p className="mb-3">
-                    Adote um pet e transforme não só a vida dele, mas também a sua!
+                    Adote um pet e transforme não só a vida dele, mas também a
+                    sua!
                   </p>
                   <button
                     className="btn btn-primary btn-lg"
@@ -482,6 +502,7 @@ const DashboardTutor = () => {
                 <button
                   className="btn btn-primary btn-sm"
                   onClick={() => navigate("/tutor/pet")}
+                  aria-label="Adicionar novo pet"
                 >
                   <FaPlus className="me-1" />
                   Adicionar Pet
@@ -574,12 +595,16 @@ const DashboardTutor = () => {
                           <button
                             className="btn btn-success btn-sm"
                             onClick={handleJoinTelemedicina}
+                            aria-label="Entrar na consulta de telemedicina"
                           >
                             <FaVideo className="me-1" />
                             Entrar na Consulta
                           </button>
                         ) : (
-                          <button className="btn btn-outline-primary btn-sm">
+                          <button
+                            className="btn btn-outline-primary btn-sm"
+                            aria-label="Ver local da consulta"
+                          >
                             <FaMapMarkerAlt className="me-1" />
                             Ver Local
                           </button>

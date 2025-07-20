@@ -1,12 +1,8 @@
+import React, { Suspense, lazy } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
-import { Suspense, lazy } from "react";
-
-// --- UTILS & LAYOUTS ---
 import ScrollToTop from "./components/ui/ScrollToTop";
 import LoadingTransition from "./components/ui/LoadingTransition";
-import TransitionWrapper from "./components/ui/TransitionWrapper";
-
-// --- AUTH & CONTEXTS ---
+import NotFoundPage from "./components/ui/NotFoundPage";
 import {
   TutorRoute,
   VeterinarioRoute,
@@ -114,6 +110,9 @@ const MarketingPage = lazy(() =>
   import("./features/vet-dashboard/pages/MarketingPage")
 );
 const ChatPage = lazy(() => import("./features/vet-dashboard/pages/ChatPage"));
+const PainelDuvidasVet = lazy(() =>
+  import("./features/vet-dashboard/pages/PainelDuvidasVet")
+);
 
 // 6. Feature: Dashboard do Anunciante
 const DashboardAnunciante = lazy(() =>
@@ -172,7 +171,7 @@ const DuvidasPage = lazy(() => import("./features/q_and_a/pages/DuvidasPage"));
 
 // Componente de fallback para o Suspense
 const PageLoader = () => (
-  <LoadingTransition timeout={1000} message="Carregando..." />
+  <LoadingTransition timeout={500} message="Carregando..." />
 );
 
 function App() {
@@ -181,348 +180,276 @@ function App() {
   return (
     <SubscriptionProvider>
       <ScrollToTop />
-      <TransitionWrapper>
-        <div key={location.pathname} className="fade-in">
-          <Suspense fallback={<PageLoader />}>
-            <Routes location={location}>
-              {/* --- ROTAS PÚBLICAS --- */}
-              <Route
-                path="/"
-                element={
-                  <PublicRoute>
-                    <Home />
-                  </PublicRoute>
-                }
-              />
-              <Route path="/sobre" element={<Sobre />} />
-              <Route path="/veterinarios" element={<Veterinarios />} />
-              <Route path="/animais" element={<Animais />} />
-              <Route path="/produto" element={<Produto />} />
-              <Route path="/planos" element={<PlanosPage />} />
-              <Route path="/duvidas" element={<DuvidasPage />} />
-              <Route path="/agenda" element={<Agenda />} />
-              <Route path="/contato" element={<Contato />} />
-              <Route
-                path="/telalogin"
-                element={
-                  <PublicRoute>
-                    <TelaLogin />
-                  </PublicRoute>
-                }
-              />
-              <Route path="/loading" element={<LoadingPage />} />
-              <Route path="/tipo-usuario" element={<TipoUsuario />} />
-              <Route path="/termos" element={<Termos />} />
-              <Route path="/auth/callback" element={<AuthCallback />} />
-              <Route path="/unauthorized" element={<UnauthorizedPage />} />
+      <div key={location.pathname} className="fade-in">
+        <Suspense fallback={<PageLoader />}>
+          <Routes location={location}>
+            {/* --- ROTAS PÚBLICAS --- */}
+            <Route
+              path="/"
+              element={
+                <PublicRoute>
+                  <Home />
+                </PublicRoute>
+              }
+            />
+            <Route path="/sobre" element={<Sobre />} />
+            <Route path="/veterinarios" element={<Veterinarios />} />
+            <Route path="/animais" element={<Animais />} />
+            <Route path="/produto" element={<Produto />} />
+            <Route path="/planos" element={<PlanosPage />} />
+            <Route path="/duvidas" element={<DuvidasPage />} />
+            <Route path="/agenda" element={<Agenda />} />
+            <Route path="/contato" element={<Contato />} />
+            <Route
+              path="/telalogin"
+              element={
+                <PublicRoute>
+                  <TelaLogin />
+                </PublicRoute>
+              }
+            />
+            <Route path="/loading" element={<LoadingPage />} />
+            <Route path="/tipo-usuario" element={<TipoUsuario />} />
+            <Route path="/termos" element={<Termos />} />
+            <Route path="/auth/callback" element={<AuthCallback />} />
+            <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
-              {/* --- ROTAS DE ONBOARDING --- */}
-              <Route
-                path="/onboarding/veterinario"
-                element={<OnboardingVeterinario />}
-              />
-              <Route path="/onboarding/tutor" element={<OnboardingTutor />} />
-              <Route
-                path="/onboarding/anunciante"
-                element={<OnboardingAnunciante />}
-              />
-              <Route
-                path="/onboarding/parceiro"
-                element={<OnboardingParceiro />}
-              />
+            {/* --- ROTAS DE ONBOARDING --- */}
+            <Route
+              path="/onboarding/veterinario"
+              element={<OnboardingVeterinario />}
+            />
+            <Route path="/onboarding/tutor" element={<OnboardingTutor />} />
+            <Route
+              path="/onboarding/anunciante"
+              element={<OnboardingAnunciante />}
+            />
+            <Route
+              path="/onboarding/parceiro"
+              element={<OnboardingParceiro />}
+            />
 
-              {/* --- ROTAS PROTEGIDAS - TUTOR --- */}
-              <Route
-                path="/dashboard/tutor"
-                element={
-                  <TutorRoute>
-                    <DashboardTutor />
-                  </TutorRoute>
-                }
-              />
-              <Route
-                path="/tutor/perfil"
-                element={
-                  <TutorRoute>
-                    <DashboardTutorPerfil />
-                  </TutorRoute>
-                }
-              />
-              <Route
-                path="/tutor/pet"
-                element={
-                  <TutorRoute>
-                    <DashboardTutorPet />
-                  </TutorRoute>
-                }
-              />
-              <Route
-                path="/tutor/financeiro"
-                element={
-                  <TutorRoute>
-                    <DashboardTutorFinanceiro />
-                  </TutorRoute>
-                }
-              />
-              <Route
-                path="/tutor/pet-perdido"
-                element={
-                  <TutorRoute>
-                    <DashboardTutorPetPerdido />
-                  </TutorRoute>
-                }
-              />
-              <Route
-                path="/tutor/adotar-pet"
-                element={
-                  <TutorRoute>
-                    <DashboardTutorAdotarPet />
-                  </TutorRoute>
-                }
-              />
-              <Route
-                path="/tutor/agendamentos"
-                element={
-                  <TutorRoute>
-                    <AgendamentosPage />
-                  </TutorRoute>
-                }
-              />
-              <Route
-                path="/tutor/vacinas"
-                element={
-                  <TutorRoute>
-                    <VacinasPage />
-                  </TutorRoute>
-                }
-              />
-              <Route
-                path="/tutor/servicos"
-                element={
-                  <TutorRoute>
-                    <ServicosPage />
-                  </TutorRoute>
-                }
-              />
-              <Route
-                path="/tutor/mensagens"
-                element={
-                  <TutorRoute>
-                    <MensagensPage />
-                  </TutorRoute>
-                }
-              />
+            {/* --- ROTAS PROTEGIDAS - TUTOR --- */}
+            <Route
+              path="/dashboard/tutor"
+              element={
+                <TutorRoute>
+                  <DashboardTutor />
+                </TutorRoute>
+              }
+            />
+            <Route
+              path="/tutor/perfil"
+              element={
+                <TutorRoute>
+                  <DashboardTutorPerfil />
+                </TutorRoute>
+              }
+            />
+            <Route
+              path="/tutor/pet"
+              element={
+                <TutorRoute>
+                  <DashboardTutorPet />
+                </TutorRoute>
+              }
+            />
+            <Route
+              path="/tutor/financeiro"
+              element={
+                <TutorRoute>
+                  <DashboardTutorFinanceiro />
+                </TutorRoute>
+              }
+            />
+            <Route
+              path="/tutor/pet-perdido"
+              element={
+                <TutorRoute>
+                  <DashboardTutorPetPerdido />
+                </TutorRoute>
+              }
+            />
+            <Route
+              path="/tutor/adotar-pet"
+              element={
+                <TutorRoute>
+                  <DashboardTutorAdotarPet />
+                </TutorRoute>
+              }
+            />
+            <Route
+              path="/tutor/agendamentos"
+              element={
+                <TutorRoute>
+                  <AgendamentosPage />
+                </TutorRoute>
+              }
+            />
+            <Route
+              path="/tutor/vacinas"
+              element={
+                <TutorRoute>
+                  <VacinasPage />
+                </TutorRoute>
+              }
+            />
+            <Route
+              path="/tutor/servicos"
+              element={
+                <TutorRoute>
+                  <ServicosPage />
+                </TutorRoute>
+              }
+            />
+            <Route
+              path="/tutor/mensagens"
+              element={
+                <TutorRoute>
+                  <MensagensPage />
+                </TutorRoute>
+              }
+            />
 
-              {/* --- ROTAS PROTEGIDAS - VETERINÁRIO --- */}
-              <Route
-                path="/dashboard/veterinario"
-                element={
-                  <VeterinarioRoute>
-                    <DashboardVeterinario />
-                  </VeterinarioRoute>
-                }
-              />
-              <Route
-                path="/dashboard/veterinario/agenda"
-                element={
-                  <VeterinarioRoute>
-                    <DashboardVeterinarioAgenda />
-                  </VeterinarioRoute>
-                }
-              />
-              <Route
-                path="/dashboard/veterinario/pacientes"
-                element={
-                  <VeterinarioRoute>
-                    <DashboardVeterinarioPacientes />
-                  </VeterinarioRoute>
-                }
-              />
-              <Route
-                path="/veterinario/perfil"
-                element={
-                  <VeterinarioRoute>
-                    <VeterinarioPerfil />
-                  </VeterinarioRoute>
-                }
-              />
-              <Route
-                path="/prontuario/:id"
-                element={
-                  <VeterinarioRoute>
-                    <ProntuarioPage />
-                  </VeterinarioRoute>
-                }
-              />
-              <Route
-                path="/inventory"
-                element={
-                  <VeterinarioRoute>
-                    <EstoquePage />
-                  </VeterinarioRoute>
-                }
-              />
-              <Route
-                path="/finance"
-                element={
-                  <VeterinarioRoute>
-                    <FinanceiroPage />
-                  </VeterinarioRoute>
-                }
-              />
-              <Route
-                path="/marketing"
-                element={
-                  <VeterinarioRoute>
-                    <MarketingPage />
-                  </VeterinarioRoute>
-                }
-              />
-              <Route
-                path="/chat"
-                element={
-                  <VeterinarioRoute>
-                    <ChatPage />
-                  </VeterinarioRoute>
-                }
-              />
-              <Route
-                path="/messages"
-                element={
-                  <VeterinarioRoute>
-                    <ChatPage />
-                  </VeterinarioRoute>
-                }
-              />
+            {/* --- ROTAS PROTEGIDAS - VETERINÁRIO --- */}
+            <Route
+              path="/dashboard/veterinario"
+              element={
+                <VeterinarioRoute>
+                  <DashboardVeterinario />
+                </VeterinarioRoute>
+              }
+            />
+            <Route
+              path="/dashboard/veterinario/agenda"
+              element={
+                <VeterinarioRoute>
+                  <DashboardVeterinarioAgenda />
+                </VeterinarioRoute>
+              }
+            />
+            <Route
+              path="/dashboard/veterinario/pacientes"
+              element={
+                <VeterinarioRoute>
+                  <DashboardVeterinarioPacientes />
+                </VeterinarioRoute>
+              }
+            />
+            <Route
+              path="/veterinario/perfil"
+              element={
+                <VeterinarioRoute>
+                  <VeterinarioPerfil />
+                </VeterinarioRoute>
+              }
+            />
+            <Route
+              path="/prontuario/:id"
+              element={
+                <VeterinarioRoute>
+                  <ProntuarioPage />
+                </VeterinarioRoute>
+              }
+            />
+            <Route
+              path="/inventory"
+              element={
+                <VeterinarioRoute>
+                  <EstoquePage />
+                </VeterinarioRoute>
+              }
+            />
+            <Route
+              path="/finance"
+              element={
+                <VeterinarioRoute>
+                  <FinanceiroPage />
+                </VeterinarioRoute>
+              }
+            />
+            <Route
+              path="/marketing"
+              element={
+                <VeterinarioRoute>
+                  <MarketingPage />
+                </VeterinarioRoute>
+              }
+            />
+            <Route
+              path="/veterinario/duvidas"
+              element={
+                <VeterinarioRoute>
+                  <PainelDuvidasVet />
+                </VeterinarioRoute>
+              }
+            />
+            <Route
+              path="/chat"
+              element={
+                <VeterinarioRoute>
+                  <ChatPage />
+                </VeterinarioRoute>
+              }
+            />
 
-              {/* --- ROTAS PROTEGIDAS - ANUNCIANTE --- */}
-              <Route
-                path="/dashboard/anunciante"
-                element={
-                  <AnuncianteRoute>
-                    <DashboardAnunciante />
-                  </AnuncianteRoute>
-                }
-              />
-              <Route
-                path="/dashboard/anunciante/financeiro"
-                element={
-                  <AnuncianteRoute>
-                    <FinanceiroAnunciante />
-                  </AnuncianteRoute>
-                }
-              />
-              <Route
-                path="/dashboard/anunciante/meus-eventos"
-                element={
-                  <AnuncianteRoute>
-                    <MeusEventos />
-                  </AnuncianteRoute>
-                }
-              />
-              <Route
-                path="/dashboard/anunciante/novo-evento"
-                element={
-                  <AnuncianteRoute>
-                    <CriacaoAnuncio />
-                  </AnuncianteRoute>
-                }
-              />
-              <Route
-                path="/anunciante/campanhas"
-                element={
-                  <AnuncianteRoute>
-                    <GestaoCampanhas />
-                  </AnuncianteRoute>
-                }
-              />
-              <Route
-                path="/demo/criacao-anuncio"
-                element={<CriacaoAnuncioDemo />}
-              />
-              <Route
-                path="/dashboard/anunciante/orcamento-duracao"
-                element={
-                  <AnuncianteRoute>
-                    <OrcamentoDuracao />
-                  </AnuncianteRoute>
-                }
-              />
-              <Route
-                path="/demo/orcamento-duracao"
-                element={<OrcamentoDuracaoDemo />}
-              />
+            {/* --- ROTAS PROTEGIDAS - ANUNCIANTE --- */}
+            <Route
+              path="/dashboard/anunciante"
+              element={
+                <AnuncianteRoute>
+                  <DashboardAnunciante />
+                </AnuncianteRoute>
+              }
+            />
+            <Route
+              path="/anunciante/criar-campanha"
+              element={
+                <AnuncianteRoute>
+                  <CriacaoAnuncio />
+                </AnuncianteRoute>
+              }
+            />
+            <Route
+              path="/anunciante/gestao-campanhas"
+              element={
+                <AnuncianteRoute>
+                  <GestaoCampanhas />
+                </AnuncianteRoute>
+              }
+            />
+            <Route
+              path="/anunciante/orcamento-duracao"
+              element={
+                <AnuncianteRoute>
+                  <OrcamentoDuracao />
+                </AnuncianteRoute>
+              }
+            />
+            <Route
+              path="/anunciante/financeiro"
+              element={
+                <AnuncianteRoute>
+                  <FinanceiroAnunciante />
+                </AnuncianteRoute>
+              }
+            />
 
-              {/* --- ROTAS PROTEGIDAS - PARCEIRO --- */}
-              <Route
-                path="/dashboard/parceiro/*"
-                element={
-                  <ParceiroRoute>
-                    <DashboardParceiroRouter />
-                  </ParceiroRoute>
-                }
-              />
-              <Route
-                path="/parceiro/animais"
-                element={
-                  <ParceiroRoute>
-                    <GestaoAnimaisCausa />
-                  </ParceiroRoute>
-                }
-              />
-              <Route
-                path="/parceiro/servicos"
-                element={
-                  <ParceiroRoute>
-                    <GestaoServicos />
-                  </ParceiroRoute>
-                }
-              />
-              <Route
-                path="/parceiro/avaliacoes"
-                element={
-                  <ParceiroRoute>
-                    <GestaoAvaliacoes />
-                  </ParceiroRoute>
-                }
-              />
+            {/* --- ROTAS PROTEGIDAS - PARCEIRO --- */}
+            <Route
+              path="/dashboard/parceiro/*"
+              element={
+                <ParceiroRoute>
+                  <DashboardParceiroRouter />
+                </ParceiroRoute>
+              }
+            />
 
-              {/* --- ROTA 404 - PÁGINA NÃO ENCONTRADA --- */}
-              <Route
-                path="*"
-                element={
-                  <div className="container text-center py-5">
-                    <div className="alert alert-info" role="alert">
-                      <h4 className="alert-heading">
-                        <i className="fas fa-search me-2"></i>
-                        404 - Página não encontrada
-                      </h4>
-                      <p className="mb-3">
-                        A página que você está procurando não existe ou foi
-                        movida.
-                      </p>
-                      <hr />
-                      <div className="d-flex justify-content-center gap-2">
-                        <a href="/" className="btn btn-primary">
-                          <i className="fas fa-home me-2"></i>
-                          Voltar ao Início
-                        </a>
-                        <button
-                          className="btn btn-outline-secondary"
-                          onClick={() => window.history.back()}
-                        >
-                          <i className="fas fa-arrow-left me-2"></i>
-                          Voltar
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                }
-              />
-            </Routes>
-          </Suspense>
-        </div>
-      </TransitionWrapper>
+            {/* --- ROTA 404 - PÁGINA NÃO ENCONTRADA --- */}
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </Suspense>
+      </div>
     </SubscriptionProvider>
   );
 }

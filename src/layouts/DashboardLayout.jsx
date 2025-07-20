@@ -221,6 +221,7 @@ const DashboardLayout = ({ children, tipoUsuario, nomeUsuario }) => {
                   }}
                   onClick={() => navigate(item.to)}
                   title={item.label}
+                  aria-label={`Navegar para ${item.label}`}
                 >
                   <Icon size={18} />
                   <span className="flex-grow-1">{item.label}</span>
@@ -268,6 +269,7 @@ const DashboardLayout = ({ children, tipoUsuario, nomeUsuario }) => {
           <button
             className="btn btn-link text-muted p-0"
             onClick={closeSidebar}
+            aria-label="Fechar menu lateral"
           >
             <FaTimes size={20} />
           </button>
@@ -330,6 +332,7 @@ const DashboardLayout = ({ children, tipoUsuario, nomeUsuario }) => {
               className="btn btn-outline-secondary d-lg-none d-flex align-items-center gap-2"
               onClick={toggleSidebar}
               style={{ fontSize: 15 }}
+              aria-label="Abrir menu lateral"
             >
               <FaBars />
             </button>
