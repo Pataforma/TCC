@@ -425,7 +425,7 @@ const Home = () => {
       </section>
 
       {/* Seção ProductHighlight */}
-      <section className="py-5 bg-light text-center">
+      {/* <section className="py-5 bg-light text-center">
         <h3>Alimentador Inteligente</h3>
         <p>
           Descubra como o nosso alimentador pode transformar a alimentação do
@@ -444,7 +444,7 @@ const Home = () => {
           className="mt-3"
           onClick={() => navigate(`/Produto`)}
         />
-      </section>
+      </section> */}
 
       {/* Seção Perdidos
       <section className="py-5 bg-button text-white">
