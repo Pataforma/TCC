@@ -58,16 +58,16 @@ const TipoUsuario = () => {
     },
     {
       id: "parceiro",
-      titulo: "Parceiro ONG",
-      descricao: "Gerencie pets para adoção, eventos e campanhas sociais",
+      titulo: "Parceiro de Negócio",
+      descricao: "Gerencie seu negócio e divulgue seus serviços",
       icone: <MdHandshake size={54} color={elementsColor} />,
       rota: "/dashboard/parceiro",
       borderColor: elementsColor,
       bullets: [
-        "Gestão de adoções",
-        "Eventos e feiras",
-        "Controle de interessados",
-        "Relatórios de impacto",
+        "Gestão de negócio",
+        "Divulgação de serviços",
+        "Gestão de clientes",
+        "Gestão de fornecedores",
       ],
     },
     {
