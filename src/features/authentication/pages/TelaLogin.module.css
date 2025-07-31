@@ -188,10 +188,21 @@
   border: 2px solid transparent;
 }
 
+.auth-label-input:hover {
+  border-color: rgba(13, 178, 172, 0.3);
+}
+
 .auth-label-input:focus-within {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: var(--main-color);
+  box-shadow: 0 0 0 2px rgba(13, 178, 172, 0.2);
+}
+
+/* .auth-label-input:focus-within {
   border-color: var(--main-color);
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-}
+} */
 
 .auth-label-input i {
   color: var(--main-color);
@@ -206,6 +217,11 @@
   height: 100%;
   color: #333;
   font-size: 15px;
+}
+
+.auth-label-input input:focus {
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 .auth-label-input input::placeholder {

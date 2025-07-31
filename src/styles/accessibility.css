@@ -1,9 +1,20 @@
 /* Estilos para acessibilidade */
 
-/* Foco visível para navegação por teclado */
-*:focus {
+/* Foco visível para navegação por teclado - excluindo inputs e elementos de formulário */
+*:focus:not(input):not(textarea):not(select):not([contenteditable]):not(.auth-label-input):not(.auth-label-input *) {
     outline: 2px solid var(--main-color) !important;
     outline-offset: 2px !important;
+}
+
+/* Remover outline dos inputs para evitar a caixa azul */
+input:focus,
+textarea:focus,
+select:focus,
+[contenteditable]:focus,
+.auth-label-input:focus,
+.auth-label-input *:focus {
+    outline: none !important;
+    outline-offset: 0 !important;
 }
 
 /* Melhorar contraste de texto */
