@@ -48,7 +48,7 @@ export default function EtapaConfiguracaoPlano({ data, onUpdate, onNext }) {
 
   useEffect(() => {
     onUpdate({ selectedPlan });
-  }, [selectedPlan, onUpdate]);
+  }, [selectedPlan]);
 
   const handlePlanSelection = (planName) => {
     setSelectedPlan(planName);

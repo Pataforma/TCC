@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./OnboardingWizard.module.css";
 
@@ -13,9 +13,9 @@ export default function OnboardingWizard({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
-  const updateFormData = (data) => {
+  const updateFormData = useCallback((data) => {
     setFormData((prev) => ({ ...prev, ...data }));
-  };
+  }, []);
 
   const nextStep = () => {
     if (currentStep < steps.length - 1) {
@@ -104,15 +104,17 @@ export default function OnboardingWizard({
 
         {/* Navigation */}
         <div className={styles.navigation}>
-          {!isFirstStep && (
-            <button
-              className={styles.btnSecondary}
-              onClick={prevStep}
-              disabled={isSubmitting}
-            >
-              <i className="fas fa-arrow-left"></i> Voltar
-            </button>
-          )}
+          <div className={styles.navigationLeft}>
+            {!isFirstStep && (
+              <button
+                className={styles.btnSecondary}
+                onClick={prevStep}
+                disabled={isSubmitting}
+              >
+                <i className="fas fa-arrow-left"></i> Voltar
+              </button>
+            )}
+          </div>
 
           <div className={styles.navigationRight}>
             {!isLastStep ? (

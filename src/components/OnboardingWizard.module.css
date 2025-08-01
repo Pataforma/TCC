@@ -188,6 +188,13 @@
   z-index: 3;
 }
 
+.navigationLeft {
+  display: flex;
+  gap: 1rem;
+  position: relative;
+  z-index: 5;
+}
+
 .navigationRight {
   display: flex;
   gap: 1rem;
@@ -305,6 +312,10 @@
     padding: 1.5rem 1rem;
     flex-direction: row;
     gap: 1rem;
+  }
+
+  .navigationLeft {
+    width: auto;
   }
 
   .navigationRight {

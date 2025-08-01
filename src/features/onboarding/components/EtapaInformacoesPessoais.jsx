@@ -11,7 +11,7 @@ export default function EtapaInformacoesPessoais({ data, onUpdate, onNext }) {
 
   useEffect(() => {
     onUpdate(formData);
-  }, [formData, onUpdate]);
+  }, [formData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
