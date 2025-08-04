@@ -470,7 +470,7 @@ const FinanceiroPage = () => {
                           </div>
                           <div className="progress" style={{ height: "8px" }}>
                             <div
-                              className="progress-bar"
+                              className="progress-bar stock-progress-bar"
                               style={{ width: `${custo.percentual}%` }}
                             ></div>
                           </div>

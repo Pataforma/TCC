@@ -108,7 +108,7 @@ const EventoCausaCard = ({ evento, onEdit, onView }) => {
             </div>
             <div className="progress" style={{ height: "6px" }}>
               <div
-                className={`progress-bar bg-${getProgressColor()}`}
+                className={`progress-bar bg-${getProgressColor()} stock-progress-bar`}
                 style={{ width: `${getProgressPercentage()}%` }}
               ></div>
             </div>

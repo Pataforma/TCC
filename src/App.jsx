@@ -427,10 +427,26 @@ function App() {
               }
             />
             <Route
-              path="/anunciante/financeiro"
+              path="/dashboard/anunciante/financeiro"
               element={
                 <AnuncianteRoute>
                   <FinanceiroAnunciante />
+                </AnuncianteRoute>
+              }
+            />
+            <Route
+              path="/dashboard/anunciante/meus-eventos"
+              element={
+                <AnuncianteRoute>
+                  <MeusEventos />
+                </AnuncianteRoute>
+              }
+            />
+            <Route
+              path="/dashboard/anunciante/novo-evento"
+              element={
+                <AnuncianteRoute>
+                  <CriacaoAnuncio />
                 </AnuncianteRoute>
               }
             />

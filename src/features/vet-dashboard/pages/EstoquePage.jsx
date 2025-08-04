@@ -458,6 +458,7 @@ const EstoquePage = () => {
                                 variant={stockProgress.variant}
                                 now={stockProgress.percentage}
                                 style={{ height: "6px" }}
+                                className="stock-progress-bar"
                               />
                             </div>
                           </td>

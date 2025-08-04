@@ -610,6 +610,7 @@ const MarketingPage = () => {
                           variant="primary"
                           now={(campanha.gastoAtual / campanha.orcamento) * 100}
                           style={{ height: "6px" }}
+                          className="stock-progress-bar"
                         />
                       </div>
 

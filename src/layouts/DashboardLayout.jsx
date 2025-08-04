@@ -87,7 +87,7 @@ const DashboardLayout = ({ children, tipoUsuario, nomeUsuario }) => {
       { label: "Vacinas", to: "/tutor/vacinas", icon: FaSyringe },
       {
         label: "Financeiro",
-        to: "/dashboard/tutor/financeiro",
+        to: "/tutor/financeiro",
         icon: FaMoneyBill,
       },
       { label: "Serviços Locais", to: "/tutor/servicos", icon: FaMapMarkerAlt },
@@ -103,7 +103,7 @@ const DashboardLayout = ({ children, tipoUsuario, nomeUsuario }) => {
         to: "/tutor/pet-perdido",
         icon: FaPlus,
       },
-      { label: "Adotar Pet", to: "/adocao", icon: FaHeart },
+      { label: "Adotar Pet", to: "/tutor/adotar-pet", icon: FaHeart },
     ],
     anunciante: [
       { label: "Dashboard", to: "/dashboard/anunciante", icon: FaHome },
