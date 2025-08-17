@@ -260,7 +260,9 @@ const TelaLogin = () => {
   const handleGoogleLogin = async () => {
     setLoading(true);
     try {
-      const redirectUrl = `${window.location.origin}/TCC-oficial/auth/callback`;
+      const base = import.meta.env.BASE_URL || "/";
+      const normalizedBase = base.endsWith("/") ? base.slice(0, -1) : base;
+      const redirectUrl = `${window.location.origin}${normalizedBase}/auth/callback`;
 
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",

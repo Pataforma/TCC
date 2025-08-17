@@ -6,41 +6,69 @@ const AuthCallback = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const processRedirect = async () => {
+        const handleCallback = async () => {
             try {
+                // 1) Garante que a sessão foi criada a partir do fragment/hash do OAuth
+                // (Supabase v2 trata automaticamente, mas aguardamos a hidratação da sessão)
                 const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
                 if (sessionError || !session || !session.user) {
-                    console.error("Erro ao obter sessão:", sessionError);
-                    navigate("/telalogin"); 
+                    // Se ainda não há sessão, tenta forçar atualização a partir da URL
+                    const { error: refreshError } = await supabase.auth.refreshSession();
+                    if (refreshError) {
+                        console.error("Erro ao hidratar sessão após OAuth:", refreshError);
+                        navigate("/telalogin", { replace: true });
+                        return;
+                    }
+                }
+
+                const { data: afterRefresh } = await supabase.auth.getSession();
+                const activeSession = afterRefresh?.session;
+
+                if (!activeSession || !activeSession.user) {
+                    navigate("/telalogin", { replace: true });
                     return;
                 }
 
-                const user = session.user;
+                const userId = activeSession.user.id;
+                const userEmail = activeSession.user.email;
 
-                const { data: userData, error } = await supabase
+                // 2) Garante que existe registro na tabela usuario
+                const { data: existingUser, error: selectError } = await supabase
                     .from("usuario")
-                    .select("tipo_usuario")
-                    .eq("email", user.email)
+                    .select("id_usuario, tipo_usuario")
+                    .eq("email", userEmail)
                     .maybeSingle();
 
-                if (error || !userData) {
-                    console.error("Erro ao buscar dados do usuário:", error);
-                    navigate("/tipo-usuario"); 
-                } else if (userData.tipo_usuario && userData.tipo_usuario !== "pendente") {
-                    navigate(`/dashboard/${userData.tipo_usuario}`); 
-                } else {
-                    navigate("/tipo-usuario"); 
+                if (selectError) {
+                    console.error("Erro ao buscar usuário:", selectError);
                 }
-            } catch (error) {
-                console.error("Erro no callback:", error);
-                navigate("/telalogin"); 
+
+                if (!existingUser) {
+                    const { error: insertError } = await supabase
+                        .from("usuario")
+                        .insert([{ id_usuario: userId, email: userEmail, tipo_usuario: "pendente" }]);
+                    if (insertError) {
+                        console.error("Erro ao criar usuário:", insertError);
+                    }
+                    navigate("/tipo-usuario", { replace: true });
+                    return;
+                }
+
+                // 3) Redireciona conforme tipo
+                if (existingUser.tipo_usuario && existingUser.tipo_usuario !== "pendente") {
+                    navigate(`/dashboard/${existingUser.tipo_usuario}`, { replace: true });
+                } else {
+                    navigate("/tipo-usuario", { replace: true });
+                }
+            } catch (err) {
+                console.error("Erro no callback OAuth:", err);
+                navigate("/telalogin", { replace: true });
             }
         };
 
-        processRedirect();
+        handleCallback();
     }, [navigate]);
-
 
     return <p>Redirecionando...</p>;
 };

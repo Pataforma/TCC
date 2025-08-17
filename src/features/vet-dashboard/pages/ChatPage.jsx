@@ -145,52 +145,12 @@ const ChatPage = () => {
     }
   };
 
-  const handleSendMessage = async () => {
-    if (!newMessage.trim() || !selectedConversation) return;
+  // Função wrapper para enviar mensagem (com suporte a anexos)
+  const handleSendMessage = () => {
+    if (!newMessage.trim() && !selectedFile) return;
 
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
-
-      const messageData = {
-        remetente_id: session.user.id,
-        destinatario_id: selectedConversation.tutor.id,
-        paciente_id: selectedConversation.paciente?.id || null,
-        conteudo: newMessage.trim(),
-        tipo: 'texto',
-        data_envio: new Date().toISOString(),
-        lida: false
-      };
-
-      const { error } = await supabase
-        .from('mensagens')
-        .insert(messageData);
-
-      if (error) throw error;
-
-      // Limpar campo de mensagem
-      setNewMessage('');
-      
-      // Recarregar conversas para atualizar a lista
-      fetchConversations();
-      
-      // Atualizar mensagens da conversa selecionada
-      if (selectedConversation) {
-        const updatedConversation = { ...selectedConversation };
-        updatedConversation.messages.push({
-          id: Date.now(), // ID temporário
-          sender: 'vet',
-          text: messageData.conteudo,
-          timestamp: formatMessageTime(messageData.data_envio),
-          status: 'sent',
-          attachments: []
-        });
-        setSelectedConversation(updatedConversation);
-      }
-    } catch (error) {
-      console.error('Erro ao enviar mensagem:', error);
-      alert('Erro ao enviar mensagem: ' + error.message);
-    }
+    // Usar a função async para enviar mensagem ao Supabase
+    handleSendMessageAsync();
   };
 
   const handleConversationSelect = (conversation) => {
@@ -232,84 +192,8 @@ const ChatPage = () => {
       console.error('Erro ao marcar mensagens como lidas:', error);
     }
   };
-      petImage: "https://via.placeholder.com/40x40/45b7d1/ffffff?text=M",
-      lastMessage:
-        "Dr. André, o Max está comendo bem e brincando normalmente. A cirurgia foi um sucesso!",
-      lastMessageTime: "12:20",
-      unreadCount: 1,
-      isOnline: true,
-      messages: [
-        {
-          id: 1,
-          sender: "tutor",
-          text: "Dr. André, o Max está comendo bem e brincando normalmente. A cirurgia foi um sucesso!",
-          timestamp: "12:20",
-          status: "read",
-          attachments: [],
-        },
-        {
-          id: 2,
-          sender: "tutor",
-          text: "Posso agendar o retorno para retirar os pontos?",
-          timestamp: "12:22",
-          status: "sent",
-          attachments: [],
-        },
-      ],
-    },
-    {
-      id: 4,
-      tutor: "Ana Costa",
-      pet: "Nina",
-      petImage: "https://via.placeholder.com/40x40/f9ca24/ffffff?text=N",
-      lastMessage: "A Nina está com o apetite reduzido. Devo me preocupar?",
-      lastMessageTime: "11:15",
-      unreadCount: 0,
-      isOnline: false,
-      messages: [
-        {
-          id: 1,
-          sender: "tutor",
-          text: "A Nina está com o apetite reduzido. Devo me preocupar?",
-          timestamp: "11:15",
-          status: "read",
-          attachments: [],
-        },
-        {
-          id: 2,
-          sender: "vet",
-          text: "Olá Ana! Há quanto tempo a Nina está com apetite reduzido? Ela está com outros sintomas?",
-          timestamp: "11:18",
-          status: "read",
-          attachments: [],
-        },
-        {
-          id: 3,
-          sender: "tutor",
-          text: "Há 2 dias. Ela está mais quieta também.",
-          timestamp: "11:20",
-          status: "read",
-          attachments: [],
-        },
-        {
-          id: 4,
-          sender: "vet",
-          text: "Vamos agendar uma consulta para avaliar. Pode vir amanhã às 10h?",
-          timestamp: "11:22",
-          status: "read",
-          attachments: [],
-        },
-      ],
-    },
-  ]);
 
   // Funções de manipulação
-  const handleSendMessage = () => {
-    if (!newMessage.trim() && !selectedFile) return;
-
-    // Usar a função async para enviar mensagem ao Supabase
-    handleSendMessageAsync();
-  };
 
   const handleSendMessageAsync = async () => {
     if (!newMessage.trim() || !selectedConversation) return;
