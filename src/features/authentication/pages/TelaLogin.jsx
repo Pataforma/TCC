@@ -32,7 +32,6 @@ const TelaLogin = () => {
           return;
         }
 
-        setLoading(true);
         const userId = session.user.id;
         const userEmail = session.user.email;
 
@@ -47,7 +46,6 @@ const TelaLogin = () => {
           if (fetchError) {
             console.error("Erro ao verificar usuário:", fetchError);
             // Não mostrar alert aqui para evitar duplos alerts
-            setLoading(false);
             return;
           }
 
@@ -85,7 +83,6 @@ const TelaLogin = () => {
 
             if (insertError) {
               console.error("Erro ao inserir usuário:", insertError);
-              setLoading(false);
               return;
             }
 
@@ -95,7 +92,6 @@ const TelaLogin = () => {
         } catch (error) {
           console.error("Erro no processo de autenticação:", error);
         } finally {
-          setLoading(false);
         }
       }
     };
