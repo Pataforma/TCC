@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import DashboardLayout from "../../../layouts/DashboardLayout";
 import { supabase } from "../../../utils/supabase";
+import { useUser } from "../../../contexts/UserContext";
 import {
   FaUserMd,
   FaEnvelope,
@@ -22,6 +23,7 @@ const VeterinarioPerfil = () => {
   const [fotoPreview, setFotoPreview] = useState("");
   const [loading, setLoading] = useState(false);
   const [mensagem, setMensagem] = useState("");
+  const { updateUserProfile, fetchUserData } = useUser();
 
   useEffect(() => {
     const fetchPerfil = async () => {
@@ -107,29 +109,28 @@ const VeterinarioPerfil = () => {
         data: { session },
       } = await supabase.auth.getSession();
       if (!session) throw new Error("Sessão expirada");
-      // Atualizar dados básicos na tabela usuario
-      const { error: userError } = await supabase
-        .from("usuario")
-        .update({
-          nome: perfil.nome,
-        })
-        .eq("email", session.user.email)
-        .eq("status", "ativo");
-
-      if (userError) throw userError;
+      // Atualizar dados básicos e sincronizar contexto global do usuário
+      await updateUserProfile({ nome: perfil.nome });
 
       // Atualizar dados específicos na tabela veterinarios
-      const { error: vetError } = await supabase.from("veterinarios").upsert({
-        id_usuario: session.user.id,
-        especialidades: [perfil.especialidade],
-        bio: perfil.bio,
-        foto_url,
-      });
+      // Usar UPDATE para evitar tentar inserir sem o campo obrigatório `crmv`
+      const { error: vetError } = await supabase
+        .from("veterinarios")
+        .update({
+          especialidades: [perfil.especialidade],
+          bio: perfil.bio,
+          foto_url,
+        })
+        .eq("id_usuario", session.user.id);
 
       if (vetError) throw vetError;
       setMensagem("Perfil atualizado com sucesso!");
       setEditMode(false);
       setPerfil((prev) => ({ ...prev, foto_url }));
+      // Garantir que o cabeçalho reflita o novo nome imediatamente
+      try {
+        await fetchUserData();
+      } catch {}
     } catch (error) {
       setMensagem("Erro ao atualizar perfil: " + error.message);
     } finally {
