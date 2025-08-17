@@ -14,10 +14,10 @@ const HeaderActions = ({ tipoUsuario, nomeUsuario }) => {
 
   // Rotas de perfil por tipo de usuário
   const perfilRoutes = {
-    veterinario: "/veterinario/perfil",
-    tutor: "/tutor/perfil",
-    anunciante: "/anunciante/perfil",
-    parceiro: "/parceiro/perfil",
+    veterinario: "/dashboard/veterinario/perfil",
+    tutor: "/dashboard/tutor/perfil",
+    anunciante: "/dashboard/anunciante/perfil",
+    parceiro: "/dashboard/parceiro/perfil",
   };
 
   const handleLogout = async () => {

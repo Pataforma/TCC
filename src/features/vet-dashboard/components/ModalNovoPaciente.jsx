@@ -1,7 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Button, Form, Row, Col, Alert } from "react-bootstrap";
+import {
+  Modal,
+  Button,
+  Form,
+  Row,
+  Col,
+  Alert,
+  InputGroup,
+} from "react-bootstrap";
 import { supabase } from "../../../utils/supabase";
-import { FaPlus, FaSpinner } from "react-icons/fa";
+import { criarRelacionamentoVeterinarioTutor } from "../../../utils/veterinarioTutor";
+import { FaPlus, FaSpinner, FaMapMarkerAlt } from "react-icons/fa";
 
 export default function ModalNovoPaciente({ show, onHide, onPacienteCriado }) {
   const [formData, setFormData] = useState({
@@ -34,6 +43,79 @@ export default function ModalNovoPaciente({ show, onHide, onPacienteCriado }) {
   // Estados para validação
   const [validated, setValidated] = useState(false);
   const [errors, setErrors] = useState({});
+  const [buscandoCep, setBuscandoCep] = useState(false);
+
+  // Funções de máscara
+  const aplicarMascaraCPF = (value) => {
+    const numbers = value.replace(/\D/g, "");
+    if (numbers.length <= 3) return numbers;
+    if (numbers.length <= 6)
+      return `${numbers.slice(0, 3)}.${numbers.slice(3)}`;
+    if (numbers.length <= 9)
+      return `${numbers.slice(0, 3)}.${numbers.slice(3, 6)}.${numbers.slice(
+        6
+      )}`;
+    return `${numbers.slice(0, 3)}.${numbers.slice(3, 6)}.${numbers.slice(
+      6,
+      9
+    )}-${numbers.slice(9, 11)}`;
+  };
+
+  const aplicarMascaraTelefone = (value) => {
+    const numbers = value.replace(/\D/g, "");
+    if (numbers.length <= 2) return `(${numbers}`;
+    if (numbers.length <= 6)
+      return `(${numbers.slice(0, 2)}) ${numbers.slice(2)}`;
+    if (numbers.length <= 10)
+      return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 6)}-${numbers.slice(
+        6
+      )}`;
+    return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 6)}-${numbers.slice(
+      6,
+      10
+    )}`;
+  };
+
+  const aplicarMascaraCep = (value) => {
+    const numbers = value.replace(/\D/g, "");
+    if (numbers.length <= 5) return numbers;
+    return `${numbers.slice(0, 5)}-${numbers.slice(5, 8)}`;
+  };
+
+  const limparMascara = (value) => {
+    return value.replace(/\D/g, "");
+  };
+
+  // Função para buscar endereço pelo CEP
+  const buscarEnderecoPorCep = async (cep) => {
+    if (!cep || cep.length < 8) return;
+
+    try {
+      setBuscandoCep(true);
+      const cepLimpo = limparMascara(cep);
+
+      if (cepLimpo.length !== 8) return;
+
+      const response = await fetch(
+        `https://viacep.com.br/ws/${cepLimpo}/json/`
+      );
+      const data = await response.json();
+
+      if (!data.erro) {
+        setFormData((prev) => ({
+          ...prev,
+          tutorEndereco: data.logradouro || "",
+          tutorCidade: data.localidade || "",
+          tutorEstado: data.uf || "",
+          tutorCep: cep, // Mantém o CEP com máscara
+        }));
+      }
+    } catch (error) {
+      console.error("Erro ao buscar CEP:", error);
+    } finally {
+      setBuscandoCep(false);
+    }
+  };
 
   // Opções para os selects
   const especies = ["Cão", "Gato", "Ave", "Réptil", "Peixe", "Outro"];
@@ -82,17 +164,39 @@ export default function ModalNovoPaciente({ show, onHide, onPacienteCriado }) {
       } = await supabase.auth.getSession();
       if (!session) return;
 
+      // Buscar tutores da tabela tutor que têm relacionamento com este veterinário
       const { data: tutores, error } = await supabase
-        .from("tutor")
-        .select("*")
-        .order("nome");
+        .from("veterinario_tutor")
+        .select(
+          `
+          tutor_id,
+          status,
+          tutor: tutor_id (
+            id,
+            nome,
+            telefone,
+            email
+          )
+        `
+        )
+        .eq("veterinario_id", session.user.id)
+        .eq("status", "ativo")
+        .order("tutor.nome");
 
       if (error) {
         console.error("Erro ao carregar tutores:", error);
         return;
       }
 
-      setTutoresExistentes(tutores || []);
+      // Mapear os dados para o formato esperado
+      const tutoresMapeados = (tutores || []).map((item) => ({
+        id_tutor: item.tutor.id, // Agora é um UUID
+        nome: item.tutor.nome,
+        telefone: item.tutor.telefone,
+        email: item.tutor.email,
+      }));
+
+      setTutoresExistentes(tutoresMapeados);
     } catch (error) {
       console.error("Erro ao carregar tutores:", error);
     }
@@ -128,9 +232,20 @@ export default function ModalNovoPaciente({ show, onHide, onPacienteCriado }) {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    let valorProcessado = value;
+
+    // Aplicar máscaras específicas
+    if (name === "tutorCpf") {
+      valorProcessado = aplicarMascaraCPF(value);
+    } else if (name === "tutorTelefone") {
+      valorProcessado = aplicarMascaraTelefone(value);
+    } else if (name === "tutorCep") {
+      valorProcessado = aplicarMascaraCep(value);
+    }
+
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: valorProcessado,
     }));
 
     // Limpar erro do campo quando usuário começa a digitar
@@ -139,6 +254,11 @@ export default function ModalNovoPaciente({ show, onHide, onPacienteCriado }) {
         ...prev,
         [name]: "",
       }));
+    }
+
+    // Buscar endereço automaticamente quando o CEP for digitado
+    if (name === "tutorCep" && value.length >= 8) {
+      buscarEnderecoPorCep(value);
     }
   };
 
@@ -149,9 +269,7 @@ export default function ModalNovoPaciente({ show, onHide, onPacienteCriado }) {
       setTutorSelecionado(null);
     } else {
       setModoNovoTutor(false);
-      const tutor = tutoresExistentes.find(
-        (t) => t.id_tutor === parseInt(tutorId)
-      );
+      const tutor = tutoresExistentes.find((t) => t.id_tutor === tutorId);
       setTutorSelecionado(tutor);
     }
   };
@@ -169,10 +287,18 @@ export default function ModalNovoPaciente({ show, onHide, onPacienteCriado }) {
     if (modoNovoTutor) {
       if (!formData.tutorNome.trim())
         novosErros.tutorNome = "Nome do tutor é obrigatório";
-      if (!formData.tutorTelefone.trim())
+
+      if (!formData.tutorTelefone.trim()) {
         novosErros.tutorTelefone = "Telefone do tutor é obrigatório";
-      if (!formData.tutorCpf.trim())
+      } else if (limparMascara(formData.tutorTelefone).length < 10) {
+        novosErros.tutorTelefone = "Telefone deve ter pelo menos 10 dígitos";
+      }
+
+      if (!formData.tutorCpf.trim()) {
         novosErros.tutorCpf = "CPF do tutor é obrigatório";
+      } else if (limparMascara(formData.tutorCpf).length !== 11) {
+        novosErros.tutorCpf = "CPF deve ter 11 dígitos";
+      }
     } else if (!tutorSelecionado) {
       novosErros.tutor = "Selecione um tutor existente";
     }
@@ -201,32 +327,86 @@ export default function ModalNovoPaciente({ show, onHide, onPacienteCriado }) {
         throw new Error("Usuário não autenticado");
       }
 
+      // Buscar o id_veterinarios do veterinário logado
+      const { data: veterinario, error: vetError } = await supabase
+        .from("veterinarios")
+        .select("id_veterinarios")
+        .eq("id_usuario", session.user.id)
+        .single();
+
+      if (vetError || !veterinario) {
+        throw new Error("Veterinário não encontrado. Verifique seu perfil.");
+      }
+
       let tutorId = tutorSelecionado?.id_tutor;
 
       // Se for um novo tutor, criar primeiro
       if (modoNovoTutor) {
+        // Criar tutor diretamente na tabela tutor (sem relação com usuario)
         const { data: novoTutor, error: tutorError } = await supabase
           .from("tutor")
           .insert([
             {
               nome: formData.tutorNome,
               email: formData.tutorEmail || null,
-              telefone: formData.tutorTelefone,
-              cpf: formData.tutorCpf,
+              telefone: limparMascara(formData.tutorTelefone),
+              cpf: limparMascara(formData.tutorCpf),
               endereco: formData.tutorEndereco || null,
               cidade: formData.tutorCidade || null,
               estado: formData.tutorEstado || null,
-              cep: formData.tutorCep || null,
+              cep: limparMascara(formData.tutorCep) || null,
+              status: "ativo",
             },
           ])
           .select()
           .single();
 
         if (tutorError) {
-          throw new Error("Erro ao criar tutor: " + tutorError.message);
+          // Tratamento detalhado de erros do Supabase
+          let mensagemErro = "Erro ao criar perfil do tutor: ";
+
+          if (tutorError.code === "42501") {
+            mensagemErro +=
+              "Você não tem permissão para criar perfis de tutor. Verifique se está logado corretamente.";
+          } else if (tutorError.code === "23505") {
+            if (tutorError.message.includes("cpf")) {
+              mensagemErro +=
+                "CPF já cadastrado no sistema. Verifique se o tutor já existe.";
+            } else if (tutorError.message.includes("email")) {
+              mensagemErro +=
+                "Email já cadastrado no sistema. Verifique se o tutor já existe.";
+            } else {
+              mensagemErro +=
+                "Dados duplicados. Verifique se o tutor já existe no sistema.";
+            }
+          } else if (tutorError.code === "23502") {
+            mensagemErro +=
+              "Campos obrigatórios não preenchidos. Verifique nome, telefone e CPF.";
+          } else if (tutorError.code === "23514") {
+            mensagemErro +=
+              "Dados inválidos. Verifique o formato do CPF ou telefone.";
+          } else {
+            mensagemErro +=
+              tutorError.message || "Erro desconhecido. Tente novamente.";
+          }
+
+          throw new Error(mensagemErro);
         }
 
-        tutorId = novoTutor.id_tutor;
+        // Criar relacionamento veterinario-tutor
+        const { success: relacionamentoSucesso, error: relacionamentoError } =
+          await criarRelacionamentoVeterinarioTutor(
+            session.user.id,
+            novoTutor.id, // Usar o id da tabela tutor (bigint)
+            "Relacionamento criado automaticamente ao cadastrar primeiro pet"
+          );
+
+        if (!relacionamentoSucesso) {
+          console.error("Erro ao criar relacionamento:", relacionamentoError);
+          // Não falha se não conseguir criar o relacionamento, apenas loga
+        }
+
+        tutorId = novoTutor.id; // Usar o id da tabela tutor (bigint)
       }
 
       // Criar o paciente
@@ -243,8 +423,8 @@ export default function ModalNovoPaciente({ show, onHide, onPacienteCriado }) {
             cor: formData.cor || null,
             microchip: formData.microchip || null,
             observacoes: formData.observacoes || null,
-            usuario_id: tutorId, // pets usa usuario_id (que é o tutor)
-            veterinario_id: session.user.id,
+            tutor_id: tutorId, // Agora podemos usar o campo tutor_id!
+            veterinario_id: veterinario.id_veterinarios, // Este deve ser o id_veterinarios (integer)
           },
         ])
         .select()
@@ -343,10 +523,15 @@ export default function ModalNovoPaciente({ show, onHide, onPacienteCriado }) {
                       onChange={handleInputChange}
                       isInvalid={!!errors.tutorTelefone}
                       placeholder="(11) 99999-9999"
+                      maxLength={15}
                     />
                     <Form.Control.Feedback type="invalid">
                       {errors.tutorTelefone}
                     </Form.Control.Feedback>
+                    <Form.Text className="text-muted">
+                      Digite apenas números, a máscara será aplicada
+                      automaticamente
+                    </Form.Text>
                   </Form.Group>
                 </Col>
               </Row>
@@ -364,10 +549,15 @@ export default function ModalNovoPaciente({ show, onHide, onPacienteCriado }) {
                       onChange={handleInputChange}
                       isInvalid={!!errors.tutorCpf}
                       placeholder="000.000.000-00"
+                      maxLength={14}
                     />
                     <Form.Control.Feedback type="invalid">
                       {errors.tutorCpf}
                     </Form.Control.Feedback>
+                    <Form.Text className="text-muted">
+                      Digite apenas números, a máscara será aplicada
+                      automaticamente
+                    </Form.Text>
                   </Form.Group>
                 </Col>
                 <Col md={6}>
@@ -387,6 +577,36 @@ export default function ModalNovoPaciente({ show, onHide, onPacienteCriado }) {
 
             {modoNovoTutor && (
               <Row>
+                <Col md={4}>
+                  <Form.Group className="mb-3">
+                    <Form.Label>CEP</Form.Label>
+                    <InputGroup>
+                      <Form.Control
+                        type="text"
+                        name="tutorCep"
+                        value={formData.tutorCep}
+                        onChange={handleInputChange}
+                        placeholder="00000-000"
+                        maxLength={9}
+                        title="Digite apenas números, o formato será aplicado automaticamente"
+                      />
+                      <Button
+                        variant="outline-secondary"
+                        onClick={() => buscarEnderecoPorCep(formData.tutorCep)}
+                        disabled={buscandoCep}
+                      >
+                        {buscandoCep ? (
+                          <FaSpinner className="fa-spin" />
+                        ) : (
+                          <FaMapMarkerAlt />
+                        )}
+                      </Button>
+                    </InputGroup>
+                    <Form.Text className="text-muted">
+                      Digite o CEP para preenchimento automático do endereço
+                    </Form.Text>
+                  </Form.Group>
+                </Col>
                 <Col md={8}>
                   <Form.Group className="mb-3">
                     <Form.Label>Endereço</Form.Label>
@@ -396,18 +616,7 @@ export default function ModalNovoPaciente({ show, onHide, onPacienteCriado }) {
                       value={formData.tutorEndereco}
                       onChange={handleInputChange}
                       placeholder="Rua, número, bairro"
-                    />
-                  </Form.Group>
-                </Col>
-                <Col md={4}>
-                  <Form.Group className="mb-3">
-                    <Form.Label>CEP</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="tutorCep"
-                      value={formData.tutorCep}
-                      onChange={handleInputChange}
-                      placeholder="00000-000"
+                      readOnly={buscandoCep}
                     />
                   </Form.Group>
                 </Col>
@@ -425,6 +634,7 @@ export default function ModalNovoPaciente({ show, onHide, onPacienteCriado }) {
                       value={formData.tutorCidade}
                       onChange={handleInputChange}
                       placeholder="Nome da cidade"
+                      readOnly={buscandoCep}
                     />
                   </Form.Group>
                 </Col>
@@ -435,8 +645,9 @@ export default function ModalNovoPaciente({ show, onHide, onPacienteCriado }) {
                       name="tutorEstado"
                       value={formData.tutorEstado}
                       onChange={handleInputChange}
+                      disabled={buscandoCep}
                     >
-                      <option value="">Selecione...</option>
+                      <option value="">Selecione o estado</option>
                       {estados.map((estado) => (
                         <option key={estado} value={estado}>
                           {estado}

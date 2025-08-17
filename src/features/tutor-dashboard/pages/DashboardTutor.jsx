@@ -159,15 +159,15 @@ const DashboardTutor = () => {
   };
 
   const handleAgendarVacina = (pet) => {
-    navigate("/tutor/vacinas", { state: { pet } });
+    navigate("/dashboard/tutor/vacinas", { state: { pet } });
   };
 
   const handleViewPetDetails = (pet) => {
-    navigate("/tutor/pet", { state: { pet } });
+    navigate("/dashboard/tutor/meus-pets", { state: { pet } });
   };
 
   const handleEditPet = (pet) => {
-    navigate("/tutor/pet", { state: { pet, editMode: true } });
+    navigate("/dashboard/tutor/meus-pets", { state: { pet, editMode: true } });
   };
 
   const handleDeletePet = async (petId) => {
@@ -245,7 +245,7 @@ const DashboardTutor = () => {
                   </p>
                   <button
                     className="btn btn-light btn-lg"
-                    onClick={() => navigate("/tutor/pet")}
+                    onClick={() => navigate("/dashboard/tutor/meus-pets")}
                   >
                     <FaPlus className="me-2" />
                     Cadastrar Meu Primeiro Pet
@@ -266,7 +266,7 @@ const DashboardTutor = () => {
                   </h5>
                   <button
                     className="btn btn-primary btn-sm"
-                    onClick={() => navigate("/tutor/adotar-pet")}
+                    onClick={() => navigate("/dashboard/tutor/adocao")}
                     aria-label="Ver todos os pets para adoção"
                   >
                     Ver todos
@@ -405,7 +405,7 @@ const DashboardTutor = () => {
                   </p>
                   <button
                     className="btn btn-primary btn-lg"
-                    onClick={() => navigate("/tutor/adotar-pet")}
+                    onClick={() => navigate("/dashboard/tutor/adocao")}
                   >
                     <FaHeart className="me-2" />
                     Ver pets para adoção
@@ -462,7 +462,7 @@ const DashboardTutor = () => {
               color="success"
               trend="up"
               trendValue="+2"
-              onClick={() => navigate("/tutor/agendamentos")}
+              onClick={() => navigate("/dashboard/tutor/agendamentos")}
             />
           </div>
           <div className="col-xl-3 col-md-6 mb-4">
@@ -473,7 +473,7 @@ const DashboardTutor = () => {
               color="warning"
               trend="down"
               trendValue="-1"
-              onClick={() => navigate("/tutor/vacinas")}
+              onClick={() => navigate("/dashboard/tutor/vacinas")}
             />
           </div>
           <div className="col-xl-3 col-md-6 mb-4">
@@ -519,7 +519,7 @@ const DashboardTutor = () => {
                     </p>
                     <button
                       className="btn btn-primary"
-                      onClick={() => navigate("/tutor/pet")}
+                      onClick={() => navigate("/dashboard/tutor/meus-pets")}
                     >
                       <FaPlus className="me-1" />
                       Cadastrar Pet
@@ -544,7 +544,7 @@ const DashboardTutor = () => {
                       <div className="text-center mt-3">
                         <button
                           className="btn btn-outline-primary"
-                          onClick={() => navigate("/tutor/pet")}
+                          onClick={() => navigate("/dashboard/tutor/meus-pets")}
                         >
                           Ver Todos os Pets ({pets.length})
                         </button>
@@ -681,7 +681,7 @@ const DashboardTutor = () => {
                   <div className="text-center mt-3">
                     <button
                       className="btn btn-outline-primary btn-sm"
-                      onClick={() => navigate("/tutor/vacinas")}
+                      onClick={() => navigate("/dashboard/tutor/vacinas")}
                     >
                       Ver Todos os Lembretes
                     </button>
@@ -702,28 +702,28 @@ const DashboardTutor = () => {
                 <div className="d-grid gap-2">
                   <button
                     className="btn btn-outline-primary"
-                    onClick={() => navigate("/tutor/agendamentos")}
+                    onClick={() => navigate("/dashboard/tutor/agendamentos")}
                   >
                     <FaCalendarAlt className="me-2" />
                     Agendar Consulta
                   </button>
                   <button
                     className="btn btn-outline-success"
-                    onClick={() => navigate("/tutor/vacinas")}
+                    onClick={() => navigate("/dashboard/tutor/vacinas")}
                   >
                     <FaSyringe className="me-2" />
                     Ver Vacinas
                   </button>
                   <button
                     className="btn btn-outline-info"
-                    onClick={() => navigate("/tutor/servicos")}
+                    onClick={() => navigate("/dashboard/tutor/servicos")}
                   >
                     <FaUser className="me-2" />
                     Meus Serviços
                   </button>
                   <button
                     className="btn btn-outline-warning"
-                    onClick={() => navigate("/tutor/mensagens")}
+                    onClick={() => navigate("/dashboard/tutor/mensagens")}
                   >
                     <FaBell className="me-2" />
                     Mensagens

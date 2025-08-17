@@ -50,31 +50,31 @@ const DashboardLayout = ({ children, tipoUsuario, nomeUsuario }) => {
       },
       {
         label: "Estoque",
-        to: "/inventory",
+        to: "/dashboard/veterinario/estoque",
         icon: FaBox,
         badge: "2",
         badgeVariant: "warning",
       },
       {
         label: "Financeiro",
-        to: "/finance",
+        to: "/dashboard/veterinario/financeiro",
         icon: FaMoneyBill,
       },
       {
         label: "Marketing",
-        to: "/marketing",
+        to: "/dashboard/veterinario/marketing",
         icon: FaBullhorn,
       },
       {
         label: "Chat",
-        to: "/chat",
+        to: "/dashboard/veterinario/chat",
         icon: FaComments,
         badge: "5",
         badgeVariant: "danger",
       },
       {
         label: "Notificações",
-        to: "/notifications",
+        to: "/dashboard/veterinario/notificacoes",
         icon: FaBell,
         badge: "3",
         badgeVariant: "primary",
@@ -82,28 +82,36 @@ const DashboardLayout = ({ children, tipoUsuario, nomeUsuario }) => {
     ],
     tutor: [
       { label: "Dashboard", to: "/dashboard/tutor", icon: FaHome },
-      { label: "Meus Pets", to: "/tutor/pet", icon: FaPaw },
-      { label: "Agendamentos", to: "/tutor/agendamentos", icon: FaCalendarAlt },
-      { label: "Vacinas", to: "/tutor/vacinas", icon: FaSyringe },
+      { label: "Meus Pets", to: "/dashboard/tutor/meus-pets", icon: FaPaw },
+      {
+        label: "Agendamentos",
+        to: "/dashboard/tutor/agendamentos",
+        icon: FaCalendarAlt,
+      },
+      { label: "Vacinas", to: "/dashboard/tutor/vacinas", icon: FaSyringe },
       {
         label: "Financeiro",
-        to: "/tutor/financeiro",
+        to: "/dashboard/tutor/financeiro",
         icon: FaMoneyBill,
       },
-      { label: "Serviços Locais", to: "/tutor/servicos", icon: FaMapMarkerAlt },
+      {
+        label: "Serviços Locais",
+        to: "/dashboard/tutor/servicos",
+        icon: FaMapMarkerAlt,
+      },
       {
         label: "Mensagens",
-        to: "/tutor/mensagens",
+        to: "/dashboard/tutor/mensagens",
         icon: FaComments,
         badge: "3",
         badgeVariant: "danger",
       },
       {
-        label: "Cadastrar Pet Perdido",
-        to: "/tutor/pet-perdido",
+        label: "Pet Perdido",
+        to: "/dashboard/tutor/pet-perdido",
         icon: FaPlus,
       },
-      { label: "Adotar Pet", to: "/tutor/adotar-pet", icon: FaHeart },
+      { label: "Adoção", to: "/dashboard/tutor/adocao", icon: FaHeart },
     ],
     anunciante: [
       { label: "Dashboard", to: "/dashboard/anunciante", icon: FaHome },
@@ -113,9 +121,19 @@ const DashboardLayout = ({ children, tipoUsuario, nomeUsuario }) => {
         icon: FaCalendarAlt,
       },
       {
-        label: "Novo Evento",
-        to: "/dashboard/anunciante/novo-evento",
+        label: "Criar Campanha",
+        to: "/dashboard/anunciante/criar-campanha",
         icon: FaPlus,
+      },
+      {
+        label: "Gestão de Campanhas",
+        to: "/dashboard/anunciante/gestao-campanhas",
+        icon: FaBullhorn,
+      },
+      {
+        label: "Orçamento",
+        to: "/dashboard/anunciante/orcamento-duracao",
+        icon: FaMoneyBill,
       },
       {
         label: "Financeiro",
@@ -169,8 +187,8 @@ const DashboardLayout = ({ children, tipoUsuario, nomeUsuario }) => {
     if (route === "/patients/:id" && location.pathname.startsWith("/patients/"))
       return true;
     if (
-      route === "/prontuario/:id" &&
-      location.pathname.startsWith("/prontuario/")
+      route === "/dashboard/veterinario/prontuario/:id" &&
+      location.pathname.startsWith("/dashboard/veterinario/prontuario/")
     )
       return true;
 

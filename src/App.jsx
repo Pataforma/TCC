@@ -239,7 +239,7 @@ function App() {
               }
             />
             <Route
-              path="/tutor/perfil"
+              path="/dashboard/tutor/perfil"
               element={
                 <TutorRoute>
                   <DashboardTutorPerfil />
@@ -247,7 +247,7 @@ function App() {
               }
             />
             <Route
-              path="/tutor/pet"
+              path="/dashboard/tutor/meus-pets"
               element={
                 <TutorRoute>
                   <DashboardTutorPet />
@@ -255,7 +255,7 @@ function App() {
               }
             />
             <Route
-              path="/tutor/financeiro"
+              path="/dashboard/tutor/financeiro"
               element={
                 <TutorRoute>
                   <DashboardTutorFinanceiro />
@@ -263,7 +263,7 @@ function App() {
               }
             />
             <Route
-              path="/tutor/pet-perdido"
+              path="/dashboard/tutor/pet-perdido"
               element={
                 <TutorRoute>
                   <DashboardTutorPetPerdido />
@@ -271,7 +271,7 @@ function App() {
               }
             />
             <Route
-              path="/tutor/adotar-pet"
+              path="/dashboard/tutor/adocao"
               element={
                 <TutorRoute>
                   <DashboardTutorAdotarPet />
@@ -279,7 +279,7 @@ function App() {
               }
             />
             <Route
-              path="/tutor/agendamentos"
+              path="/dashboard/tutor/agendamentos"
               element={
                 <TutorRoute>
                   <AgendamentosPage />
@@ -287,7 +287,7 @@ function App() {
               }
             />
             <Route
-              path="/tutor/vacinas"
+              path="/dashboard/tutor/vacinas"
               element={
                 <TutorRoute>
                   <VacinasPage />
@@ -295,7 +295,7 @@ function App() {
               }
             />
             <Route
-              path="/tutor/servicos"
+              path="/dashboard/tutor/servicos"
               element={
                 <TutorRoute>
                   <ServicosPage />
@@ -303,7 +303,7 @@ function App() {
               }
             />
             <Route
-              path="/tutor/mensagens"
+              path="/dashboard/tutor/mensagens"
               element={
                 <TutorRoute>
                   <MensagensPage />
@@ -337,7 +337,7 @@ function App() {
               }
             />
             <Route
-              path="/veterinario/perfil"
+              path="/dashboard/veterinario/perfil"
               element={
                 <VeterinarioRoute>
                   <VeterinarioPerfil />
@@ -345,7 +345,7 @@ function App() {
               }
             />
             <Route
-              path="/prontuario/:id"
+              path="/dashboard/veterinario/prontuario/:id"
               element={
                 <VeterinarioRoute>
                   <ProntuarioPage />
@@ -353,7 +353,7 @@ function App() {
               }
             />
             <Route
-              path="/inventory"
+              path="/dashboard/veterinario/estoque"
               element={
                 <VeterinarioRoute>
                   <EstoquePage />
@@ -361,7 +361,7 @@ function App() {
               }
             />
             <Route
-              path="/finance"
+              path="/dashboard/veterinario/financeiro"
               element={
                 <VeterinarioRoute>
                   <FinanceiroPage />
@@ -369,7 +369,7 @@ function App() {
               }
             />
             <Route
-              path="/marketing"
+              path="/dashboard/veterinario/marketing"
               element={
                 <VeterinarioRoute>
                   <MarketingPage />
@@ -377,18 +377,18 @@ function App() {
               }
             />
             <Route
-              path="/veterinario/duvidas"
+              path="/dashboard/veterinario/chat"
               element={
                 <VeterinarioRoute>
-                  <PainelDuvidasVet />
+                  <ChatPage />
                 </VeterinarioRoute>
               }
             />
             <Route
-              path="/chat"
+              path="/dashboard/veterinario/notificacoes"
               element={
                 <VeterinarioRoute>
-                  <ChatPage />
+                  <PainelDuvidasVet />
                 </VeterinarioRoute>
               }
             />
@@ -403,7 +403,7 @@ function App() {
               }
             />
             <Route
-              path="/anunciante/criar-campanha"
+              path="/dashboard/anunciante/criar-campanha"
               element={
                 <AnuncianteRoute>
                   <CriacaoAnuncio />
@@ -411,7 +411,7 @@ function App() {
               }
             />
             <Route
-              path="/anunciante/gestao-campanhas"
+              path="/dashboard/anunciante/gestao-campanhas"
               element={
                 <AnuncianteRoute>
                   <GestaoCampanhas />
@@ -419,7 +419,7 @@ function App() {
               }
             />
             <Route
-              path="/anunciante/orcamento-duracao"
+              path="/dashboard/anunciante/orcamento-duracao"
               element={
                 <AnuncianteRoute>
                   <OrcamentoDuracao />

@@ -4,10 +4,10 @@ import styles from "./DashboardBase.module.css";
 const DashboardBase = ({ children, titulo, tipoUsuario }) => {
   // Ajustar rotas de perfil para cada tipo
   const perfilRoutes = {
-    veterinario: "/veterinario/perfil",
-    tutor: "/tutor/perfil",
-    anunciante: "/anunciante/perfil",
-    parceiro: "/parceiro/perfil",
+    veterinario: "/dashboard/veterinario/perfil",
+    tutor: "/dashboard/tutor/perfil",
+    anunciante: "/dashboard/anunciante/perfil",
+    parceiro: "/dashboard/parceiro/perfil",
   };
   return (
     <div
@@ -48,7 +48,7 @@ const DashboardBase = ({ children, titulo, tipoUsuario }) => {
             {tipoUsuario === "tutor" && (
               <li className="mb-2">
                 <a
-                  href="/tutor/pet"
+                  href="/dashboard/tutor/meus-pets"
                   className={`${styles.menuLink} d-flex align-items-center px-4 py-3`}
                 >
                   <i className="fas fa-paw me-3"></i>

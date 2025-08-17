@@ -94,12 +94,35 @@ const DashboardVeterinarioAgenda = () => {
     fetchTutores();
   }, []);
 
+  // Recarregar consultas quando a data ou visualização mudar
+  useEffect(() => {
+    fetchConsultas();
+  }, [currentDate, activeTab]);
+
   const fetchConsultas = async () => {
     try {
       const {
         data: { session },
       } = await supabase.auth.getSession();
       if (!session) return;
+
+      // Calcular range de datas baseado na visualização
+      let dataInicio, dataFim;
+      const hoje = new Date(currentDate);
+
+      if (activeTab === "dia") {
+        dataInicio = new Date(hoje);
+        dataFim = new Date(hoje);
+      } else if (activeTab === "semana") {
+        const inicioSemana = new Date(hoje);
+        inicioSemana.setDate(hoje.getDate() - hoje.getDay());
+        dataInicio = inicioSemana;
+        dataFim = new Date(inicioSemana);
+        dataFim.setDate(inicioSemana.getDate() + 6);
+      } else if (activeTab === "mes") {
+        dataInicio = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+        dataFim = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+      }
 
       const { data, error } = await supabase
         .from("consultas")
@@ -111,6 +134,8 @@ const DashboardVeterinarioAgenda = () => {
         `
         )
         .eq("veterinario_id", session.user.id)
+        .gte("data_consulta", dataInicio.toISOString().split("T")[0])
+        .lte("data_consulta", dataFim.toISOString().split("T")[0])
         .order("data_consulta", { ascending: true });
 
       if (error) throw error;
@@ -238,12 +263,72 @@ const DashboardVeterinarioAgenda = () => {
     setShowModal(false);
   };
 
+  const handleAnterior = () => {
+    const novaData = new Date(currentDate);
+
+    if (activeTab === "dia") {
+      novaData.setDate(novaData.getDate() - 1);
+    } else if (activeTab === "semana") {
+      novaData.setDate(novaData.getDate() - 7);
+    } else if (activeTab === "mes") {
+      novaData.setMonth(novaData.getMonth() - 1);
+    }
+
+    setCurrentDate(novaData);
+  };
+
+  const handleProximo = () => {
+    const novaData = new Date(currentDate);
+
+    if (activeTab === "dia") {
+      novaData.setDate(novaData.getDate() + 1);
+    } else if (activeTab === "semana") {
+      novaData.setDate(novaData.getDate() + 7);
+    } else if (activeTab === "mes") {
+      novaData.setMonth(novaData.getMonth() + 1);
+    }
+
+    setCurrentDate(novaData);
+  };
+
+  const handleHoje = () => {
+    setCurrentDate(new Date());
+  };
+
   const formatarData = (data) => {
     return new Date(data).toLocaleDateString("pt-BR", {
       weekday: "long",
       year: "numeric",
       month: "long",
       day: "numeric",
+    });
+  };
+
+  const formatarDataCurta = (data) => {
+    return new Date(data).toLocaleDateString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+    });
+  };
+
+  const formatarDataSemana = (data) => {
+    return new Date(data).toLocaleDateString("pt-BR", {
+      weekday: "short",
+      day: "2-digit",
+      month: "2-digit",
+    });
+  };
+
+  const formatarDataMes = (data) => {
+    return new Date(data).toLocaleDateString("pt-BR", {
+      day: "2-digit",
+    });
+  };
+
+  const formatarNomeMes = (data) => {
+    return new Date(data).toLocaleDateString("pt-BR", {
+      month: "long",
+      year: "numeric",
     });
   };
 
@@ -258,8 +343,73 @@ const DashboardVeterinarioAgenda = () => {
 
   const horarios = gerarHorarios();
 
+  // Função para gerar datas baseada na visualização selecionada
+  const gerarDatas = () => {
+    const datas = [];
+    const hoje = new Date(currentDate);
+
+    if (activeTab === "dia") {
+      // Visualização de um dia
+      datas.push(hoje);
+    } else if (activeTab === "semana") {
+      // Visualização de uma semana (7 dias)
+      const inicioSemana = new Date(hoje);
+      inicioSemana.setDate(hoje.getDate() - hoje.getDay());
+
+      for (let i = 0; i < 7; i++) {
+        const data = new Date(inicioSemana);
+        data.setDate(inicioSemana.getDate() + i);
+        datas.push(data);
+      }
+    } else if (activeTab === "mes") {
+      // Visualização de um mês
+      const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+      const fimMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+
+      // Adicionar dias do mês anterior para completar a primeira semana
+      const primeiroDiaSemana = inicioMes.getDay();
+      for (let i = primeiroDiaSemana - 1; i >= 0; i--) {
+        const data = new Date(inicioMes);
+        data.setDate(inicioMes.getDate() - i - 1);
+        datas.push(data);
+      }
+
+      // Adicionar todos os dias do mês
+      for (let i = 1; i <= fimMes.getDate(); i++) {
+        const data = new Date(hoje.getFullYear(), hoje.getMonth(), i);
+        datas.push(data);
+      }
+
+      // Adicionar dias do próximo mês para completar a última semana
+      const ultimoDiaSemana = fimMes.getDay();
+      for (let i = 1; i <= 6 - ultimoDiaSemana; i++) {
+        const data = new Date(fimMes);
+        data.setDate(fimMes.getDate() + i);
+        datas.push(data);
+      }
+    }
+
+    return datas;
+  };
+
+  const datas = gerarDatas();
+
   const consultasPorHorario = (horario) => {
     return consultas.filter((consulta) => consulta.horario === horario);
+  };
+
+  const consultasPorData = (data) => {
+    const dataStr = data.toISOString().split("T")[0];
+    return consultas.filter((consulta) => {
+      const consultaData = new Date(consulta.data_consulta);
+      const consultaDataStr = consultaData.toISOString().split("T")[0];
+      return consultaDataStr === dataStr;
+    });
+  };
+
+  const consultasPorDataHorario = (data, horario) => {
+    const consultasData = consultasPorData(data);
+    return consultasData.filter((consulta) => consulta.horario === horario);
   };
 
   const formatarDataConsulta = (data) => {
@@ -293,125 +443,8 @@ const DashboardVeterinarioAgenda = () => {
           </div>
         </div>
 
-        {/* Navegação de Períodos */}
+        {/* Lista de Consultas - EM DESTAQUE */}
         <Card className="border-0 shadow-sm mb-4" style={{ borderRadius: 16 }}>
-          <Card.Body className="p-4">
-            <div className="d-flex justify-content-between align-items-center mb-3">
-              <div className="d-flex align-items-center gap-3">
-                <Button variant="outline-secondary" size="sm">
-                  <FaChevronLeft />
-                </Button>
-                <h5 className="fw-semibold text-dark mb-0">
-                  {formatarData(currentDate)}
-                </h5>
-                <Button variant="outline-secondary" size="sm">
-                  <FaChevronRight />
-                </Button>
-              </div>
-
-              <Nav
-                variant="pills"
-                activeKey={activeTab}
-                onSelect={setActiveTab}
-              >
-                <Nav.Item>
-                  <Nav.Link eventKey="dia" className="rounded-pill">
-                    Dia
-                  </Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                  <Nav.Link eventKey="semana" className="rounded-pill">
-                    Semana
-                  </Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                  <Nav.Link eventKey="mes" className="rounded-pill">
-                    Mês
-                  </Nav.Link>
-                </Nav.Item>
-              </Nav>
-            </div>
-
-            {/* Calendário */}
-            <div className="border rounded-3" style={{ minHeight: 600 }}>
-              <div className="d-flex">
-                {/* Coluna de Horários */}
-                <div style={{ width: 80, borderRight: "1px solid #dee2e6" }}>
-                  <div className="p-3 bg-light border-bottom">
-                    <small className="text-muted fw-semibold">Horário</small>
-                  </div>
-                  {horarios.map((horario) => (
-                    <div
-                      key={horario}
-                      className="p-2 border-bottom d-flex align-items-center justify-content-center"
-                      style={{ height: 60, fontSize: 12 }}
-                    >
-                      {horario}
-                    </div>
-                  ))}
-                </div>
-
-                {/* Grade de Consultas */}
-                <div className="flex-grow-1">
-                  <div className="p-3 bg-light border-bottom">
-                    <small className="text-muted fw-semibold">Consultas</small>
-                  </div>
-                  {horarios.map((horario) => (
-                    <div
-                      key={horario}
-                      className="p-2 border-bottom position-relative"
-                      style={{ height: 60 }}
-                    >
-                      {consultasPorHorario(horario).map((consulta) => (
-                        <div
-                          key={consulta.id}
-                          className="position-absolute w-100 h-100 p-2"
-                          style={{ top: 0, left: 0 }}
-                        >
-                          <Card
-                            className="h-100 border-0 shadow-sm cursor-pointer"
-                            style={{
-                              backgroundColor:
-                                consulta.status === "confirmada"
-                                  ? "#d1ecf1"
-                                  : "#fff3cd",
-                              borderRadius: 8,
-                              cursor: "pointer",
-                            }}
-                            onClick={() => handleConsultaClick(consulta)}
-                          >
-                            <Card.Body className="p-2">
-                              <div className="d-flex justify-content-between align-items-start">
-                                <div>
-                                  <h6
-                                    className="fw-semibold mb-1"
-                                    style={{ fontSize: 12 }}
-                                  >
-                                    {consulta.paciente}
-                                  </h6>
-                                  <p
-                                    className="mb-0 text-muted"
-                                    style={{ fontSize: 10 }}
-                                  >
-                                    {consulta.tipo}
-                                  </p>
-                                </div>
-                                {getStatusBadge(consulta.status)}
-                              </div>
-                            </Card.Body>
-                          </Card>
-                        </div>
-                      ))}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </Card.Body>
-        </Card>
-
-        {/* Lista de Consultas */}
-        <Card className="border-0 shadow-sm" style={{ borderRadius: 16 }}>
           <Card.Header className="bg-white border-0">
             <h5 className="fw-semibold text-dark mb-0">Próximas Consultas</h5>
           </Card.Header>
@@ -488,6 +521,345 @@ const DashboardVeterinarioAgenda = () => {
                 ))}
               </tbody>
             </Table>
+          </Card.Body>
+        </Card>
+
+        {/* Calendário Geral */}
+        <Card className="border-0 shadow-sm" style={{ borderRadius: 16 }}>
+          <Card.Header className="bg-white border-0">
+            <h5 className="fw-semibold text-dark mb-0">Calendário Geral</h5>
+          </Card.Header>
+          <Card.Body className="p-4">
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <div className="d-flex align-items-center gap-3">
+                <Button
+                  variant="outline-secondary"
+                  size="sm"
+                  onClick={handleAnterior}
+                >
+                  <FaChevronLeft />
+                </Button>
+                <h5 className="fw-semibold text-dark mb-0">
+                  {activeTab === "mes"
+                    ? formatarNomeMes(currentDate)
+                    : formatarData(currentDate)}
+                </h5>
+                <Button
+                  variant="outline-secondary"
+                  size="sm"
+                  onClick={handleProximo}
+                >
+                  <FaChevronRight />
+                </Button>
+                <Button
+                  variant="outline-primary"
+                  size="sm"
+                  onClick={handleHoje}
+                >
+                  Hoje
+                </Button>
+              </div>
+
+              <Nav
+                variant="pills"
+                activeKey={activeTab}
+                onSelect={setActiveTab}
+              >
+                <Nav.Item>
+                  <Nav.Link eventKey="dia" className="rounded-pill">
+                    Dia
+                  </Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                  <Nav.Link eventKey="semana" className="rounded-pill">
+                    Semana
+                  </Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                  <Nav.Link eventKey="mes" className="rounded-pill">
+                    Mês
+                  </Nav.Link>
+                </Nav.Item>
+              </Nav>
+            </div>
+
+            {/* Calendário */}
+            <div className="border rounded-3" style={{ minHeight: 600 }}>
+              {activeTab === "dia" && (
+                <div className="d-flex">
+                  {/* Coluna de Horários */}
+                  <div style={{ width: 80, borderRight: "1px solid #dee2e6" }}>
+                    <div className="p-3 bg-light border-bottom">
+                      <small className="text-muted fw-semibold">Horário</small>
+                    </div>
+                    {horarios.map((horario) => (
+                      <div
+                        key={horario}
+                        className="p-2 border-bottom d-flex align-items-center justify-content-center"
+                        style={{ height: 60, fontSize: 12 }}
+                      >
+                        {horario}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Grade de Consultas - Visualização Diária */}
+                  <div className="flex-grow-1">
+                    <div className="p-3 bg-light border-bottom">
+                      <small className="text-muted fw-semibold">
+                        {formatarData(currentDate)}
+                      </small>
+                    </div>
+                    {horarios.map((horario) => (
+                      <div
+                        key={horario}
+                        className="p-2 border-bottom position-relative"
+                        style={{ height: 60 }}
+                      >
+                        {consultasPorDataHorario(currentDate, horario).map(
+                          (consulta) => (
+                            <div
+                              key={consulta.id}
+                              className="position-absolute w-100 h-100 p-2"
+                              style={{ top: 0, left: 0 }}
+                            >
+                              <Card
+                                className="h-100 border-0 shadow-sm cursor-pointer"
+                                style={{
+                                  backgroundColor:
+                                    consulta.status === "confirmada"
+                                      ? "#d1ecf1"
+                                      : "#fff3cd",
+                                  borderRadius: 8,
+                                  cursor: "pointer",
+                                }}
+                                onClick={() => handleConsultaClick(consulta)}
+                              >
+                                <Card.Body className="p-2">
+                                  <div className="d-flex justify-content-between align-items-start">
+                                    <div>
+                                      <h6
+                                        className="fw-semibold mb-1"
+                                        style={{ fontSize: 12 }}
+                                      >
+                                        {consulta.pacientes?.nome || "N/A"}
+                                      </h6>
+                                      <p
+                                        className="mb-0 text-muted"
+                                        style={{ fontSize: 10 }}
+                                      >
+                                        {consulta.tipo}
+                                      </p>
+                                    </div>
+                                    {getStatusBadge(consulta.status)}
+                                  </div>
+                                </Card.Body>
+                              </Card>
+                            </div>
+                          )
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {activeTab === "semana" && (
+                <div className="d-flex">
+                  {/* Coluna de Horários */}
+                  <div style={{ width: 80, borderRight: "1px solid #dee2e6" }}>
+                    <div className="p-3 bg-light border-bottom">
+                      <small className="text-muted fw-semibold">Horário</small>
+                    </div>
+                    {horarios.map((horario) => (
+                      <div
+                        key={horario}
+                        className="p-2 border-bottom d-flex align-items-center justify-content-center"
+                        style={{ height: 60, fontSize: 12 }}
+                      >
+                        {horario}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Grade de Consultas - Visualização Semanal */}
+                  {datas.slice(0, 7).map((data) => (
+                    <div
+                      key={data.toISOString()}
+                      style={{
+                        width: `${100 / 7}%`,
+                        borderRight: "1px solid #dee2e6",
+                      }}
+                    >
+                      <div className="p-3 bg-light border-bottom text-center">
+                        <small className="text-muted fw-semibold">
+                          {formatarDataSemana(data)}
+                        </small>
+                      </div>
+                      {horarios.map((horario) => (
+                        <div
+                          key={horario}
+                          className="p-2 border-bottom position-relative"
+                          style={{ height: 60 }}
+                        >
+                          {consultasPorDataHorario(data, horario).map(
+                            (consulta) => (
+                              <div
+                                key={consulta.id}
+                                className="position-absolute w-100 h-100 p-2"
+                                style={{ top: 0, left: 0 }}
+                              >
+                                <Card
+                                  className="h-100 border-0 shadow-sm cursor-pointer"
+                                  style={{
+                                    backgroundColor:
+                                      consulta.status === "confirmada"
+                                        ? "#d1ecf1"
+                                        : "#fff3cd",
+                                    borderRadius: 8,
+                                    cursor: "pointer",
+                                  }}
+                                  onClick={() => handleConsultaClick(consulta)}
+                                >
+                                  <Card.Body className="p-2">
+                                    <div className="d-flex justify-content-between align-items-start">
+                                      <div>
+                                        <h6
+                                          className="fw-semibold mb-1"
+                                          style={{ fontSize: 12 }}
+                                        >
+                                          {consulta.pacientes?.nome || "N/A"}
+                                        </h6>
+                                        <p
+                                          className="mb-0 text-muted"
+                                          style={{ fontSize: 10 }}
+                                        >
+                                          {consulta.tipo}
+                                        </p>
+                                      </div>
+                                      {getStatusBadge(consulta.status)}
+                                    </div>
+                                  </Card.Body>
+                                </Card>
+                              </div>
+                            )
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {activeTab === "mes" && (
+                <div>
+                  {/* Cabeçalho do Mês */}
+                  <div className="p-3 bg-light border-bottom text-center">
+                    <h6 className="fw-semibold mb-0">
+                      {formatarNomeMes(currentDate)}
+                    </h6>
+                  </div>
+
+                  {/* Grade de Dias do Mês */}
+                  <div className="d-flex flex-wrap">
+                    {/* Cabeçalhos dos dias da semana */}
+                    {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map(
+                      (dia) => (
+                        <div
+                          key={dia}
+                          className="p-2 border-bottom border-end text-center fw-semibold"
+                          style={{
+                            width: `${100 / 7}%`,
+                            backgroundColor: "#f8f9fa",
+                            minHeight: 40,
+                          }}
+                        >
+                          {dia}
+                        </div>
+                      )
+                    )}
+
+                    {/* Dias do mês */}
+                    {datas.map((data, index) => {
+                      const consultasDia = consultasPorData(data);
+                      const isCurrentMonth =
+                        data.getMonth() === currentDate.getMonth();
+                      const isToday =
+                        data.toDateString() === new Date().toDateString();
+
+                      return (
+                        <div
+                          key={index}
+                          className="p-2 border-bottom border-end position-relative"
+                          style={{
+                            width: `${100 / 7}%`,
+                            minHeight: 80,
+                            backgroundColor: isToday
+                              ? "#e3f2fd"
+                              : isCurrentMonth
+                              ? "#ffffff"
+                              : "#f8f9fa",
+                          }}
+                        >
+                          <div className="d-flex justify-content-between align-items-start mb-1">
+                            <small
+                              className={`fw-semibold ${
+                                isToday
+                                  ? "text-primary"
+                                  : isCurrentMonth
+                                  ? "text-dark"
+                                  : "text-muted"
+                              }`}
+                            >
+                              {formatarDataMes(data)}
+                            </small>
+                            {consultasDia.length > 0 && (
+                              <Badge bg="primary" className="ms-auto">
+                                {consultasDia.length}
+                              </Badge>
+                            )}
+                          </div>
+
+                          {/* Lista de consultas do dia */}
+                          <div className="mt-1">
+                            {consultasDia.slice(0, 3).map((consulta) => (
+                              <div
+                                key={consulta.id}
+                                className="mb-1 p-1 rounded cursor-pointer"
+                                style={{
+                                  backgroundColor:
+                                    consulta.status === "confirmada"
+                                      ? "#d1ecf1"
+                                      : "#fff3cd",
+                                  fontSize: 10,
+                                  cursor: "pointer",
+                                }}
+                                onClick={() => handleConsultaClick(consulta)}
+                                title={`${consulta.horario} - ${
+                                  consulta.pacientes?.nome || "N/A"
+                                }`}
+                              >
+                                <div className="fw-semibold text-truncate">
+                                  {consulta.horario}
+                                </div>
+                                <div className="text-truncate">
+                                  {consulta.pacientes?.nome || "N/A"}
+                                </div>
+                              </div>
+                            ))}
+                            {consultasDia.length > 3 && (
+                              <small className="text-muted">
+                                +{consultasDia.length - 3} mais
+                              </small>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
           </Card.Body>
         </Card>
       </div>

@@ -66,19 +66,32 @@ const DashboardVeterinarioPacientes = () => {
         return;
       }
 
+      // Primeiro, buscar o id_veterinarios do veterinário logado
+      const { data: veterinario, error: vetError } = await supabase
+        .from("veterinarios")
+        .select("id_veterinarios")
+        .eq("id_usuario", session.user.id)
+        .single();
+
+      if (vetError || !veterinario) {
+        console.error("Veterinário não encontrado:", vetError);
+        return;
+      }
+
+      // Agora buscar os pacientes usando o id_veterinarios correto
       const { data: pacientesData, error } = await supabase
         .from("pets")
         .select(
           `
           *,
-          tutor:usuario_id (
+          tutor:tutor_id (
             nome,
             telefone,
             email
           )
         `
         )
-        .eq("veterinario_id", session.user.id)
+        .eq("veterinario_id", veterinario.id_veterinarios)
         .order("nome");
 
       if (error) {
@@ -134,6 +147,39 @@ const DashboardVeterinarioPacientes = () => {
   const handlePacienteClick = (paciente) => {
     setSelectedPaciente(paciente);
     setShowModal(true);
+  };
+
+  const handleExcluirPaciente = async (pacienteId) => {
+    if (
+      !window.confirm(
+        "Tem certeza que deseja excluir este paciente? Esta ação não pode ser desfeita."
+      )
+    ) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const { error } = await supabase
+        .from("pets")
+        .delete()
+        .eq("id", pacienteId);
+
+      if (error) {
+        console.error("Erro ao excluir paciente:", error);
+        alert("Erro ao excluir paciente. Tente novamente.");
+        return;
+      }
+
+      // Recarregar a lista de pacientes
+      await carregarPacientes();
+      alert("Paciente excluído com sucesso!");
+    } catch (error) {
+      console.error("Erro ao excluir paciente:", error);
+      alert("Erro ao excluir paciente. Tente novamente.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const filteredPacientes = pacientes.filter((paciente) => {
@@ -309,7 +355,7 @@ const DashboardVeterinarioPacientes = () => {
                         <div>
                           <div className="fw-semibold">{paciente.nome}</div>
                           <small className="text-muted">
-                            ID: {paciente.id}
+                            ID: {paciente.id.substring(0, 8)}...
                           </small>
                         </div>
                       </div>
@@ -321,7 +367,9 @@ const DashboardVeterinarioPacientes = () => {
                       </small>
                     </td>
                     <td className="align-middle">
-                      <div>{paciente.especie}</div>
+                      <div className="text-capitalize">
+                        {paciente.especie?.toLowerCase() || "N/A"}
+                      </div>
                       <small className="text-muted">
                         {paciente.raca || "N/A"}
                       </small>
@@ -351,6 +399,10 @@ const DashboardVeterinarioPacientes = () => {
                           variant="outline-primary"
                           size="sm"
                           title="Ver detalhes"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handlePacienteClick(paciente);
+                          }}
                         >
                           <FaEye size={12} />
                         </Button>
@@ -358,6 +410,13 @@ const DashboardVeterinarioPacientes = () => {
                           variant="outline-secondary"
                           size="sm"
                           title="Editar"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            // TODO: Implementar edição
+                            alert(
+                              "Funcionalidade de edição será implementada em breve!"
+                            );
+                          }}
                         >
                           <FaEdit size={12} />
                         </Button>
@@ -365,6 +424,10 @@ const DashboardVeterinarioPacientes = () => {
                           variant="outline-danger"
                           size="sm"
                           title="Excluir"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleExcluirPaciente(paciente.id);
+                          }}
                         >
                           <FaTrash size={12} />
                         </Button>
@@ -413,13 +476,19 @@ const DashboardVeterinarioPacientes = () => {
                         <div>
                           <small className="text-muted">Idade</small>
                           <div className="fw-semibold">
-                            {selectedPaciente.idade} anos
+                            {selectedPaciente.data_nascimento
+                              ? calcularIdade(
+                                  selectedPaciente.data_nascimento
+                                ) + " anos"
+                              : "N/A"}
                           </div>
                         </div>
                         <div>
                           <small className="text-muted">Peso</small>
                           <div className="fw-semibold">
-                            {selectedPaciente.peso} kg
+                            {selectedPaciente.peso
+                              ? selectedPaciente.peso + " kg"
+                              : "N/A"}
                           </div>
                         </div>
                         <div>
@@ -436,15 +505,15 @@ const DashboardVeterinarioPacientes = () => {
                       <h6 className="fw-semibold mb-3">Informações do Tutor</h6>
                       <div className="d-flex align-items-center gap-2 mb-2">
                         <FaUser className="text-muted" />
-                        <span>{selectedPaciente.tutor}</span>
+                        <span>{selectedPaciente.tutor?.nome || "N/A"}</span>
                       </div>
                       <div className="d-flex align-items-center gap-2 mb-2">
                         <FaPhone className="text-muted" />
-                        <span>{selectedPaciente.telefone}</span>
+                        <span>{selectedPaciente.tutor?.telefone || "N/A"}</span>
                       </div>
                       <div className="d-flex align-items-center gap-2">
                         <FaEnvelope className="text-muted" />
-                        <span>{selectedPaciente.email}</span>
+                        <span>{selectedPaciente.tutor?.email || "N/A"}</span>
                       </div>
                     </Card.Body>
                   </Card>
@@ -495,13 +564,19 @@ const DashboardVeterinarioPacientes = () => {
                             <div className="col-6">
                               <small className="text-muted">Idade</small>
                               <div className="fw-semibold">
-                                {selectedPaciente.idade} anos
+                                {selectedPaciente.data_nascimento
+                                  ? calcularIdade(
+                                      selectedPaciente.data_nascimento
+                                    ) + " anos"
+                                  : "N/A"}
                               </div>
                             </div>
                             <div className="col-6">
                               <small className="text-muted">Peso</small>
                               <div className="fw-semibold">
-                                {selectedPaciente.peso} kg
+                                {selectedPaciente.peso
+                                  ? selectedPaciente.peso + " kg"
+                                  : "N/A"}
                               </div>
                             </div>
                           </div>
@@ -514,20 +589,10 @@ const DashboardVeterinarioPacientes = () => {
                           <h6 className="fw-semibold mb-3">
                             Próximas Consultas
                           </h6>
-                          <div className="d-flex align-items-center gap-2 mb-2">
-                            <FaCalendarAlt className="text-primary" />
-                            <span>
-                              Próxima consulta:{" "}
-                              {formatarData(selectedPaciente.proximaConsulta)}
-                            </span>
-                          </div>
-                          <div className="d-flex align-items-center gap-2">
-                            <FaCalendarAlt className="text-muted" />
-                            <span>
-                              Última consulta:{" "}
-                              {formatarData(selectedPaciente.ultimaConsulta)}
-                            </span>
-                          </div>
+                          <p className="text-muted">
+                            Nenhuma consulta agendada. Esta funcionalidade será
+                            implementada em breve.
+                          </p>
                         </Card.Body>
                       </Card>
                     </Col>
@@ -538,41 +603,10 @@ const DashboardVeterinarioPacientes = () => {
                   <Card className="border-0 bg-light">
                     <Card.Body>
                       <h6 className="fw-semibold mb-3">Histórico Clínico</h6>
-                      {selectedPaciente.historico.length > 0 ? (
-                        <div className="d-flex flex-column gap-3">
-                          {selectedPaciente.historico.map((consulta, index) => (
-                            <div
-                              key={index}
-                              className="border rounded p-3 bg-white"
-                            >
-                              <div className="d-flex justify-content-between align-items-start mb-2">
-                                <h6 className="fw-semibold mb-0">
-                                  {consulta.tipo}
-                                </h6>
-                                <small className="text-muted">
-                                  {formatarData(consulta.data)}
-                                </small>
-                              </div>
-                              <div className="mb-2">
-                                <small className="text-muted">
-                                  Diagnóstico:
-                                </small>
-                                <div>{consulta.diagnostico}</div>
-                              </div>
-                              <div>
-                                <small className="text-muted">
-                                  Prescrição:
-                                </small>
-                                <div>{consulta.prescricao}</div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <p className="text-muted">
-                          Nenhum histórico encontrado.
-                        </p>
-                      )}
+                      <p className="text-muted">
+                        Nenhum histórico encontrado. Esta funcionalidade será
+                        implementada em breve.
+                      </p>
                     </Card.Body>
                   </Card>
                 </Tab.Pane>
@@ -581,32 +615,10 @@ const DashboardVeterinarioPacientes = () => {
                   <Card className="border-0 bg-light">
                     <Card.Body>
                       <h6 className="fw-semibold mb-3">Carteira de Vacinas</h6>
-                      {selectedPaciente.vacinas.length > 0 ? (
-                        <Table className="mb-0">
-                          <thead>
-                            <tr>
-                              <th>Vacina</th>
-                              <th>Data Aplicação</th>
-                              <th>Próxima Dose</th>
-                              <th>Status</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {selectedPaciente.vacinas.map((vacina, index) => (
-                              <tr key={index}>
-                                <td>{vacina.nome}</td>
-                                <td>{formatarData(vacina.data)}</td>
-                                <td>{formatarData(vacina.proxima)}</td>
-                                <td>
-                                  <Badge bg="success">Em dia</Badge>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </Table>
-                      ) : (
-                        <p className="text-muted">Nenhuma vacina registrada.</p>
-                      )}
+                      <p className="text-muted">
+                        Nenhuma vacina registrada. Esta funcionalidade será
+                        implementada em breve.
+                      </p>
                     </Card.Body>
                   </Card>
                 </Tab.Pane>
@@ -615,31 +627,10 @@ const DashboardVeterinarioPacientes = () => {
                   <Card className="border-0 bg-light">
                     <Card.Body>
                       <h6 className="fw-semibold mb-3">Exames Realizados</h6>
-                      {selectedPaciente.exames.length > 0 ? (
-                        <div className="d-flex flex-column gap-3">
-                          {selectedPaciente.exames.map((exame, index) => (
-                            <div
-                              key={index}
-                              className="border rounded p-3 bg-white"
-                            >
-                              <div className="d-flex justify-content-between align-items-start mb-2">
-                                <h6 className="fw-semibold mb-0">
-                                  {exame.nome}
-                                </h6>
-                                <small className="text-muted">
-                                  {formatarData(exame.data)}
-                                </small>
-                              </div>
-                              <div>
-                                <small className="text-muted">Resultado:</small>
-                                <div>{exame.resultado}</div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <p className="text-muted">Nenhum exame registrado.</p>
-                      )}
+                      <p className="text-muted">
+                        Nenhum exame registrado. Esta funcionalidade será
+                        implementada em breve.
+                      </p>
                     </Card.Body>
                   </Card>
                 </Tab.Pane>

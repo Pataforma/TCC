@@ -624,14 +624,14 @@ const Contato = () => {
             </div>
           </div>
 
-          <div className="text-center mt-4">
+          {/* <div className="text-center mt-4">
             <Botao
               text="Ver todas as perguntas"
               bgColor="var(--secondary-color)"
               hoverColor="var(--elements-color)"
               className="px-4 py-2"
-            />
-          </div>
+            /> 
+          </div> */}
         </div>
       </section>
 
