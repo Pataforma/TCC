@@ -36,7 +36,7 @@ const AuthCallback = () => {
                 // 2) Garante que existe registro na tabela usuario
                 const { data: existingUser, error: selectError } = await supabase
                     .from("usuario")
-                    .select("id_usuario, tipo_usuario")
+                    .select("id_usuario, tipo_usuario, perfil_completo")
                     .eq("email", userEmail)
                     .maybeSingle();
 
@@ -47,7 +47,7 @@ const AuthCallback = () => {
                 if (!existingUser) {
                     const { error: insertError } = await supabase
                         .from("usuario")
-                        .insert([{ id_usuario: userId, email: userEmail, tipo_usuario: "pendente" }]);
+                        .insert([{ id_usuario: userId, email: userEmail, tipo_usuario: "pendente", perfil_completo: false }]);
                     if (insertError) {
                         console.error("Erro ao criar usuário:", insertError);
                     }
@@ -55,11 +55,20 @@ const AuthCallback = () => {
                     return;
                 }
 
-                // 3) Redireciona conforme tipo
-                if (existingUser.tipo_usuario && existingUser.tipo_usuario !== "pendente") {
-                    navigate(`/dashboard/${existingUser.tipo_usuario}`, { replace: true });
+                // 3) Redireciona conforme estado do perfil/tipo
+                if (
+                  existingUser.perfil_completo === true &&
+                  existingUser.tipo_usuario &&
+                  existingUser.tipo_usuario !== "pendente"
+                ) {
+                  navigate(`/dashboard/${existingUser.tipo_usuario}`, { replace: true });
+                } else if (
+                  existingUser.tipo_usuario &&
+                  existingUser.tipo_usuario !== "pendente"
+                ) {
+                  navigate(`/onboarding/${existingUser.tipo_usuario}`, { replace: true });
                 } else {
-                    navigate("/tipo-usuario", { replace: true });
+                  navigate("/tipo-usuario", { replace: true });
                 }
             } catch (err) {
                 console.error("Erro no callback OAuth:", err);

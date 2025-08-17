@@ -6,6 +6,7 @@ import EtapaInformacoesProfissionais from "./components/EtapaInformacoesProfissi
 import EtapaConfiguracaoPlano from "./components/EtapaConfiguracaoPlano";
 import EtapaConclusao from "./components/EtapaConclusao";
 import { supabase } from "../../utils/supabase";
+import { useUser } from "../../contexts/UserContext";
 
 const steps = [
   {
@@ -28,6 +29,7 @@ const steps = [
 
 export default function OnboardingVeterinario() {
   const navigate = useNavigate();
+  const { fetchUserData } = useUser();
 
   const handleComplete = async (formData) => {
     try {
@@ -84,6 +86,8 @@ export default function OnboardingVeterinario() {
           telefone: formData.telefone,
           tipo_usuario: "veterinario",
           status: "ativo",
+          // Mantém perfil_completo falso durante o preenchimento; será marcado true ao final
+          perfil_completo: false,
         })
         .eq("email", userEmail);
 
@@ -112,12 +116,15 @@ export default function OnboardingVeterinario() {
       console.log("DEBUG: Validando campos obrigatórios...");
       const camposObrigatorios = {
         crmv: formData.crmv,
-        nomeClinica: formData.nomeClinica,
-        endereco: formData.endereco,
-        cidade: formData.cidade,
-        estado: formData.estado,
-        cep: formData.cep,
       };
+      if (formData.vincularClinica) {
+        camposObrigatorios.nomeClinica = formData.nomeClinica;
+        camposObrigatorios.endereco = formData.endereco;
+        camposObrigatorios.cidade = formData.cidade;
+        camposObrigatorios.estado = formData.estado;
+        camposObrigatorios.cep = formData.cep;
+        camposObrigatorios.telefone = formData.telefone;
+      }
 
       const camposVazios = Object.entries(camposObrigatorios)
         .filter(([key, value]) => !value || value.trim() === "")
@@ -136,12 +143,12 @@ export default function OnboardingVeterinario() {
         id_usuario: userId,
         crmv: formData.crmv,
         especialidades: formData.especialidades || [],
-        nome_clinica: formData.nomeClinica,
-        endereco_clinica: formData.endereco,
-        cidade_clinica: formData.cidade,
-        estado_clinica: formData.estado,
-        cep_clinica: formData.cep,
-        telefone_clinica: formData.telefone,
+        nome_clinica: formData.vincularClinica ? formData.nomeClinica : null,
+        endereco_clinica: formData.vincularClinica ? formData.endereco : null,
+        cidade_clinica: formData.vincularClinica ? formData.cidade : null,
+        estado_clinica: formData.vincularClinica ? formData.estado : null,
+        cep_clinica: formData.vincularClinica ? formData.cep : null,
+        telefone_clinica: formData.vincularClinica ? formData.telefone : null,
         plano: formData.selectedPlan || "basico",
         status: "ativo",
         data_cadastro: new Date().toISOString(),
@@ -227,10 +234,29 @@ export default function OnboardingVeterinario() {
         console.log("DEBUG: Registro criado com sucesso!");
       }
 
+      // PASSO 3: Marcar perfil_completo = true ao final do onboarding
+      console.log("DEBUG: PASSO 3 - Marcando perfil_completo=true na tabela usuario...");
+      const { error: completeProfileError } = await supabase
+        .from("usuario")
+        .update({ perfil_completo: true })
+        .eq("id_usuario", userId);
+
+      if (completeProfileError) {
+        console.error("DEBUG: Erro ao marcar perfil_completo:", completeProfileError);
+        throw new Error(
+          "Erro ao finalizar onboarding (perfil_completo): " + completeProfileError.message
+        );
+      }
+
+      // Atualizar contexto do usuário para refletir perfil_completo=true imediatamente
+      try {
+        await fetchUserData();
+      } catch (e) {
+        console.warn("DEBUG: Falha ao atualizar contexto após onboarding:", e);
+      }
+
       console.log("DEBUG: Onboarding veterinário concluído com sucesso!");
       console.log("DEBUG: Todos os dados foram salvos corretamente");
-      console.log("DEBUG: Redirecionando para dashboard...");
-
       console.log("DEBUG: Redirecionando para dashboard...");
 
       // Redirecionar para dashboard

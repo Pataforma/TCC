@@ -95,7 +95,7 @@ const TipoUsuario = () => {
     try {
       const { error } = await supabase
         .from("usuario")
-        .update({ tipo_usuario: tipo.id })
+        .update({ tipo_usuario: tipo.id, perfil_completo: false })
         .eq("id_usuario", user.id);
 
       if (error) {

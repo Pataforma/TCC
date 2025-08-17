@@ -126,6 +126,18 @@
     margin-top: 2rem;
 }
 
+/* Grupo de radio cheio (forma e alinhamento) */
+.radioGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+/* Cada opção preenche toda a largura para alinhamento consistente */
+.radioOption {
+    width: 100%;
+}
+
 .btnNext {
     background: linear-gradient(135deg, #0DB2AC, #089691);
     color: white;

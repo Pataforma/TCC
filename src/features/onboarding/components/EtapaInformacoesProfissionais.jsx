@@ -32,6 +32,7 @@ export default function EtapaInformacoesProfissionais({
     estado: data.estado || "",
     cep: data.cep || "",
     telefone: data.telefone || "",
+    vincularClinica: data.vincularClinica ?? false,
   });
   const [errors, setErrors] = useState({});
 
@@ -75,6 +76,36 @@ export default function EtapaInformacoesProfissionais({
     }));
   };
 
+  const handleVincularClinicaChange = (value) => {
+    setFormData((prev) => ({
+      ...prev,
+      vincularClinica: value,
+      ...(value
+        ? {}
+        : {
+            nomeClinica: "",
+            endereco: "",
+            cidade: "",
+            estado: "",
+            cep: "",
+            telefone: "",
+          }),
+    }));
+
+    if (!value) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors.nomeClinica;
+        delete newErrors.endereco;
+        delete newErrors.cidade;
+        delete newErrors.estado;
+        delete newErrors.cep;
+        delete newErrors.telefone;
+        return newErrors;
+      });
+    }
+  };
+
   const validateForm = () => {
     const newErrors = {};
 
@@ -86,32 +117,34 @@ export default function EtapaInformacoesProfissionais({
       newErrors.especialidades = "Selecione pelo menos uma especialidade";
     }
 
-    if (!formData.nomeClinica.trim()) {
-      newErrors.nomeClinica = "Nome da clínica é obrigatório";
-    }
+    if (formData.vincularClinica) {
+      if (!formData.nomeClinica.trim()) {
+        newErrors.nomeClinica = "Nome da clínica é obrigatório";
+      }
 
-    if (!formData.endereco.trim()) {
-      newErrors.endereco = "Endereço é obrigatório";
-    }
+      if (!formData.endereco.trim()) {
+        newErrors.endereco = "Endereço é obrigatório";
+      }
 
-    if (!formData.cidade.trim()) {
-      newErrors.cidade = "Cidade é obrigatória";
-    }
+      if (!formData.cidade.trim()) {
+        newErrors.cidade = "Cidade é obrigatória";
+      }
 
-    if (!formData.estado) {
-      newErrors.estado = "Estado é obrigatório";
-    }
+      if (!formData.estado) {
+        newErrors.estado = "Estado é obrigatório";
+      }
 
-    if (!formData.cep) {
-      newErrors.cep = "CEP é obrigatório";
-    } else if (formData.cep.replace(/\D/g, "").length !== 8) {
-      newErrors.cep = "CEP inválido";
-    }
+      if (!formData.cep) {
+        newErrors.cep = "CEP é obrigatório";
+      } else if (formData.cep.replace(/\D/g, "").length !== 8) {
+        newErrors.cep = "CEP inválido";
+      }
 
-    if (!formData.telefone) {
-      newErrors.telefone = "Telefone é obrigatório";
-    } else if (formData.telefone.replace(/\D/g, "").length < 10) {
-      newErrors.telefone = "Telefone inválido";
+      if (!formData.telefone) {
+        newErrors.telefone = "Telefone é obrigatório";
+      } else if (formData.telefone.replace(/\D/g, "").length < 10) {
+        newErrors.telefone = "Telefone inválido";
+      }
     }
 
     setErrors(newErrors);
@@ -175,49 +208,80 @@ export default function EtapaInformacoesProfissionais({
         </div>
 
         <div className={styles.section}>
-          <h3>Dados da Clínica</h3>
-
           <div className={styles.field}>
-            <label htmlFor="nomeClinica" className={styles.label}>
-              Nome da Clínica *
+            <label className={styles.label}>
+              Você deseja vincular seu perfil a alguma clínica?
             </label>
-            <input
-              type="text"
-              id="nomeClinica"
-              name="nomeClinica"
-              value={formData.nomeClinica}
-              onChange={handleChange}
-              className={`${styles.input} ${
-                errors.nomeClinica ? styles.error : ""
-              }`}
-              placeholder="Nome da sua clínica ou consultório"
-            />
-            {errors.nomeClinica && (
-              <span className={styles.errorText}>{errors.nomeClinica}</span>
-            )}
+            <div className={styles.radioGroup}>
+              <label className={`${styles.checkboxLabel} ${styles.radioOption}`}>
+                <input
+                  type="radio"
+                  name="vincularClinica"
+                  className={styles.checkbox}
+                  checked={formData.vincularClinica === true}
+                  onChange={() => handleVincularClinicaChange(true)}
+                />
+                <span className={styles.checkboxText}>Sim</span>
+              </label>
+              <label className={`${styles.checkboxLabel} ${styles.radioOption}`}>
+                <input
+                  type="radio"
+                  name="vincularClinica"
+                  className={styles.checkbox}
+                  checked={formData.vincularClinica === false}
+                  onChange={() => handleVincularClinicaChange(false)}
+                />
+                <span className={styles.checkboxText}>Não</span>
+              </label>
+            </div>
           </div>
+        </div>
 
-          <div className={styles.field}>
-            <label htmlFor="endereco" className={styles.label}>
-              Endereço *
-            </label>
-            <input
-              type="text"
-              id="endereco"
-              name="endereco"
-              value={formData.endereco}
-              onChange={handleChange}
-              className={`${styles.input} ${
-                errors.endereco ? styles.error : ""
-              }`}
-              placeholder="Rua, número, complemento"
-            />
-            {errors.endereco && (
-              <span className={styles.errorText}>{errors.endereco}</span>
-            )}
-          </div>
+        {formData.vincularClinica && (
+          <div className={styles.section}>
+            <h3>Dados da Clínica</h3>
 
-          <div className={styles.row}>
+            <div className={styles.field}>
+              <label htmlFor="nomeClinica" className={styles.label}>
+                Nome da Clínica *
+              </label>
+              <input
+                type="text"
+                id="nomeClinica"
+                name="nomeClinica"
+                value={formData.nomeClinica}
+                onChange={handleChange}
+                className={`${styles.input} ${
+                  errors.nomeClinica ? styles.error : ""
+                }`}
+                placeholder="Nome da sua clínica ou consultório"
+              />
+              {errors.nomeClinica && (
+                <span className={styles.errorText}>{errors.nomeClinica}</span>
+              )}
+            </div>
+
+            <div className={styles.field}>
+              <label htmlFor="endereco" className={styles.label}>
+                Endereço *
+              </label>
+              <input
+                type="text"
+                id="endereco"
+                name="endereco"
+                value={formData.endereco}
+                onChange={handleChange}
+                className={`${styles.input} ${
+                  errors.endereco ? styles.error : ""
+                }`}
+                placeholder="Rua, número, complemento"
+              />
+              {errors.endereco && (
+                <span className={styles.errorText}>{errors.endereco}</span>
+              )}
+            </div>
+
+            <div className={styles.row}>
             <div className={styles.field}>
               <label htmlFor="cidade" className={styles.label}>
                 Cidade *
@@ -326,8 +390,9 @@ export default function EtapaInformacoesProfissionais({
                 <span className={styles.errorText}>{errors.telefone}</span>
               )}
             </div>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       <div className={styles.actions}>

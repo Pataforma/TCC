@@ -39,7 +39,7 @@ const TelaLogin = () => {
           // Verifica se o usuário já existe na tabela usuario
           const { data: existingUser, error: fetchError } = await supabase
             .from("usuario")
-            .select("tipo_usuario")
+            .select("tipo_usuario, perfil_completo")
             .eq("email", userEmail)
             .maybeSingle();
 
@@ -51,21 +51,22 @@ const TelaLogin = () => {
 
           // Se o usuário já existe
           if (existingUser) {
-            // Verifica se já tem tipo definido
+            // Decisão por estado do perfil
             if (
+              existingUser.perfil_completo === true &&
               existingUser.tipo_usuario &&
               existingUser.tipo_usuario !== "pendente"
             ) {
-              console.log(
-                "Usuário existente com perfil completo, redirecionando para dashboard"
-              );
-              navigate(`/dashboard/${existingUser.tipo_usuario}`, {
-                replace: true,
-              });
+              console.log("Perfil completo. Indo para dashboard.");
+              navigate(`/dashboard/${existingUser.tipo_usuario}`, { replace: true });
+            } else if (
+              existingUser.tipo_usuario &&
+              existingUser.tipo_usuario !== "pendente"
+            ) {
+              console.log("Tipo escolhido, mas perfil incompleto. Indo para onboarding do tipo.");
+              navigate(`/onboarding/${existingUser.tipo_usuario}`, { replace: true });
             } else {
-              console.log(
-                "Usuário existente com perfil pendente, redirecionando para tipo-usuario"
-              );
+              console.log("Tipo não escolhido. Indo para seleção de tipo.");
               navigate("/tipo-usuario", { replace: true });
             }
           } else {
@@ -78,6 +79,7 @@ const TelaLogin = () => {
                   id_usuario: userId,
                   email: userEmail,
                   tipo_usuario: "pendente",
+                  perfil_completo: false,
                 },
               ]);
 
@@ -167,13 +169,21 @@ const TelaLogin = () => {
       }
 
       // CORREÇÃO: Redirecionamento baseado no estado real do usuário
-      if (userData.tipo_usuario && userData.tipo_usuario !== "pendente") {
-        // Usuário já tem perfil completo, vai direto para o dashboard
-        console.log("Redirecionando para dashboard:", userData.tipo_usuario);
+      if (
+        userData.perfil_completo === true &&
+        userData.tipo_usuario &&
+        userData.tipo_usuario !== "pendente"
+      ) {
+        console.log("Perfil completo. Indo para dashboard:", userData.tipo_usuario);
         navigate(`/dashboard/${userData.tipo_usuario}`, { replace: true });
+      } else if (
+        userData.tipo_usuario &&
+        userData.tipo_usuario !== "pendente"
+      ) {
+        console.log("Tipo escolhido, mas perfil incompleto. Indo para onboarding do tipo.");
+        navigate(`/onboarding/${userData.tipo_usuario}`, { replace: true });
       } else {
-        // Usuário precisa completar onboarding
-        console.log("Redirecionando para: /tipo-usuario");
+        console.log("Tipo não escolhido. Indo para seleção de tipo.");
         navigate("/tipo-usuario", { replace: true });
       }
     } catch (error) {
