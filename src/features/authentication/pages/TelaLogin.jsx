@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import styles from "./TelaLogin.module.css";
 import Header from "../../../components/ui/Header";
 import Footer from "../../../components/ui/Footer";
+import PasswordInput from "../../../components/ui/PasswordInput";
 import { supabase } from "../../../utils/supabase";
 
 const TelaLogin = () => {
@@ -378,13 +379,16 @@ const TelaLogin = () => {
                   <i
                     className={`fas fa-lock ${styles["auth-icon-modify"]}`}
                   ></i>
-                  <input
-                    type="password"
+                  <PasswordInput
+                    id="loginPassword"
                     placeholder="Senha"
                     value={loginPassword}
                     onChange={(e) => setLoginPassword(e.target.value)}
                     required
                     disabled={loading}
+                    inputClassName=""
+                    className=""
+                    style={{ flex: 1 }}
                   />
                 </label>
                 <a className={styles["auth-password"]} href="#">
@@ -472,13 +476,16 @@ const TelaLogin = () => {
                   <i
                     className={`fas fa-lock ${styles["auth-icon-modify"]}`}
                   ></i>
-                  <input
-                    type="password"
+                  <PasswordInput
+                    id="signupPassword"
                     placeholder="Senha"
                     value={signupPassword}
                     onChange={(e) => setSignupPassword(e.target.value)}
                     required
                     disabled={loading}
+                    inputClassName=""
+                    className=""
+                    style={{ flex: 1 }}
                   />
                 </label>
                 <button
