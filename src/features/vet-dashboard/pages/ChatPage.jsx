@@ -37,6 +37,7 @@ import {
   FaPaw,
 } from "react-icons/fa";
 import DashboardLayout from "../../../layouts/DashboardLayout";
+import { useUser } from "../../../contexts/UserContext";
 
 const ChatPage = () => {
   const [selectedConversation, setSelectedConversation] = useState(null);
@@ -319,8 +320,10 @@ const ChatPage = () => {
     return () => clearInterval(interval);
   }, []);
 
+  const { user } = useUser();
+
   return (
-    <DashboardLayout tipoUsuario="veterinario" nomeUsuario="Dr. André Silva">
+    <DashboardLayout tipoUsuario="veterinario" nomeUsuario={user?.nome}>
       <Container fluid className="py-4">
         <Row className="h-100">
           {/* Lista de Conversas - Coluna Esquerda */}

@@ -57,7 +57,6 @@ const VeterinarioPerfil = () => {
           bio: vetData?.bio || "",
           foto_url: vetData?.foto_url || "",
         };
-        if (error) throw error;
         setPerfil(data);
         setFotoPreview(data.foto_url || "");
       } catch (error) {

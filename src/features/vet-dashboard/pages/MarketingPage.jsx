@@ -54,6 +54,7 @@ import {
   FaLock,
 } from "react-icons/fa";
 import DashboardLayout from "../../../layouts/DashboardLayout";
+import { useUser } from "../../../contexts/UserContext";
 
 const MarketingPage = () => {
   const [activeTab, setActiveTab] = useState("perfil");
@@ -300,8 +301,9 @@ const MarketingPage = () => {
     ));
   };
 
+  const { user } = useUser();
   return (
-    <DashboardLayout tipoUsuario="veterinario" nomeUsuario="Dr. André Silva">
+    <DashboardLayout tipoUsuario="veterinario" nomeUsuario={user?.nome}>
       <Container fluid className="py-4">
         {/* Header */}
         <Row className="mb-4">

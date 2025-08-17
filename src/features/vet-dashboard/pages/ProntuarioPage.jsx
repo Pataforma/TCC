@@ -15,6 +15,7 @@ import {
   Image,
 } from "react-bootstrap";
 import DashboardLayout from "../../../layouts/DashboardLayout";
+import { useUser } from "../../../contexts/UserContext";
 import {
   FaPaw,
   FaUser,
@@ -462,8 +463,9 @@ const ProntuarioPage = () => {
     setShowPrescriptionModal(true);
   };
 
+  const { user } = useUser();
   return (
-    <DashboardLayout tipoUsuario="veterinario" nomeUsuario="Dr. André Silva">
+    <DashboardLayout tipoUsuario="veterinario" nomeUsuario={user?.nome}>
       <div className="container-fluid">
         {/* Header do Paciente */}
         <Card className="border-0 shadow-sm mb-4" style={{ borderRadius: 16 }}>

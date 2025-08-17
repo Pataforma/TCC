@@ -33,6 +33,7 @@ import {
   FaCog,
 } from "react-icons/fa";
 import DashboardLayout from "../../../layouts/DashboardLayout";
+import { useUser } from "../../../contexts/UserContext";
 import StatCard from "../../../components/Dashboard/StatCard";
 import AdvancedChart from "../../../components/Dashboard/AdvancedChart";
 import AutoTransactionsInfo from "../../../components/ui/AutoTransactionsInfo";
@@ -299,8 +300,9 @@ const FinanceiroPage = () => {
     setEditingService(null);
   };
 
+  const { user } = useUser();
   return (
-    <DashboardLayout tipoUsuario="veterinario" nomeUsuario="Dr. André Silva">
+    <DashboardLayout tipoUsuario="veterinario" nomeUsuario={user?.nome}>
       <div className="container-fluid">
         {/* Header da Página */}
         <div className="d-flex justify-content-between align-items-center mb-4">

@@ -14,6 +14,7 @@ import {
   Dropdown,
 } from "react-bootstrap";
 import DashboardLayout from "../../../layouts/DashboardLayout";
+import { useUser } from "../../../contexts/UserContext";
 import ModalNovoPaciente from "../components/ModalNovoPaciente";
 import { supabase } from "../../../utils/supabase";
 import {
@@ -200,8 +201,9 @@ const DashboardVeterinarioPacientes = () => {
     return new Date(data).toLocaleDateString("pt-BR");
   };
 
+  const { user } = useUser();
   return (
-    <DashboardLayout tipoUsuario="veterinario" nomeUsuario="Dr. André Silva">
+    <DashboardLayout tipoUsuario="veterinario" nomeUsuario={user?.nome}>
       <div className="container-fluid">
         {/* Header da Página */}
         <div className="d-flex justify-content-between align-items-center mb-4">

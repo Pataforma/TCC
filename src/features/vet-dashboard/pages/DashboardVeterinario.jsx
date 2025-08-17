@@ -4,6 +4,7 @@ import DashboardLayout from "../../../layouts/DashboardLayout";
 import StatCard from "../../../components/Dashboard/StatCard";
 import SimpleChart from "../../../components/Dashboard/SimpleChart";
 import UpgradeToProBanner from "../../plans/components/UpgradeToProBanner";
+import { useUser } from "../../../contexts/UserContext";
 import {
   FaCalendarAlt,
   FaUsers,
@@ -137,15 +138,17 @@ const DashboardVeterinario = () => {
     }
   };
 
+  const { user } = useUser();
+
   return (
-    <DashboardLayout tipoUsuario="veterinario" nomeUsuario="Dr. André Silva">
+    <DashboardLayout tipoUsuario="veterinario" nomeUsuario={user?.nome}>
       <div className="container-fluid">
         {/* Header da Página */}
         <div className="d-flex justify-content-between align-items-center mb-4">
           <div>
             <h2 className="fw-bold text-dark mb-1">Dashboard Veterinário</h2>
             <p className="text-muted mb-0">
-              Bem-vindo de volta, Dr. André! Aqui está o resumo do seu dia.
+              Bem-vindo de volta, {user?.nome?.split(" ")[0] || "Doutor(a)"}! Aqui está o resumo do seu dia.
             </p>
           </div>
           <div className="d-flex gap-2">

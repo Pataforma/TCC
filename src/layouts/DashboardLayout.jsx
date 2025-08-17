@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { supabase } from "../utils/supabase";
 import logo from "../assets/imgs/logo.png";
 import HeaderActions from "../components/ui/HeaderActions";
+import { useUser } from "../contexts/UserContext";
 import {
   FaBars,
   FaTimes,
@@ -33,6 +33,11 @@ const DashboardLayout = ({ children, tipoUsuario, nomeUsuario }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { user } = useUser();
+
+  // Preferir dados do contexto (banco) sobre props hardcoded
+  const currentTipo = (user?.tipo_usuario) || tipoUsuario;
+  const currentNome = (user?.nome) || nomeUsuario;
 
   // Menus dinâmicos por tipo de usuário (removido "Meu Perfil" da sidebar)
   const menus = {
@@ -221,7 +226,7 @@ const DashboardLayout = ({ children, tipoUsuario, nomeUsuario }) => {
         {/* Menu de Navegação */}
         <div className="flex-grow-1 p-3">
           <div className="d-flex flex-column gap-2">
-            {menus[tipoUsuario]?.map((item, idx) => {
+            {menus[currentTipo]?.map((item, idx) => {
               const active = isActiveRoute(item.to);
               const Icon = item.icon;
               return (
@@ -296,7 +301,7 @@ const DashboardLayout = ({ children, tipoUsuario, nomeUsuario }) => {
         {/* Menu Mobile */}
         <div className="flex-grow-1 p-3">
           <div className="d-flex flex-column gap-2">
-            {menus[tipoUsuario]?.map((item, idx) => {
+            {menus[currentTipo]?.map((item, idx) => {
               const active = isActiveRoute(item.to);
               const Icon = item.icon;
               return (
@@ -367,7 +372,7 @@ const DashboardLayout = ({ children, tipoUsuario, nomeUsuario }) => {
           </div>
 
           {/* Lado direito - Ações do header */}
-          <HeaderActions tipoUsuario={tipoUsuario} nomeUsuario={nomeUsuario} />
+          <HeaderActions tipoUsuario={currentTipo} nomeUsuario={currentNome} />
         </header>
 
         {/* Conteúdo da página */}
