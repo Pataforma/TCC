@@ -11,52 +11,69 @@ const DashboardBase = ({ children, titulo, tipoUsuario }) => {
   };
   return (
     <div
-      className={styles.dashboardContainer + " d-flex flex-column flex-grow-1"}
+      className={`${styles.dashboardContainer} d-flex flex-column min-vh-100`}
     >
-      <header className={styles.header}>
-        <h1>{titulo}</h1>
-        <div className={styles.userInfo}>
+      <header
+        className={`${styles.header} d-flex justify-content-between align-items-center p-4`}
+      >
+        <h1 className={styles.title}>{titulo}</h1>
+        <div className={`${styles.userInfo} d-flex align-items-center gap-3`}>
           <span>Bem-vindo(a)!</span>
         </div>
       </header>
 
-      <div className={styles.content + " flex-grow-1"}>
-        <nav className={styles.sidebar}>
-          <ul className={styles.menu}>
-            <li>
-              <a href={perfilRoutes[tipoUsuario] || "/"}>
-                <i className="fas fa-user"></i>
+      <div className="d-flex flex-grow-1">
+        <nav className={`${styles.sidebar} bg-white`}>
+          <ul className={`${styles.menu} list-unstyled mb-0`}>
+            <li className="mb-2">
+              <a
+                href={perfilRoutes[tipoUsuario] || "/"}
+                className={`${styles.menuLink} d-flex align-items-center px-4 py-3`}
+              >
+                <i className="fas fa-user me-3"></i>
                 Meu Perfil
               </a>
             </li>
             {tipoUsuario === "veterinario" && (
-              <li>
-                <a href="/dashboard/veterinario/blog">
-                  <i className="fas fa-blog"></i>
+              <li className="mb-2">
+                <a
+                  href="/dashboard/veterinario/blog"
+                  className={`${styles.menuLink} d-flex align-items-center px-4 py-3`}
+                >
+                  <i className="fas fa-blog me-3"></i>
                   Blog
                 </a>
               </li>
             )}
             {tipoUsuario === "tutor" && (
-              <li>
-                <a href="/tutor/pet">
-                  <i className="fas fa-paw"></i>
+              <li className="mb-2">
+                <a
+                  href="/tutor/pet"
+                  className={`${styles.menuLink} d-flex align-items-center px-4 py-3`}
+                >
+                  <i className="fas fa-paw me-3"></i>
                   Meus Pets
                 </a>
               </li>
             )}
             {tipoUsuario === "anunciante" && (
-              <li>
-                <a href="/dashboard/anunciante/eventos">
-                  <i className="fas fa-calendar-alt"></i>
+              <li className="mb-2">
+                <a
+                  href="/dashboard/anunciante/eventos"
+                  className={`${styles.menuLink} d-flex align-items-center px-4 py-3`}
+                >
+                  <i className="fas fa-calendar-alt me-3"></i>
                   Meus Eventos
                 </a>
               </li>
             )}
             {tipoUsuario === "parceiro" && (
-              <li>
-                <a href="/dashboard/parceiro/recursos">
-                  <i className="fas fa-tools"></i>
+              <li className="mb-2">
+                <a
+                  href="/dashboard/parceiro/recursos"
+                  className={`${styles.menuLink} d-flex align-items-center px-4 py-3`}
+                >
+                  <i className="fas fa-tools me-3"></i>
                   Recursos
                 </a>
               </li>
@@ -64,7 +81,9 @@ const DashboardBase = ({ children, titulo, tipoUsuario }) => {
           </ul>
         </nav>
 
-        <main className={styles.mainContent + " flex-grow-1"}>{children}</main>
+        <main className={`${styles.mainContent} flex-grow-1 p-4 bg-light`}>
+          {children}
+        </main>
       </div>
     </div>
   );

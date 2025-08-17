@@ -1,11 +1,12 @@
 // src/pages/Home.jsx
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/ui/Header";
 import Footer from "../components/ui/Footer";
 import Carousel from "react-bootstrap/Carousel";
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
+import Botao from "../components/ui/Botao";
 
 // Importações de imagens
 import bgPata from "../assets/imgs/bg-pata.png";
@@ -20,44 +21,6 @@ import OptimizedImage from "../components/ui/OptimizedImage";
 
 const Home = () => {
   const navigate = useNavigate();
-
-  // Componente Botao
-  const Botao = ({
-    text = "Botao",
-    bgColor = "var(--main-color)",
-    hoverColor = "var(--bg-button)",
-    textColor = "white",
-    onClick,
-    className = "",
-  }) => {
-    const [isHover, setIsHover] = useState(false);
-
-    const buttonStyle = {
-      backgroundColor: isHover ? hoverColor : bgColor,
-      color: textColor,
-      padding: "0.5rem 1.2rem",
-      border: "none",
-      borderRadius: "5px",
-      cursor: "pointer",
-      fontWeight: "500",
-      transition: "background-color 0.3s ease",
-      borderBottom: isHover
-        ? `3px solid ${bgColor}`
-        : `3px solid ${hoverColor}`,
-    };
-
-    return (
-      <button
-        className={`custom-button ${className}`}
-        style={buttonStyle}
-        onClick={onClick}
-        onMouseEnter={() => setIsHover(true)}
-        onMouseLeave={() => setIsHover(false)}
-      >
-        {text}
-      </button>
-    );
-  };
 
   // Componente DicaCard para CardsHome
   function DicaCard({ title, text }) {

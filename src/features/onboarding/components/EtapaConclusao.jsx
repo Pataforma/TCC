@@ -5,13 +5,22 @@ import styles from "./EtapaConclusao.module.css";
 export default function EtapaConclusao({ data, onComplete }) {
   const navigate = useNavigate();
 
-  const handleGoToDashboard = () => {
-    // TODO: Salvar dados do onboarding no backend
-    console.log("Dados do onboarding:", data);
-
-    // Redirecionar para o dashboard baseado no tipo de usuário
-    const userType = data.tipoUsuario || "veterinario";
-    navigate(`/dashboard/${userType}`);
+  const handleGoToDashboard = async () => {
+    try {
+      // Chamar a função onComplete passada pelo componente pai
+      // que é responsável por salvar os dados no backend
+      if (onComplete) {
+        await onComplete(data);
+      } else {
+        // Fallback caso onComplete não seja fornecido
+        console.log("Dados do onboarding:", data);
+        const userType = data.tipoUsuario || "veterinario";
+        navigate(`/dashboard/${userType}`);
+      }
+    } catch (error) {
+      console.error("Erro ao finalizar onboarding:", error);
+      alert("Erro ao salvar configurações. Tente novamente.");
+    }
   };
 
   return (

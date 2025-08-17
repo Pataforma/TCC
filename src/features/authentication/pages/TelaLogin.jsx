@@ -17,7 +17,20 @@ const TelaLogin = () => {
   // Listener para eventos de autenticação
   useEffect(() => {
     const handleAuthChange = async (event, session) => {
-      if (event === "SIGNED_IN" && session) {
+      // CORREÇÃO: Só processar eventos SIGNED_IN que não são resultado de login manual
+      // Para evitar redirecionamento duplo
+      if (event === "SIGNED_IN" && session && !loading) {
+        console.log("Auth state change detected:", event);
+
+        // CORREÇÃO: Verificar se este evento é resultado de um login manual
+        // Se sim, não processar aqui (será tratado no handleLogin)
+        if (session.user.email === loginEmail) {
+          console.log(
+            "Evento de login manual detectado, ignorando redirecionamento automático"
+          );
+          return;
+        }
+
         setLoading(true);
         const userId = session.user.id;
         const userEmail = session.user.email;
@@ -32,7 +45,7 @@ const TelaLogin = () => {
 
           if (fetchError) {
             console.error("Erro ao verificar usuário:", fetchError);
-            alert("Erro ao verificar dados do usuário");
+            // Não mostrar alert aqui para evitar duplos alerts
             setLoading(false);
             return;
           }
@@ -44,12 +57,21 @@ const TelaLogin = () => {
               existingUser.tipo_usuario &&
               existingUser.tipo_usuario !== "pendente"
             ) {
-              navigate(`/dashboard/${existingUser.tipo_usuario}`);
+              console.log(
+                "Usuário existente com perfil completo, redirecionando para dashboard"
+              );
+              navigate(`/dashboard/${existingUser.tipo_usuario}`, {
+                replace: true,
+              });
             } else {
-              navigate("/tipo-usuario");
+              console.log(
+                "Usuário existente com perfil pendente, redirecionando para tipo-usuario"
+              );
+              navigate("/tipo-usuario", { replace: true });
             }
           } else {
             // Usuário novo - cria registro na tabela usuario
+            console.log("Criando novo usuário na tabela usuario");
             const { error: insertError } = await supabase
               .from("usuario")
               .insert([
@@ -62,17 +84,15 @@ const TelaLogin = () => {
 
             if (insertError) {
               console.error("Erro ao inserir usuário:", insertError);
-              alert("Erro ao criar perfil do usuário");
               setLoading(false);
               return;
             }
 
             // Redireciona para seleção de tipo
-            navigate("/tipo-usuario");
+            navigate("/tipo-usuario", { replace: true });
           }
         } catch (error) {
           console.error("Erro no processo de autenticação:", error);
-          alert("Erro no processo de login");
         } finally {
           setLoading(false);
         }
@@ -100,6 +120,10 @@ const TelaLogin = () => {
       });
       console.log("Resposta do Supabase:", { data, error });
       if (error) {
+        console.error("DEBUG: Erro detalhado do Supabase:", error);
+        console.error("DEBUG: Código do erro:", error.code);
+        console.error("DEBUG: Mensagem do erro:", error.message);
+
         if (error.message.includes("Invalid login credentials")) {
           alert("Credenciais inválidas. Verifique seu e-mail e senha.");
         } else {
@@ -108,24 +132,57 @@ const TelaLogin = () => {
         setLoading(false);
         return;
       }
-      // Buscar dados do usuário no banco
+
+      // CORREÇÃO: Verificar se realmente há uma sessão válida após o login
+      if (!data.session || !data.user) {
+        console.error("DEBUG: Sessão ou usuário inválidos após login");
+        console.error("DEBUG: data.session:", data.session);
+        console.error("DEBUG: data.user:", data.user);
+        alert("Erro na autenticação. Tente novamente.");
+        setLoading(false);
+        return;
+      }
+
+      console.log("DEBUG: Login bem-sucedido, sessão válida obtida");
+      console.log("DEBUG: User ID:", data.user.id);
+      console.log("DEBUG: User Email:", data.user.email);
+
+      // Buscar dados do usuário no banco somente se login foi bem-sucedido
       const { data: userData, error: userError } = await supabase
         .from("usuario")
         .select("*")
         .eq("email", loginEmail)
         .maybeSingle();
+
       console.log("Dados do usuário após login:", userData);
-      if (userError || !userData) {
+
+      if (userError) {
+        console.error("Erro ao buscar dados do usuário:", userError);
         alert("Erro ao buscar dados do usuário após login.");
         setLoading(false);
         return;
       }
-      // Redirecionar sempre para a tela de tipo de usuário após login
-      console.log("Redirecionando para: /tipo-usuario");
-      navigate("/tipo-usuario", { replace: true });
+
+      if (!userData) {
+        alert("Usuário não encontrado no banco de dados.");
+        setLoading(false);
+        return;
+      }
+
+      // CORREÇÃO: Redirecionamento baseado no estado real do usuário
+      if (userData.tipo_usuario && userData.tipo_usuario !== "pendente") {
+        // Usuário já tem perfil completo, vai direto para o dashboard
+        console.log("Redirecionando para dashboard:", userData.tipo_usuario);
+        navigate(`/dashboard/${userData.tipo_usuario}`, { replace: true });
+      } else {
+        // Usuário precisa completar onboarding
+        console.log("Redirecionando para: /tipo-usuario");
+        navigate("/tipo-usuario", { replace: true });
+      }
     } catch (error) {
       console.error("Erro no login:", error);
       alert("Erro inesperado no login");
+      setLoading(false);
     } finally {
       setLoading(false);
     }

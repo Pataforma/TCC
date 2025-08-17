@@ -32,11 +32,34 @@ export default function OnboardingWizard({
   const handleComplete = async () => {
     setIsSubmitting(true);
     try {
-      await onComplete(formData);
-      // O componente pai deve lidar com o redirecionamento
+      console.log("DEBUG: OnboardingWizard - Iniciando handleComplete");
+      console.log("DEBUG: OnboardingWizard - Dados do formulário:", formData);
+
+      const result = await onComplete(formData);
+
+      console.log(
+        "DEBUG: OnboardingWizard - onComplete executado com resultado:",
+        result
+      );
+
+      if (result === true) {
+        console.log(
+          "DEBUG: OnboardingWizard - Onboarding concluído com sucesso"
+        );
+        // O componente pai deve lidar com o redirecionamento
+      } else {
+        console.log(
+          "DEBUG: OnboardingWizard - Onboarding falhou, usuário pode tentar novamente"
+        );
+        // Não fazer nada, deixar o usuário tentar novamente
+      }
     } catch (error) {
-      console.error("Erro ao completar onboarding:", error);
+      console.error(
+        "DEBUG: OnboardingWizard - Erro ao completar onboarding:",
+        error
+      );
       alert("Erro ao salvar configurações. Tente novamente.");
+      // Não resetar isSubmitting em caso de erro para permitir nova tentativa
     } finally {
       setIsSubmitting(false);
     }
@@ -85,7 +108,7 @@ export default function OnboardingWizard({
                   index + 1
                 )}
               </div>
-              <span className={styles.stepLabel}>{step.title}</span>
+              <span className={styles.stepLabel}>{step.label}</span>
             </div>
           ))}
         </div>

@@ -67,25 +67,97 @@ export const CompleteProfileRoute = ({ children }) => {
 
 // Componente para verificar se usuário é tutor
 export const TutorRoute = ({ children }) => {
-  // Durante o desenvolvimento, permitir acesso irrestrito
+  const { user, loading, perfilCompleto } = useUser();
+  const location = useLocation();
+
+  if (loading) {
+    return <LoadingPage />;
+  }
+
+  if (!user) {
+    return <Navigate to="/telalogin" state={{ from: location }} replace />;
+  }
+
+  if (!perfilCompleto) {
+    return <Navigate to="/tipo-usuario" replace />;
+  }
+
+  if (user.tipo_usuario !== "tutor") {
+    return <UnauthorizedPage />;
+  }
+
   return children;
 };
 
 // Componente para verificar se usuário é veterinário
 export const VeterinarioRoute = ({ children }) => {
-  // Durante o desenvolvimento, permitir acesso irrestrito
+  const { user, loading, perfilCompleto } = useUser();
+  const location = useLocation();
+
+  if (loading) {
+    return <LoadingPage />;
+  }
+
+  if (!user) {
+    return <Navigate to="/telalogin" state={{ from: location }} replace />;
+  }
+
+  if (!perfilCompleto) {
+    return <Navigate to="/tipo-usuario" replace />;
+  }
+
+  if (user.tipo_usuario !== "veterinario") {
+    return <UnauthorizedPage />;
+  }
+
   return children;
 };
 
 // Componente para verificar se usuário é anunciante
 export const AnuncianteRoute = ({ children }) => {
-  // Durante o desenvolvimento, permitir acesso irrestrito
+  const { user, loading, perfilCompleto } = useUser();
+  const location = useLocation();
+
+  if (loading) {
+    return <LoadingPage />;
+  }
+
+  if (!user) {
+    return <Navigate to="/telalogin" state={{ from: location }} replace />;
+  }
+
+  if (!perfilCompleto) {
+    return <Navigate to="/tipo-usuario" replace />;
+  }
+
+  if (user.tipo_usuario !== "anunciante") {
+    return <UnauthorizedPage />;
+  }
+
   return children;
 };
 
 // Componente para verificar se usuário é parceiro
 export const ParceiroRoute = ({ children }) => {
-  // Durante o desenvolvimento, permitir acesso irrestrito
+  const { user, loading, perfilCompleto } = useUser();
+  const location = useLocation();
+
+  if (loading) {
+    return <LoadingPage />;
+  }
+
+  if (!user) {
+    return <Navigate to="/telalogin" state={{ from: location }} replace />;
+  }
+
+  if (!perfilCompleto) {
+    return <Navigate to="/tipo-usuario" replace />;
+  }
+
+  if (user.tipo_usuario !== "parceiro") {
+    return <UnauthorizedPage />;
+  }
+
   return children;
 };
 

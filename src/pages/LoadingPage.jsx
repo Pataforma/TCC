@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import LoadingTransition from "../components/ui/LoadingTransition";
+import LoadingSpinner from "../components/ui/LoadingSpinner";
 
 function LoadingPage() {
   const navigate = useNavigate();
@@ -13,28 +13,23 @@ function LoadingPage() {
   const message = params.get("message") || "Carregando...";
   const timeout = parseInt(params.get("timeout") || "2000", 10);
 
-  // Gerencia a transição após o carregamento
-  const handleLoadingComplete = () => {
-    setShowLoader(false);
-    // Pequeno atraso para permitir a animação de saída
-    setTimeout(() => {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowLoader(false);
       navigate(nextRoute);
-    }, 300);
-  };
+    }, timeout);
 
-  return (
-    <div className="loading-page">
-      {showLoader && (
-        <LoadingTransition
-          onComplete={handleLoadingComplete}
-          message={message}
-          timeout={timeout}
-          color="secondary"
-          size="large"
-        />
-      )}
-    </div>
-  );
+    return () => clearTimeout(timer);
+  }, [navigate, nextRoute, timeout]);
+
+  return showLoader ? (
+    <LoadingSpinner
+      size="large"
+      variant="primary"
+      fullscreen={true}
+      text={message}
+    />
+  ) : null;
 }
 
 export default LoadingPage;

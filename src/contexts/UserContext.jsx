@@ -114,7 +114,13 @@ export const UserProvider = ({ children }) => {
       dispatch({ type: ACTIONS.SET_USER, payload: user });
 
       // Verificar se perfil está completo
-      const perfilCompleto = !!(userData?.nome && userData?.telefone);
+      // Para veterinários, também verificar se o tipo_usuario foi definido corretamente
+      const perfilCompleto = !!(
+        userData?.nome &&
+        userData?.telefone &&
+        userData?.tipo_usuario &&
+        userData?.tipo_usuario !== "pendente"
+      );
       dispatch({ type: ACTIONS.SET_PERFIL_COMPLETO, payload: perfilCompleto });
 
       // Se usuário existe, buscar dados em paralelo para melhor performance
@@ -272,7 +278,12 @@ export const UserProvider = ({ children }) => {
       dispatch({ type: ACTIONS.SET_USER, payload: data });
       dispatch({
         type: ACTIONS.SET_PERFIL_COMPLETO,
-        payload: !!(data.nome && data.telefone),
+        payload: !!(
+          data.nome &&
+          data.telefone &&
+          data.tipo_usuario &&
+          data.tipo_usuario !== "pendente"
+        ),
       });
 
       return data;

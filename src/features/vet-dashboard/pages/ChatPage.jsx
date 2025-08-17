@@ -14,6 +14,7 @@ import {
   Modal,
   Alert,
 } from "react-bootstrap";
+import { supabase } from "../../../utils/supabase";
 import {
   FaPaperclip,
   FaPaperPlane,
@@ -33,6 +34,7 @@ import {
   FaExclamationTriangle,
   FaSmile,
   FaMicrophone,
+  FaPaw,
 } from "react-icons/fa";
 import DashboardLayout from "../../../layouts/DashboardLayout";
 
@@ -45,108 +47,191 @@ const ChatPage = () => {
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
 
-  // Dados mockados de conversas
-  const [conversations] = useState([
-    {
-      id: 1,
-      tutor: "Maria Silva",
-      pet: "Thor",
-      petImage: "https://via.placeholder.com/40x40/ff6b6b/ffffff?text=T",
-      lastMessage:
-        "Olá Dr. André, o Thor está com uma ferida na pata. Posso enviar uma foto?",
-      lastMessageTime: "14:30",
-      unreadCount: 2,
-      isOnline: true,
-      messages: [
-        {
-          id: 1,
-          sender: "tutor",
-          text: "Olá Dr. André, o Thor está com uma ferida na pata. Posso enviar uma foto?",
-          timestamp: "14:30",
-          status: "read",
-          attachments: [],
-        },
-        {
-          id: 2,
-          sender: "vet",
-          text: "Olá Maria! Claro, pode enviar a foto. Vou analisar e te dar as orientações necessárias.",
-          timestamp: "14:32",
-          status: "read",
-          attachments: [],
-        },
-        {
-          id: 3,
-          sender: "tutor",
-          text: "Perfeito! Aqui está a foto da ferida.",
-          timestamp: "14:35",
-          status: "read",
-          attachments: [
-            {
-              type: "image",
-              url: "https://via.placeholder.com/200x150/ff6b6b/ffffff?text=Foto+Ferida",
-              name: "ferida_thor.jpg",
-            },
-          ],
-        },
-        {
-          id: 4,
-          sender: "vet",
-          text: "Analisando a foto... Parece ser uma ferida superficial. Vou te passar as instruções de cuidados.",
-          timestamp: "14:37",
-          status: "read",
-          attachments: [],
-        },
-        {
-          id: 5,
-          sender: "tutor",
-          text: "Obrigada! Estou aguardando as instruções.",
-          timestamp: "14:38",
-          status: "delivered",
-          attachments: [],
-        },
-        {
-          id: 6,
-          sender: "tutor",
-          text: "Dr. André, o Thor está se coçando muito na ferida. Isso é normal?",
-          timestamp: "14:40",
-          status: "sent",
-          attachments: [],
-        },
-      ],
-    },
-    {
-      id: 2,
-      tutor: "João Santos",
-      pet: "Luna",
-      petImage: "https://via.placeholder.com/40x40/4ecdc4/ffffff?text=L",
-      lastMessage:
-        "A Luna tomou a vacina ontem e está bem. Obrigado pelo atendimento!",
-      lastMessageTime: "13:45",
-      unreadCount: 0,
-      isOnline: false,
-      messages: [
-        {
-          id: 1,
-          sender: "tutor",
-          text: "A Luna tomou a vacina ontem e está bem. Obrigado pelo atendimento!",
-          timestamp: "13:45",
-          status: "read",
-          attachments: [],
-        },
-        {
-          id: 2,
-          sender: "vet",
-          text: "Que ótimo! Fico feliz que a Luna esteja bem. Lembre-se de marcar o retorno para a próxima dose.",
-          timestamp: "13:47",
-          status: "read",
-          attachments: [],
-        },
-      ],
-    },
-    {
-      id: 3,
-      tutor: "Carlos Oliveira",
-      pet: "Max",
+  const [conversations, setConversations] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState(null);
+
+  // Carregar conversas do Supabase
+  useEffect(() => {
+    fetchConversations();
+  }, []);
+
+  const fetchConversations = async () => {
+    try {
+      setLoading(true);
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      setCurrentUserId(session.user.id);
+
+      // Buscar conversas onde o veterinário é destinatário ou remetente
+      const { data, error } = await supabase
+        .from('mensagens')
+        .select(`
+          *,
+          remetente: remetente_id (id, nome, email),
+          destinatario: destinatario_id (id, nome, email),
+          pacientes: paciente_id (nome, especie)
+        `)
+        .or(`remetente_id.eq.${session.user.id},destinatario_id.eq.${session.user.id}`)
+        .order('data_envio', { ascending: false });
+
+      if (error) throw error;
+
+      // Agrupar mensagens por conversa
+      const conversasAgrupadas = groupMessagesByConversation(data || []);
+      setConversations(conversasAgrupadas);
+    } catch (error) {
+      console.error('Erro ao carregar conversas:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const groupMessagesByConversation = (mensagens) => {
+    const conversas = {};
+    
+    mensagens.forEach(msg => {
+      // Determinar o outro participante da conversa
+      const isRemetente = msg.remetente_id === currentUserId;
+      const outroParticipante = isRemetente ? msg.destinatario : msg.remetente;
+      const paciente = msg.pacientes;
+      
+      const conversaKey = `${outroParticipante.id}_${msg.paciente_id || 'sem_paciente'}`;
+      
+      if (!conversas[conversaKey]) {
+        conversas[conversaKey] = {
+          id: conversaKey,
+          tutor: outroParticipante,
+          paciente: paciente,
+          lastMessage: msg.conteudo,
+          lastMessageTime: formatMessageTime(msg.data_envio),
+          unreadCount: isRemetente ? 0 : (msg.lida ? 0 : 1),
+          isOnline: false, // Por enquanto sempre false
+          messages: []
+        };
+      }
+      
+      conversas[conversaKey].messages.push({
+        id: msg.id,
+        sender: isRemetente ? 'vet' : 'tutor',
+        text: msg.conteudo,
+        timestamp: formatMessageTime(msg.data_envio),
+        status: msg.lida ? 'read' : 'sent',
+        attachments: msg.anexos || []
+      });
+      
+      // Atualizar última mensagem se for mais recente
+      if (new Date(msg.data_envio) > new Date(conversas[conversaKey].lastMessageTime)) {
+        conversas[conversaKey].lastMessage = msg.conteudo;
+        conversas[conversaKey].lastMessageTime = formatMessageTime(msg.data_envio);
+      }
+    });
+    
+    return Object.values(conversas);
+  };
+
+  const formatMessageTime = (timestamp) => {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffInHours = (now - date) / (1000 * 60 * 60);
+    
+    if (diffInHours < 24) {
+      return date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    } else if (diffInHours < 48) {
+      return 'Ontem';
+    } else {
+      return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+    }
+  };
+
+  const handleSendMessage = async () => {
+    if (!newMessage.trim() || !selectedConversation) return;
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      const messageData = {
+        remetente_id: session.user.id,
+        destinatario_id: selectedConversation.tutor.id,
+        paciente_id: selectedConversation.paciente?.id || null,
+        conteudo: newMessage.trim(),
+        tipo: 'texto',
+        data_envio: new Date().toISOString(),
+        lida: false
+      };
+
+      const { error } = await supabase
+        .from('mensagens')
+        .insert(messageData);
+
+      if (error) throw error;
+
+      // Limpar campo de mensagem
+      setNewMessage('');
+      
+      // Recarregar conversas para atualizar a lista
+      fetchConversations();
+      
+      // Atualizar mensagens da conversa selecionada
+      if (selectedConversation) {
+        const updatedConversation = { ...selectedConversation };
+        updatedConversation.messages.push({
+          id: Date.now(), // ID temporário
+          sender: 'vet',
+          text: messageData.conteudo,
+          timestamp: formatMessageTime(messageData.data_envio),
+          status: 'sent',
+          attachments: []
+        });
+        setSelectedConversation(updatedConversation);
+      }
+    } catch (error) {
+      console.error('Erro ao enviar mensagem:', error);
+      alert('Erro ao enviar mensagem: ' + error.message);
+    }
+  };
+
+  const handleConversationSelect = (conversation) => {
+    setSelectedConversation(conversation);
+    
+    // Marcar mensagens como lidas
+    if (conversation.unreadCount > 0) {
+      markMessagesAsRead(conversation);
+    }
+  };
+
+  const markMessagesAsRead = async (conversation) => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      // Buscar mensagens não lidas desta conversa
+      const { data: unreadMessages, error } = await supabase
+        .from('mensagens')
+        .select('id')
+        .eq('destinatario_id', session.user.id)
+        .eq('remetente_id', conversation.tutor.id)
+        .eq('lida', false);
+
+      if (error) throw error;
+
+      // Marcar como lidas
+      if (unreadMessages && unreadMessages.length > 0) {
+        const messageIds = unreadMessages.map(msg => msg.id);
+        await supabase
+          .from('mensagens')
+          .update({ lida: true })
+          .in('id', messageIds);
+      }
+
+      // Atualizar conversas
+      fetchConversations();
+    } catch (error) {
+      console.error('Erro ao marcar mensagens como lidas:', error);
+    }
+  };
       petImage: "https://via.placeholder.com/40x40/45b7d1/ffffff?text=M",
       lastMessage:
         "Dr. André, o Max está comendo bem e brincando normalmente. A cirurgia foi um sucesso!",
@@ -222,49 +307,67 @@ const ChatPage = () => {
   const handleSendMessage = () => {
     if (!newMessage.trim() && !selectedFile) return;
 
-    // TODO: Connect to backend API or WebSocket to send message data.
-    // const response = await sendMessageAPI({
-    //   conversationId: selectedConversation.id,
-    //   messageText: newMessage,
-    //   file: selectedFile
-    // });
+    // Usar a função async para enviar mensagem ao Supabase
+    handleSendMessageAsync();
+  };
 
-    const newMessageObj = {
-      id: Date.now(),
-      sender: "vet",
-      text: newMessage,
-      timestamp: new Date().toLocaleTimeString("pt-BR", {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-      status: "sent",
-      attachments: selectedFile
-        ? [
-            {
-              type: selectedFile.type.startsWith("image/") ? "image" : "file",
-              url: URL.createObjectURL(selectedFile),
-              name: selectedFile.name,
-            },
-          ]
-        : [],
-    };
+  const handleSendMessageAsync = async () => {
+    if (!newMessage.trim() || !selectedConversation) return;
 
-    // Atualizar conversa localmente (mock)
-    const updatedConversations = conversations.map((conv) => {
-      if (conv.id === selectedConversation.id) {
-        return {
-          ...conv,
-          messages: [...conv.messages, newMessageObj],
-          lastMessage: newMessage,
-          lastMessageTime: newMessageObj.timestamp,
-        };
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      const messageData = {
+        remetente_id: session.user.id,
+        destinatario_id: selectedConversation.tutor.id,
+        paciente_id: selectedConversation.paciente?.id || null,
+        conteudo: newMessage.trim(),
+        tipo: 'texto',
+        data_envio: new Date().toISOString(),
+        lida: false
+      };
+
+      const { error } = await supabase
+        .from('mensagens')
+        .insert(messageData);
+
+      if (error) throw error;
+
+      // Limpar campo de mensagem
+      setNewMessage('');
+      setSelectedFile(null);
+      
+      // Recarregar conversas para atualizar a lista
+      fetchConversations();
+      
+      // Atualizar mensagens da conversa selecionada
+      if (selectedConversation) {
+        const updatedConversation = { ...selectedConversation };
+        updatedConversation.messages.push({
+          id: Date.now(), // ID temporário
+          sender: 'vet',
+          text: messageData.conteudo,
+          timestamp: formatMessageTime(messageData.data_envio),
+          status: 'sent',
+          attachments: selectedFile
+            ? [
+                {
+                  type: selectedFile.type.startsWith("image/") ? "image" : "file",
+                  url: URL.createObjectURL(selectedFile),
+                  name: selectedFile.name,
+                },
+              ]
+            : []
+        });
+        setSelectedConversation(updatedConversation);
       }
-      return conv;
-    });
-
-    setNewMessage("");
-    setSelectedFile(null);
-    scrollToBottom();
+      
+      scrollToBottom();
+    } catch (error) {
+      console.error('Erro ao enviar mensagem:', error);
+      alert('Erro ao enviar mensagem: ' + error.message);
+    }
   };
 
   const handleFileUpload = (event) => {
@@ -305,8 +408,8 @@ const ChatPage = () => {
 
   const filteredConversations = conversations.filter(
     (conv) =>
-      conv.tutor.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      conv.pet.toLowerCase().includes(searchTerm.toLowerCase())
+      conv.tutor?.nome?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      conv.paciente?.nome?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Auto-scroll para o final das mensagens quando uma conversa é selecionada
@@ -401,10 +504,10 @@ const ChatPage = () => {
                           <div className="d-flex justify-content-between align-items-start">
                             <div>
                               <h6 className="mb-1 fw-semibold">
-                                {conversation.tutor}
+                                {conversation.tutor?.nome || 'N/A'}
                               </h6>
                               <small className="text-muted">
-                                {conversation.pet}
+                                {conversation.paciente?.nome || 'N/A'} ({conversation.paciente?.especie || 'N/A'})
                               </small>
                             </div>
                             <div className="text-end">
@@ -439,19 +542,18 @@ const ChatPage = () => {
                   <Card.Header className="bg-white border-bottom">
                     <div className="d-flex justify-content-between align-items-center">
                       <div className="d-flex align-items-center gap-3">
-                        <Image
-                          src={selectedConversation.petImage}
-                          alt={selectedConversation.pet}
-                          roundedCircle
-                          width={40}
-                          height={40}
-                        />
+                        <div
+                          className="bg-primary d-flex align-items-center justify-content-center text-white rounded-circle"
+                          style={{ width: 40, height: 40 }}
+                        >
+                          <FaPaw size={16} />
+                        </div>
                         <div>
                           <h6 className="mb-0 fw-semibold">
-                            {selectedConversation.tutor}
+                            {selectedConversation.tutor?.nome || 'N/A'}
                           </h6>
                           <small className="text-muted">
-                            {selectedConversation.pet} •{" "}
+                            {selectedConversation.paciente?.nome || 'N/A'} •{" "}
                             {selectedConversation.isOnline ? (
                               <span className="text-success">Online</span>
                             ) : (

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Row,
   Col,
@@ -14,6 +14,8 @@ import {
   Dropdown,
 } from "react-bootstrap";
 import DashboardLayout from "../../../layouts/DashboardLayout";
+import ModalNovoPaciente from "../components/ModalNovoPaciente";
+import { supabase } from "../../../utils/supabase";
 import {
   FaSearch,
   FaFilter,
@@ -37,104 +39,81 @@ import {
 
 const DashboardVeterinarioPacientes = () => {
   const [showModal, setShowModal] = useState(false);
+  const [showModalNovoPaciente, setShowModalNovoPaciente] = useState(false);
   const [selectedPaciente, setSelectedPaciente] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("todos");
   const [activeTab, setActiveTab] = useState("geral");
+  const [loading, setLoading] = useState(false);
 
-  // Dados mockados dos pacientes
-  const [pacientes] = useState([
-    {
-      id: 1,
-      nome: "Rex",
-      especie: "Cão",
-      raca: "Golden Retriever",
-      idade: 3,
-      peso: 28.5,
-      tutor: "Maria Silva",
-      telefone: "(11) 99999-9999",
-      email: "maria@email.com",
-      ultimaConsulta: "2024-01-10",
-      proximaConsulta: "2024-01-20",
-      status: "ativo",
-      historico: [
-        {
-          data: "2024-01-10",
-          tipo: "Consulta de Rotina",
-          diagnostico: "Pet saudável",
-          prescricao: "Manter alimentação atual",
-        },
-        {
-          data: "2023-12-15",
-          tipo: "Vacinação",
-          diagnostico: "Vacina aplicada",
-          prescricao: "Retornar em 1 ano",
-        },
-      ],
-      vacinas: [
-        { nome: "V10", data: "2023-12-15", proxima: "2024-12-15" },
-        { nome: "Antirrábica", data: "2023-12-15", proxima: "2024-12-15" },
-      ],
-      exames: [
-        { nome: "Hemograma", data: "2024-01-10", resultado: "Normal" },
-        { nome: "Bioquímico", data: "2024-01-10", resultado: "Normal" },
-      ],
-    },
-    {
-      id: 2,
-      nome: "Luna",
-      especie: "Gato",
-      raca: "Siamês",
-      idade: 2,
-      peso: 4.2,
-      tutor: "João Santos",
-      telefone: "(11) 88888-8888",
-      email: "joao@email.com",
-      ultimaConsulta: "2024-01-08",
-      proximaConsulta: "2024-01-25",
-      status: "ativo",
-      historico: [
-        {
-          data: "2024-01-08",
-          tipo: "Consulta de Rotina",
-          diagnostico: "Pet saudável",
-          prescricao: "Continuar com ração premium",
-        },
-      ],
-      vacinas: [{ nome: "V4", data: "2023-11-20", proxima: "2024-11-20" }],
-      exames: [],
-    },
-    {
-      id: 3,
-      nome: "Thor",
-      especie: "Cão",
-      raca: "Pastor Alemão",
-      idade: 5,
-      peso: 35.0,
-      tutor: "Ana Costa",
-      telefone: "(11) 77777-7777",
-      email: "ana@email.com",
-      ultimaConsulta: "2024-01-05",
-      proximaConsulta: "2024-01-30",
-      status: "inativo",
-      historico: [
-        {
-          data: "2024-01-05",
-          tipo: "Exame",
-          diagnostico: "Problema cardíaco leve",
-          prescricao: "Medicação cardíaca",
-        },
-      ],
-      vacinas: [{ nome: "V10", data: "2023-10-10", proxima: "2024-10-10" }],
-      exames: [
-        {
-          nome: "Eletrocardiograma",
-          data: "2024-01-05",
-          resultado: "Arritmia leve",
-        },
-      ],
-    },
-  ]);
+  // Dados dos pacientes carregados do banco
+  const [pacientes, setPacientes] = useState([]);
+
+  // Carregar pacientes do banco de dados
+  useEffect(() => {
+    carregarPacientes();
+  }, []);
+
+  const carregarPacientes = async () => {
+    try {
+      setLoading(true);
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session) {
+        console.error("Usuário não autenticado");
+        return;
+      }
+
+      const { data: pacientesData, error } = await supabase
+        .from("pets")
+        .select(
+          `
+          *,
+          tutor:usuario_id (
+            nome,
+            telefone,
+            email
+          )
+        `
+        )
+        .eq("veterinario_id", session.user.id)
+        .order("nome");
+
+      if (error) {
+        console.error("Erro ao carregar pacientes:", error);
+        return;
+      }
+
+      setPacientes(pacientesData || []);
+    } catch (error) {
+      console.error("Erro ao carregar pacientes:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePacienteCriado = (novoPaciente) => {
+    // Recarregar a lista de pacientes
+    carregarPacientes();
+  };
+
+  // Função para calcular idade baseada na data de nascimento
+  const calcularIdade = (dataNascimento) => {
+    if (!dataNascimento) return null;
+
+    const hoje = new Date();
+    const nascimento = new Date(dataNascimento);
+    const diffAnos = hoje.getFullYear() - nascimento.getFullYear();
+    const mes = hoje.getMonth() - nascimento.getMonth();
+
+    if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) {
+      return diffAnos - 1;
+    }
+
+    return diffAnos;
+  };
 
   const getStatusBadge = (status) => {
     const variants = {
@@ -160,8 +139,10 @@ const DashboardVeterinarioPacientes = () => {
   const filteredPacientes = pacientes.filter((paciente) => {
     const matchesSearch =
       paciente.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      paciente.tutor.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      paciente.raca.toLowerCase().includes(searchTerm.toLowerCase());
+      (paciente.tutor?.nome || "")
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      (paciente.tutor?.telefone || "").includes(searchTerm);
 
     const matchesFilter =
       filterStatus === "todos" || paciente.status === filterStatus;
@@ -189,7 +170,11 @@ const DashboardVeterinarioPacientes = () => {
               <FaDownload className="me-2" />
               Exportar
             </Button>
-            <Button variant="primary" size="sm">
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => setShowModalNovoPaciente(true)}
+            >
               <FaPlus className="me-2" />
               Novo Paciente
             </Button>
@@ -330,22 +315,32 @@ const DashboardVeterinarioPacientes = () => {
                       </div>
                     </td>
                     <td className="align-middle">
-                      <div>{paciente.tutor}</div>
-                      <small className="text-muted">{paciente.telefone}</small>
+                      <div>{paciente.tutor?.nome || "N/A"}</div>
+                      <small className="text-muted">
+                        {paciente.tutor?.telefone || "N/A"}
+                      </small>
                     </td>
                     <td className="align-middle">
                       <div>{paciente.especie}</div>
-                      <small className="text-muted">{paciente.raca}</small>
+                      <small className="text-muted">
+                        {paciente.raca || "N/A"}
+                      </small>
                     </td>
                     <td className="align-middle">
-                      <div>{paciente.idade} anos</div>
-                      <small className="text-muted">{paciente.peso} kg</small>
+                      <div>
+                        {paciente.data_nascimento
+                          ? calcularIdade(paciente.data_nascimento) + " anos"
+                          : "N/A"}
+                      </div>
+                      <small className="text-muted">
+                        {paciente.peso ? paciente.peso + " kg" : "N/A"}
+                      </small>
                     </td>
                     <td className="align-middle">
-                      <div>{formatarData(paciente.ultimaConsulta)}</div>
+                      <div>N/A</div>
                     </td>
                     <td className="align-middle">
-                      <div>{formatarData(paciente.proximaConsulta)}</div>
+                      <div>N/A</div>
                     </td>
                     <td className="align-middle">
                       {getStatusBadge(paciente.status)}
@@ -666,6 +661,13 @@ const DashboardVeterinarioPacientes = () => {
           </Button>
         </Modal.Footer>
       </Modal>
+
+      {/* Modal de Novo Paciente */}
+      <ModalNovoPaciente
+        show={showModalNovoPaciente}
+        onHide={() => setShowModalNovoPaciente(false)}
+        onPacienteCriado={handlePacienteCriado}
+      />
     </DashboardLayout>
   );
 };

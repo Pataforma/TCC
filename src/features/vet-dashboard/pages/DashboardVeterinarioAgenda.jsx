@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Row,
   Col,
@@ -12,6 +12,7 @@ import {
   Tab,
 } from "react-bootstrap";
 import DashboardLayout from "../../../layouts/DashboardLayout";
+import { supabase } from "../../../utils/supabase";
 import {
   FaCalendarAlt,
   FaClock,
@@ -29,14 +30,31 @@ import {
   FaList,
   FaTasks,
   FaBell,
+  FaSave,
+  FaTrash,
 } from "react-icons/fa";
 
 const DashboardVeterinarioAgenda = () => {
   const [showModal, setShowModal] = useState(false);
+  const [showConsultaModal, setShowConsultaModal] = useState(false);
   const [selectedConsulta, setSelectedConsulta] = useState(null);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [activeTab, setActiveTab] = useState("semana");
   const [activeView, setActiveView] = useState("agenda");
+  const [consultas, setConsultas] = useState([]);
+  const [pacientes, setPacientes] = useState([]);
+  const [tutores, setTutores] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [novaConsulta, setNovaConsulta] = useState({
+    paciente_id: "",
+    tutor_id: "",
+    data_consulta: "",
+    horario: "",
+    duracao: 30,
+    tipo: "Consulta de Rotina",
+    observacoes: "",
+    status: "pendente",
+  });
 
   // Dados mockados das tarefas
   const [tarefas] = useState([
@@ -69,61 +87,66 @@ const DashboardVeterinarioAgenda = () => {
     },
   ]);
 
-  // Dados mockados das consultas
-  const [consultas] = useState([
-    {
-      id: 1,
-      paciente: "Rex",
-      tutor: "Maria Silva",
-      telefone: "(11) 99999-9999",
-      email: "maria@email.com",
-      horario: "09:00",
-      duracao: 30,
-      tipo: "Consulta de Rotina",
-      status: "confirmada",
-      observacoes: "Pet apresentando coceira excessiva",
-      data: "2024-01-15",
-    },
-    {
-      id: 2,
-      paciente: "Luna",
-      tutor: "João Santos",
-      telefone: "(11) 88888-8888",
-      email: "joao@email.com",
-      horario: "10:30",
-      duracao: 45,
-      tipo: "Vacinação",
-      status: "pendente",
-      observacoes: "Primeira vacina anual",
-      data: "2024-01-15",
-    },
-    {
-      id: 3,
-      paciente: "Thor",
-      tutor: "Ana Costa",
-      telefone: "(11) 77777-7777",
-      email: "ana@email.com",
-      horario: "14:00",
-      duracao: 60,
-      tipo: "Exame",
-      status: "confirmada",
-      observacoes: "Exame de sangue completo",
-      data: "2024-01-15",
-    },
-    {
-      id: 4,
-      paciente: "Nina",
-      tutor: "Carlos Oliveira",
-      telefone: "(11) 66666-6666",
-      email: "carlos@email.com",
-      horario: "16:00",
-      duracao: 30,
-      tipo: "Consulta de Emergência",
-      status: "confirmada",
-      observacoes: "Pet com vômito",
-      data: "2024-01-16",
-    },
-  ]);
+  // Carregar dados do Supabase
+  useEffect(() => {
+    fetchConsultas();
+    fetchPacientes();
+    fetchTutores();
+  }, []);
+
+  const fetchConsultas = async () => {
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session) return;
+
+      const { data, error } = await supabase
+        .from("consultas")
+        .select(
+          `
+          *,
+          pacientes: paciente_id (nome, especie, raca),
+          tutores: tutor_id (nome, telefone, email)
+        `
+        )
+        .eq("veterinario_id", session.user.id)
+        .order("data_consulta", { ascending: true });
+
+      if (error) throw error;
+      setConsultas(data || []);
+    } catch (error) {
+      console.error("Erro ao carregar consultas:", error);
+    }
+  };
+
+  const fetchPacientes = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("pacientes")
+        .select("*")
+        .order("nome");
+
+      if (error) throw error;
+      setPacientes(data || []);
+    } catch (error) {
+      console.error("Erro ao carregar pacientes:", error);
+    }
+  };
+
+  const fetchTutores = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("tutores")
+        .select("*")
+        .order("nome");
+
+      if (error) throw error;
+      setTutores(data || []);
+    } catch (error) {
+      console.error("Erro ao carregar tutores:", error);
+    }
+  };
 
   const getStatusBadge = (status) => {
     const variants = {
@@ -144,6 +167,69 @@ const DashboardVeterinarioAgenda = () => {
   const handleConsultaClick = (consulta) => {
     setSelectedConsulta(consulta);
     setShowModal(true);
+  };
+
+  const handleNovaConsulta = () => {
+    setNovaConsulta({
+      paciente_id: "",
+      tutor_id: "",
+      data_consulta: "",
+      horario: "",
+      duracao: 30,
+      tipo: "Consulta de Rotina",
+      observacoes: "",
+      status: "pendente",
+    });
+    setShowConsultaModal(true);
+  };
+
+  const handleSalvarConsulta = async () => {
+    try {
+      setLoading(true);
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session) throw new Error("Sessão expirada");
+
+      const consultaData = {
+        ...novaConsulta,
+        veterinario_id: session.user.id,
+        data_criacao: new Date().toISOString(),
+      };
+
+      const { error } = await supabase.from("consultas").insert(consultaData);
+
+      if (error) throw error;
+
+      setShowConsultaModal(false);
+      fetchConsultas();
+      alert("Consulta criada com sucesso!");
+    } catch (error) {
+      console.error("Erro ao salvar consulta:", error);
+      alert("Erro ao salvar consulta: " + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleExcluirConsulta = async (id) => {
+    if (!confirm("Tem certeza que deseja excluir esta consulta?")) return;
+
+    try {
+      setLoading(true);
+      const { error } = await supabase.from("consultas").delete().eq("id", id);
+
+      if (error) throw error;
+
+      fetchConsultas();
+      setShowModal(false);
+      alert("Consulta excluída com sucesso!");
+    } catch (error) {
+      console.error("Erro ao excluir consulta:", error);
+      alert("Erro ao excluir consulta: " + error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleIniciarTeleconsulta = () => {
@@ -176,6 +262,10 @@ const DashboardVeterinarioAgenda = () => {
     return consultas.filter((consulta) => consulta.horario === horario);
   };
 
+  const formatarDataConsulta = (data) => {
+    return new Date(data).toLocaleDateString("pt-BR");
+  };
+
   return (
     <DashboardLayout tipoUsuario="veterinario" nomeUsuario="Dr. André Silva">
       <div className="container-fluid">
@@ -188,7 +278,11 @@ const DashboardVeterinarioAgenda = () => {
             </p>
           </div>
           <div className="d-flex gap-2">
-            <Button variant="outline-primary" size="sm">
+            <Button
+              variant="outline-primary"
+              size="sm"
+              onClick={handleNovaConsulta}
+            >
               <FaPlus className="me-2" />
               Nova Consulta
             </Button>
@@ -343,6 +437,7 @@ const DashboardVeterinarioAgenda = () => {
                     <td className="align-middle">
                       <div className="fw-semibold">{consulta.horario}</div>
                       <small className="text-muted">
+                        {formatarDataConsulta(consulta.data_consulta)} •{" "}
                         {consulta.duracao}min
                       </small>
                     </td>
@@ -355,14 +450,21 @@ const DashboardVeterinarioAgenda = () => {
                           <FaPaw size={12} />
                         </div>
                         <div>
-                          <div className="fw-semibold">{consulta.paciente}</div>
-                          <small className="text-muted">{consulta.tutor}</small>
+                          <div className="fw-semibold">
+                            {consulta.pacientes?.nome || "N/A"}
+                          </div>
+                          <small className="text-muted">
+                            {consulta.pacientes?.especie} -{" "}
+                            {consulta.pacientes?.raca}
+                          </small>
                         </div>
                       </div>
                     </td>
                     <td className="align-middle">
-                      <div>{consulta.tutor}</div>
-                      <small className="text-muted">{consulta.telefone}</small>
+                      <div>{consulta.tutores?.nome || "N/A"}</div>
+                      <small className="text-muted">
+                        {consulta.tutores?.telefone}
+                      </small>
                     </td>
                     <td className="align-middle">
                       <span className="badge bg-light text-dark">
@@ -419,9 +521,12 @@ const DashboardVeterinarioAgenda = () => {
                   </div>
                   <div>
                     <h5 className="fw-bold mb-1">
-                      {selectedConsulta.paciente}
+                      {selectedConsulta.pacientes?.nome || "N/A"}
                     </h5>
-                    <p className="text-muted mb-0">Paciente</p>
+                    <p className="text-muted mb-0">
+                      {selectedConsulta.pacientes?.especie} -{" "}
+                      {selectedConsulta.pacientes?.raca}
+                    </p>
                   </div>
                 </div>
 
@@ -429,7 +534,7 @@ const DashboardVeterinarioAgenda = () => {
                   <label className="form-label fw-semibold">Tutor</label>
                   <div className="d-flex align-items-center gap-2">
                     <FaUser className="text-muted" />
-                    <span>{selectedConsulta.tutor}</span>
+                    <span>{selectedConsulta.tutores?.nome || "N/A"}</span>
                   </div>
                 </div>
 
@@ -438,11 +543,11 @@ const DashboardVeterinarioAgenda = () => {
                   <div className="d-flex flex-column gap-1">
                     <div className="d-flex align-items-center gap-2">
                       <FaPhone className="text-muted" size={12} />
-                      <span>{selectedConsulta.telefone}</span>
+                      <span>{selectedConsulta.tutores?.telefone || "N/A"}</span>
                     </div>
                     <div className="d-flex align-items-center gap-2">
                       <FaEnvelope className="text-muted" size={12} />
-                      <span>{selectedConsulta.email}</span>
+                      <span>{selectedConsulta.tutores?.email || "N/A"}</span>
                     </div>
                   </div>
                 </div>
@@ -454,10 +559,13 @@ const DashboardVeterinarioAgenda = () => {
                 </h6>
 
                 <div className="mb-3">
-                  <label className="form-label fw-semibold">Horário</label>
+                  <label className="form-label fw-semibold">
+                    Data e Horário
+                  </label>
                   <div className="d-flex align-items-center gap-2">
                     <FaClock className="text-muted" />
                     <span>
+                      {formatarDataConsulta(selectedConsulta.data_consulta)} às{" "}
                       {selectedConsulta.horario} ({selectedConsulta.duracao}{" "}
                       min)
                     </span>
@@ -487,17 +595,207 @@ const DashboardVeterinarioAgenda = () => {
           )}
         </Modal.Body>
         <Modal.Footer className="border-0">
-          <Button variant="secondary" onClick={() => setShowModal(false)}>
+          <Button
+            variant="danger"
+            onClick={() => handleExcluirConsulta(selectedConsulta.id)}
+            disabled={loading}
+          >
+            <FaTrash className="me-2" />
+            Excluir
+          </Button>
+          <div className="ms-auto">
+            <Button variant="secondary" onClick={() => setShowModal(false)}>
+              <FaTimes className="me-2" />
+              Fechar
+            </Button>
+            <Button variant="success" className="ms-2">
+              <FaCheckCircle className="me-2" />
+              Confirmar
+            </Button>
+            <Button
+              variant="primary"
+              onClick={handleIniciarTeleconsulta}
+              className="ms-2"
+            >
+              <FaVideo className="me-2" />
+              Iniciar Teleconsulta
+            </Button>
+          </div>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Modal para Nova Consulta */}
+      <Modal
+        show={showConsultaModal}
+        onHide={() => setShowConsultaModal(false)}
+        size="lg"
+        centered
+      >
+        <Modal.Header closeButton className="border-0">
+          <Modal.Title className="fw-semibold">
+            <FaPlus className="me-2 text-primary" />
+            Nova Consulta
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <div className="row g-3">
+              <div className="col-md-6">
+                <Form.Group>
+                  <Form.Label>Paciente</Form.Label>
+                  <Form.Select
+                    value={novaConsulta.paciente_id}
+                    onChange={(e) =>
+                      setNovaConsulta({
+                        ...novaConsulta,
+                        paciente_id: e.target.value,
+                      })
+                    }
+                    required
+                  >
+                    <option value="">Selecione um paciente</option>
+                    {pacientes.map((paciente) => (
+                      <option key={paciente.id} value={paciente.id}>
+                        {paciente.nome} ({paciente.especie})
+                      </option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
+              </div>
+              <div className="col-md-6">
+                <Form.Group>
+                  <Form.Label>Tutor</Form.Label>
+                  <Form.Select
+                    value={novaConsulta.tutor_id}
+                    onChange={(e) =>
+                      setNovaConsulta({
+                        ...novaConsulta,
+                        tutor_id: e.target.value,
+                      })
+                    }
+                    required
+                  >
+                    <option value="">Selecione um tutor</option>
+                    {tutores.map((tutor) => (
+                      <option key={tutor.id} value={tutor.id}>
+                        {tutor.nome}
+                      </option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
+              </div>
+              <div className="col-md-6">
+                <Form.Group>
+                  <Form.Label>Data da Consulta</Form.Label>
+                  <Form.Control
+                    type="date"
+                    value={novaConsulta.data_consulta}
+                    onChange={(e) =>
+                      setNovaConsulta({
+                        ...novaConsulta,
+                        data_consulta: e.target.value,
+                      })
+                    }
+                    required
+                  />
+                </Form.Group>
+              </div>
+              <div className="col-md-6">
+                <Form.Group>
+                  <Form.Label>Horário</Form.Label>
+                  <Form.Control
+                    type="time"
+                    value={novaConsulta.horario}
+                    onChange={(e) =>
+                      setNovaConsulta({
+                        ...novaConsulta,
+                        horario: e.target.value,
+                      })
+                    }
+                    required
+                  />
+                </Form.Group>
+              </div>
+              <div className="col-md-6">
+                <Form.Group>
+                  <Form.Label>Duração (minutos)</Form.Label>
+                  <Form.Control
+                    type="number"
+                    value={novaConsulta.duracao}
+                    onChange={(e) =>
+                      setNovaConsulta({
+                        ...novaConsulta,
+                        duracao: parseInt(e.target.value),
+                      })
+                    }
+                    min="15"
+                    max="120"
+                    step="15"
+                    required
+                  />
+                </Form.Group>
+              </div>
+              <div className="col-md-6">
+                <Form.Group>
+                  <Form.Label>Tipo de Consulta</Form.Label>
+                  <Form.Select
+                    value={novaConsulta.tipo}
+                    onChange={(e) =>
+                      setNovaConsulta({ ...novaConsulta, tipo: e.target.value })
+                    }
+                    required
+                  >
+                    <option value="Consulta de Rotina">
+                      Consulta de Rotina
+                    </option>
+                    <option value="Vacinação">Vacinação</option>
+                    <option value="Exame">Exame</option>
+                    <option value="Consulta de Emergência">
+                      Consulta de Emergência
+                    </option>
+                    <option value="Cirurgia">Cirurgia</option>
+                  </Form.Select>
+                </Form.Group>
+              </div>
+              <div className="col-12">
+                <Form.Group>
+                  <Form.Label>Observações</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    rows={3}
+                    value={novaConsulta.observacoes}
+                    onChange={(e) =>
+                      setNovaConsulta({
+                        ...novaConsulta,
+                        observacoes: e.target.value,
+                      })
+                    }
+                    placeholder="Descreva os sintomas ou motivo da consulta..."
+                  />
+                </Form.Group>
+              </div>
+            </div>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer className="border-0">
+          <Button
+            variant="secondary"
+            onClick={() => setShowConsultaModal(false)}
+          >
             <FaTimes className="me-2" />
-            Fechar
+            Cancelar
           </Button>
-          <Button variant="success">
-            <FaCheckCircle className="me-2" />
-            Confirmar
-          </Button>
-          <Button variant="primary" onClick={handleIniciarTeleconsulta}>
-            <FaVideo className="me-2" />
-            Iniciar Teleconsulta
+          <Button
+            variant="primary"
+            onClick={handleSalvarConsulta}
+            disabled={loading}
+          >
+            {loading ? (
+              <span className="spinner-border spinner-border-sm me-2" />
+            ) : (
+              <FaSave className="me-2" />
+            )}
+            Salvar Consulta
           </Button>
         </Modal.Footer>
       </Modal>

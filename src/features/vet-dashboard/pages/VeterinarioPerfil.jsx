@@ -31,12 +31,32 @@ const VeterinarioPerfil = () => {
           data: { session },
         } = await supabase.auth.getSession();
         if (!session) return;
-        const { data, error } = await supabase
+        // Primeiro buscar dados básicos do usuário
+        const { data: userData, error: userError } = await supabase
           .from("usuario")
-          .select("nome, email, especialidade, bio, foto_url")
+          .select("nome, email, status")
           .eq("email", session.user.email)
           .eq("status", "ativo")
           .single();
+
+        if (userError) throw userError;
+
+        // Depois buscar dados específicos do veterinário
+        const { data: vetData, error: vetError } = await supabase
+          .from("veterinarios")
+          .select("especialidades, bio, foto_url")
+          .eq("id_usuario", session.user.id)
+          .single();
+
+        if (vetError && vetError.code !== "PGRST116") throw vetError;
+
+        // Combinar dados
+        const data = {
+          ...userData,
+          especialidade: vetData?.especialidades?.[0] || "",
+          bio: vetData?.bio || "",
+          foto_url: vetData?.foto_url || "",
+        };
         if (error) throw error;
         setPerfil(data);
         setFotoPreview(data.foto_url || "");
@@ -88,17 +108,26 @@ const VeterinarioPerfil = () => {
         data: { session },
       } = await supabase.auth.getSession();
       if (!session) throw new Error("Sessão expirada");
-      const { error } = await supabase
+      // Atualizar dados básicos na tabela usuario
+      const { error: userError } = await supabase
         .from("usuario")
         .update({
           nome: perfil.nome,
-          especialidade: perfil.especialidade,
-          bio: perfil.bio,
-          foto_url,
         })
         .eq("email", session.user.email)
         .eq("status", "ativo");
-      if (error) throw error;
+
+      if (userError) throw userError;
+
+      // Atualizar dados específicos na tabela veterinarios
+      const { error: vetError } = await supabase.from("veterinarios").upsert({
+        id_usuario: session.user.id,
+        especialidades: [perfil.especialidade],
+        bio: perfil.bio,
+        foto_url,
+      });
+
+      if (vetError) throw vetError;
       setMensagem("Perfil atualizado com sucesso!");
       setEditMode(false);
       setPerfil((prev) => ({ ...prev, foto_url }));
