@@ -5,6 +5,7 @@ import StatCard from "../../../components/Dashboard/StatCard";
 import SimpleChart from "../../../components/Dashboard/SimpleChart";
 import UpgradeToProBanner from "../../plans/components/UpgradeToProBanner";
 import { useUser } from "../../../contexts/UserContext";
+import { supabase } from "../../../utils/supabase";
 import {
   FaCalendarAlt,
   FaUsers,
@@ -24,86 +25,188 @@ import {
 
 const DashboardVeterinario = () => {
   const [stats, setStats] = useState({
-    consultasAgendadas: 8,
-    consultasPendentes: 3,
-    novasMensagens: 12,
-    faturamentoMes: 15420,
+    consultasAgendadas: 0,
+    consultasPendentes: 0,
+    novasMensagens: 0,
+    faturamentoMes: 0,
   });
 
-  const [consultasHoje, setConsultasHoje] = useState([
-    {
-      id: 1,
-      paciente: "Rex",
-      tutor: "Maria Silva",
-      horario: "09:00",
-      tipo: "Consulta de Rotina",
-      status: "confirmada",
-    },
-    {
-      id: 2,
-      paciente: "Luna",
-      tutor: "João Santos",
-      horario: "10:30",
-      tipo: "Vacinação",
-      status: "pendente",
-    },
-    {
-      id: 3,
-      paciente: "Thor",
-      tutor: "Ana Costa",
-      horario: "14:00",
-      tipo: "Exame",
-      status: "confirmada",
-    },
-  ]);
+  const [consultasHoje, setConsultasHoje] = useState([]);
 
-  // Dados para a caixa de entrada (inbox)
-  const [inboxItems] = useState([
-    {
-      id: 1,
-      tipo: "exame",
-      titulo: "Novo resultado de exame",
-      descricao: "Hemograma do paciente Rex está disponível",
-      paciente: "Rex",
-      data: "2024-01-15",
-      prioridade: "alta",
-    },
-    {
-      id: 2,
-      tipo: "mensagem",
-      titulo: "Mensagem do tutor",
-      descricao: "João Santos enviou uma mensagem sobre Luna",
-      paciente: "Luna",
-      data: "2024-01-15",
-      prioridade: "media",
-    },
-    {
-      id: 3,
-      tipo: "estoque",
-      titulo: "Alerta de estoque baixo",
-      descricao: "Insulina NPH está com estoque baixo",
-      produto: "Insulina NPH",
-      data: "2024-01-14",
-      prioridade: "alta",
-    },
-  ]);
+  // Dados para a caixa de entrada (inbox) – vindo do banco
+  const [inboxItems, setInboxItems] = useState([]);
 
-  const [faturamentoData] = useState([
-    { label: "Jan", value: 12000 },
-    { label: "Fev", value: 13500 },
-    { label: "Mar", value: 14200 },
-    { label: "Abr", value: 15420 },
-    { label: "Mai", value: 16800 },
-    { label: "Jun", value: 18200 },
-  ]);
+  const [faturamentoData, setFaturamentoData] = useState([]);
 
-  const [servicosData] = useState([
-    { label: "Consultas", value: 45 },
-    { label: "Vacinas", value: 28 },
-    { label: "Exames", value: 32 },
-    { label: "Cirurgias", value: 8 },
-    { label: "Emergências", value: 12 },
-  ]);
+  const [servicosData, setServicosData] = useState([]);
+
+  useEffect(() => {
+    const carregarResumo = async () => {
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+        if (!session) return;
+
+        // Descobrir id inteiro do veterinário
+        const { data: vet, error: vetError } = await supabase
+          .from("veterinarios")
+          .select("id_veterinarios")
+          .eq("id_usuario", session.user.id)
+          .single();
+        if (vetError || !vet) return;
+        const vetId = vet.id_veterinarios;
+
+        // Range de hoje (timestamp)
+        const start = new Date();
+        start.setHours(0, 0, 0, 0);
+        const end = new Date();
+        end.setHours(23, 59, 59, 999);
+
+        // Consultas de hoje
+        const { data: consultasDeHoje, error: consultasHojeError } = await supabase
+          .from("consultas")
+          .select(
+            `id, tipo, status, data_consulta,
+             paciente: paciente_id (nome),
+             tutor: tutor_id (nome)`
+          )
+          .eq("veterinario_id", vetId)
+          .gte("data_consulta", start.toISOString())
+          .lt("data_consulta", end.toISOString())
+          .order("data_consulta", { ascending: true });
+        if (consultasHojeError) throw consultasHojeError;
+
+        setConsultasHoje(
+          (consultasDeHoje || []).map((c) => ({
+            id: c.id,
+            paciente: c.paciente?.nome || "N/A",
+            tutor: c.tutor?.nome || "N/A",
+            horario: new Date(c.data_consulta).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }),
+            tipo: c.tipo,
+            status: c.status,
+          }))
+        );
+
+        // Stats básicas
+        const { count: countAgendadas, error: countAgError } = await supabase
+          .from("consultas")
+          .select("id", { count: "exact", head: true })
+          .eq("veterinario_id", vetId)
+          .gte("data_consulta", start.toISOString())
+          .lt("data_consulta", end.toISOString());
+        if (countAgError) throw countAgError;
+
+        const { count: countPendentes, error: countPenError } = await supabase
+          .from("consultas")
+          .select("id", { count: "exact", head: true })
+          .eq("veterinario_id", vetId)
+          .eq("status", "pendente")
+          .gte("data_consulta", start.toISOString());
+        if (countPenError) throw countPenError;
+
+        // Novas mensagens (não lidas)
+        const { count: countNovasMsgs, error: msgsError } = await supabase
+          .from("mensagens")
+          .select("id", { count: "exact", head: true })
+          .eq("veterinario_id", vetId)
+          .eq("destinatario_id", session.user.id)
+          .eq("lida", false);
+        if (msgsError) {
+          // se tabela não existir, mantém zero
+          console.warn("Falha ao contar mensagens:", msgsError.message);
+        }
+
+        setStats((prev) => ({
+          ...prev,
+          consultasAgendadas: countAgendadas || 0,
+          consultasPendentes: countPendentes || 0,
+          novasMensagens: countNovasMsgs || 0,
+        }));
+
+        // Inbox: últimas mensagens recebidas
+        const { data: inboxMensagens, error: inboxError } = await supabase
+          .from("mensagens")
+          .select(
+            `id, conteudo, created_at,
+             remetente: remetente_id (nome)`
+          )
+          .eq("veterinario_id", vetId)
+          .eq("destinatario_id", session.user.id)
+          .order("created_at", { ascending: false })
+          .limit(5);
+        if (!inboxError && inboxMensagens) {
+          setInboxItems(
+            inboxMensagens.map((m) => ({
+              id: m.id,
+              tipo: "mensagem",
+              titulo: "Nova mensagem",
+              descricao: m.conteudo?.slice(0, 80) || "",
+              paciente: "",
+              data: m.created_at,
+              prioridade: "media",
+            }))
+          );
+        }
+
+        // Faturamento (transações receitas) e serviços por tipo (consultas)
+        const now = new Date();
+        const inicioMes = new Date(now.getFullYear(), now.getMonth(), 1)
+          .toISOString()
+          .split("T")[0];
+        const fimMes = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+          .toISOString()
+          .split("T")[0];
+
+        const { data: consultasMes, error: consMesError } = await supabase
+          .from("consultas")
+          .select("tipo, data_consulta")
+          .eq("veterinario_id", vetId)
+          .gte("data_consulta", `${inicioMes}T00:00:00.000Z`)
+          .lte("data_consulta", `${fimMes}T23:59:59.999Z`);
+        if (!consMesError && consultasMes) {
+          // Distribuição por tipo
+          const porTipo = consultasMes.reduce((acc, c) => {
+            const key = c.tipo || "Outros";
+            acc[key] = (acc[key] || 0) + 1;
+            return acc;
+          }, {});
+          setServicosData(
+            Object.entries(porTipo).map(([label, value]) => ({ label, value }))
+          );
+        }
+
+        // Faturamento do mês via transações do tipo receita
+        const { data: transacoesMes, error: txError } = await supabase
+          .from("transacoes")
+          .select("valor, data")
+          .eq("veterinario_id", vetId)
+          .eq("tipo", "receita")
+          .gte("data", `${inicioMes}T00:00:00.000Z`)
+          .lte("data", `${fimMes}T23:59:59.999Z`);
+        if (!txError && transacoesMes) {
+          const total = transacoesMes.reduce((acc, t) => acc + Number(t.valor || 0), 0);
+          setStats((prev) => ({ ...prev, faturamentoMes: total }));
+          const porDia = transacoesMes.reduce((acc, t) => {
+            const d = new Date(t.data).toISOString().split("T")[0];
+            acc[d] = (acc[d] || 0) + Number(t.valor || 0);
+            return acc;
+          }, {});
+          const orderedDays = Object.keys(porDia).sort();
+          setFaturamentoData(
+            orderedDays.map((d) => ({
+              label: new Date(d).toLocaleDateString("pt-BR", { day: "2-digit" }),
+              value: porDia[d],
+            }))
+          );
+        }
+      } catch (error) {
+        console.error("Erro ao carregar resumo do veterinário:", error);
+      }
+    };
+
+    carregarResumo();
+  }, []);
 
   const getStatusBadge = (status) => {
     const variants = {

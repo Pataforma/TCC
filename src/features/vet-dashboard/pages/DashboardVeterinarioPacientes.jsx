@@ -16,6 +16,7 @@ import {
 import DashboardLayout from "../../../layouts/DashboardLayout";
 import { useUser } from "../../../contexts/UserContext";
 import ModalNovoPaciente from "../components/ModalNovoPaciente";
+import ModalEditarPaciente from "../components/ModalEditarPaciente";
 import { supabase } from "../../../utils/supabase";
 import {
   FaSearch,
@@ -42,6 +43,7 @@ const DashboardVeterinarioPacientes = () => {
   const [showModal, setShowModal] = useState(false);
   const [showModalNovoPaciente, setShowModalNovoPaciente] = useState(false);
   const [selectedPaciente, setSelectedPaciente] = useState(null);
+  const [showModalEditarPaciente, setShowModalEditarPaciente] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("todos");
   const [activeTab, setActiveTab] = useState("geral");
@@ -414,10 +416,8 @@ const DashboardVeterinarioPacientes = () => {
                           title="Editar"
                           onClick={(e) => {
                             e.stopPropagation();
-                            // TODO: Implementar edição
-                            alert(
-                              "Funcionalidade de edição será implementada em breve!"
-                            );
+                            setSelectedPaciente(paciente);
+                            setShowModalEditarPaciente(true);
                           }}
                         >
                           <FaEdit size={12} />
@@ -660,6 +660,14 @@ const DashboardVeterinarioPacientes = () => {
         show={showModalNovoPaciente}
         onHide={() => setShowModalNovoPaciente(false)}
         onPacienteCriado={handlePacienteCriado}
+      />
+
+      {/* Modal Editar Paciente */}
+      <ModalEditarPaciente
+        show={showModalEditarPaciente}
+        onHide={() => setShowModalEditarPaciente(false)}
+        paciente={selectedPaciente}
+        onPacienteAtualizado={carregarPacientes}
       />
     </DashboardLayout>
   );

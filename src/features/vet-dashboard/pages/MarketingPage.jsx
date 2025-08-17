@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { supabase } from "../../../utils/supabase";
 import {
   Container,
   Row,
@@ -63,170 +64,39 @@ const MarketingPage = () => {
   const [showAddReview, setShowAddReview] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
 
-  // Dados mockados do veterinário
-  const [veterinario] = useState({
-    nome: "Dr. André Silva",
-    crmv: "CRMV-SP 12345",
-    especialidade: "Clínico Geral e Cirurgia",
-    experiencia: "8 anos",
-    email: "andre.silva@pataforma.com",
-    telefone: "(11) 99999-9999",
-    whatsapp: "(11) 98888-8888",
-    endereco: "Rua das Flores, 123 - Centro",
-    cidade: "São Paulo",
-    estado: "SP",
-    cep: "01234-567",
-    horarioFuncionamento: "Segunda a Sexta: 8h às 18h | Sábado: 8h às 12h",
-    descricao:
-      "Médico veterinário com mais de 8 anos de experiência em clínica geral e cirurgia de pequenos animais. Especializado em atendimento humanizado e medicina preventiva.",
-    foto: "https://via.placeholder.com/150x150/007bff/ffffff?text=Dr.+André",
-    banner:
-      "https://via.placeholder.com/800x200/007bff/ffffff?text=Clínica+Veterinária",
-    redesSociais: {
-      facebook: "https://facebook.com/drandresilva",
-      instagram: "https://instagram.com/drandresilva",
-      whatsapp: "https://wa.me/5511999999999",
-      website: "https://drandresilva.com.br",
-    },
+  // Perfil do veterinário carregado do banco
+  const [veterinario, setVeterinario] = useState({
+    nome: "",
+    crmv: "",
+    especialidade: "",
+    experiencia: "",
+    email: "",
+    telefone: "",
+    whatsapp: "",
+    endereco: "",
+    cidade: "",
+    estado: "",
+    cep: "",
+    horarioFuncionamento: "",
+    descricao: "",
+    foto: "https://via.placeholder.com/150x150/007bff/ffffff?text=VET",
+    banner: "https://via.placeholder.com/800x200/007bff/ffffff?text=Perfil",
+    redesSociais: {},
     estatisticas: {
-      consultasRealizadas: 1250,
-      pacientesAtendidos: 450,
-      avaliacaoMedia: 4.8,
-      totalAvaliacoes: 89,
-      seguidoresInstagram: 1250,
-      seguidoresFacebook: 890,
+      consultasRealizadas: 0,
+      pacientesAtendidos: 0,
+      avaliacaoMedia: 0,
+      totalAvaliacoes: 0,
+      seguidoresInstagram: 0,
+      seguidoresFacebook: 0,
     },
   });
 
-  // Dados mockados de campanhas
-  const [campanhas] = useState([
-    {
-      id: 1,
-      titulo: "Vacinação em Massa - Cães e Gatos",
-      tipo: "vacina",
-      status: "ativa",
-      dataInicio: "2024-01-01",
-      dataFim: "2024-01-31",
-      orcamento: 5000.0,
-      gastoAtual: 3200.0,
-      alcance: 2500,
-      engajamento: 15.5,
-      conversoes: 45,
-      descricao:
-        "Campanha de vacinação com desconto de 20% em todas as vacinas para cães e gatos.",
-      imagem:
-        "https://via.placeholder.com/300x200/28a745/ffffff?text=Vacinação",
-    },
-    {
-      id: 2,
-      titulo: "Castração com Preço Especial",
-      tipo: "cirurgia",
-      status: "ativa",
-      dataInicio: "2024-01-15",
-      dataFim: "2024-02-15",
-      orcamento: 8000.0,
-      gastoAtual: 4500.0,
-      alcance: 1800,
-      engajamento: 22.3,
-      conversoes: 28,
-      descricao:
-        "Promoção especial para castração de cães e gatos com 30% de desconto.",
-      imagem:
-        "https://via.placeholder.com/300x200/dc3545/ffffff?text=Castração",
-    },
-    {
-      id: 3,
-      titulo: "Check-up Preventivo",
-      tipo: "consulta",
-      status: "finalizada",
-      dataInicio: "2023-12-01",
-      dataFim: "2023-12-31",
-      orcamento: 3000.0,
-      gastoAtual: 2800.0,
-      alcance: 1200,
-      engajamento: 18.7,
-      conversoes: 35,
-      descricao: "Check-up completo com 25% de desconto para novos pacientes.",
-      imagem: "https://via.placeholder.com/300x200/ffc107/ffffff?text=Check-up",
-    },
-  ]);
+  const [campanhas, setCampanhas] = useState([]);
 
-  // Dados mockados de avaliações
-  const [avaliacoes] = useState([
-    {
-      id: 1,
-      paciente: "Thor",
-      tutor: "Maria Silva",
-      nota: 5,
-      comentario:
-        "Excelente atendimento! Dr. André foi muito atencioso e profissional. Recomendo muito!",
-      data: "2024-01-15",
-      resposta:
-        "Obrigado Maria! Foi um prazer atender o Thor. Espero vê-los em breve!",
-      dataResposta: "2024-01-16",
-    },
-    {
-      id: 2,
-      paciente: "Luna",
-      tutor: "João Santos",
-      nota: 4,
-      comentario:
-        "Bom atendimento, mas a espera foi um pouco longa. O doutor é muito competente.",
-      data: "2024-01-14",
-      resposta:
-        "Obrigado João! Estamos trabalhando para melhorar o tempo de espera. Abraços para a Luna!",
-      dataResposta: "2024-01-15",
-    },
-    {
-      id: 3,
-      paciente: "Max",
-      tutor: "Carlos Oliveira",
-      nota: 5,
-      comentario:
-        "Dr. André salvou a vida do meu Max! Profissionalismo e dedicação total. Muito obrigado!",
-      data: "2024-01-13",
-      resposta:
-        "Carlos, foi uma honra poder ajudar o Max! Ele está se recuperando muito bem. Abraços!",
-      dataResposta: "2024-01-14",
-    },
-  ]);
+  const [avaliacoes, setAvaliacoes] = useState([]);
 
-  // Dados mockados de posts
-  const [posts] = useState([
-    {
-      id: 1,
-      tipo: "imagem",
-      titulo: "Dicas de Cuidados com Filhotes",
-      conteudo:
-        "Confira nossas dicas essenciais para cuidar do seu filhote nos primeiros meses de vida! 🐕",
-      imagem:
-        "https://via.placeholder.com/400x300/007bff/ffffff?text=Dicas+Filhotes",
-      data: "2024-01-15",
-      engajamento: 245,
-      alcance: 1200,
-    },
-    {
-      id: 2,
-      tipo: "video",
-      titulo: "Como Escovar os Dentes do seu Pet",
-      conteudo:
-        "Aprenda a técnica correta para escovar os dentes do seu pet e prevenir problemas bucais! 🦷",
-      video: "https://example.com/video.mp4",
-      data: "2024-01-14",
-      engajamento: 189,
-      alcance: 980,
-    },
-    {
-      id: 3,
-      tipo: "texto",
-      titulo: "Importância da Vacinação",
-      conteudo:
-        "A vacinação é fundamental para a saúde do seu pet. Mantenha a carteira de vacinação sempre em dia! 💉",
-      data: "2024-01-13",
-      engajamento: 156,
-      alcance: 750,
-    },
-  ]);
+  const [posts, setPosts] = useState([]);
 
   // Funções de formatação
   const formatCurrency = (value) => {
@@ -302,6 +172,58 @@ const MarketingPage = () => {
   };
 
   const { user } = useUser();
+  useEffect(() => {
+    const carregarDados = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) return;
+
+        // Perfil do veterinário
+        const { data: vet, error: vetError } = await supabase
+          .from('veterinarios')
+          .select('crmv, especialidades, bio, foto_url')
+          .eq('id_usuario', session.user.id)
+          .single();
+        if (!vetError && vet) {
+          setVeterinario((prev) => ({
+            ...prev,
+            nome: user?.nome || '',
+            crmv: vet.crmv || '',
+            especialidade: vet.especialidades?.[0] || '',
+            descricao: vet.bio || '',
+            foto: vet.foto_url || prev.foto,
+          }));
+        }
+
+        // Campanhas
+        const { data: camp, error: campError } = await supabase
+          .from('marketing_campanhas')
+          .select('*')
+          .eq('veterinario_id', session.user.id)
+          .order('dataInicio', { ascending: false });
+        if (!campError) setCampanhas(camp || []);
+
+        // Posts
+        const { data: postsData, error: postsError } = await supabase
+          .from('marketing_posts')
+          .select('*')
+          .eq('veterinario_id', session.user.id)
+          .order('data', { ascending: false });
+        if (!postsError) setPosts(postsData || []);
+
+        // Avaliações
+        const { data: avs, error: avError } = await supabase
+          .from('avaliacoes')
+          .select('*')
+          .eq('veterinario_id', session.user.id)
+          .order('data', { ascending: false });
+        if (!avError) setAvaliacoes(avs || []);
+      } catch (error) {
+        console.error('Erro ao carregar dados de marketing:', error);
+      }
+    };
+    carregarDados();
+  }, [user]);
   return (
     <DashboardLayout tipoUsuario="veterinario" nomeUsuario={user?.nome}>
       <Container fluid className="py-4">

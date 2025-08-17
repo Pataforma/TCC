@@ -106,23 +106,32 @@ const DashboardVeterinarioAgenda = () => {
         data: { session },
       } = await supabase.auth.getSession();
       if (!session) return;
+      // Buscar id interno do veterinário
+      const { data: vet, error: vetError } = await supabase
+        .from("veterinarios")
+        .select("id_veterinarios")
+        .eq("id_usuario", session.user.id)
+        .single();
+      if (vetError || !vet) return;
+      const vetId = vet.id_veterinarios;
 
-      // Calcular range de datas baseado na visualização
+      // Calcular range de datas baseado na visualização (timestamps)
       let dataInicio, dataFim;
       const hoje = new Date(currentDate);
 
       if (activeTab === "dia") {
-        dataInicio = new Date(hoje);
-        dataFim = new Date(hoje);
+        dataInicio = new Date(new Date(hoje).setHours(0, 0, 0, 0));
+        dataFim = new Date(new Date(hoje).setHours(23, 59, 59, 999));
       } else if (activeTab === "semana") {
         const inicioSemana = new Date(hoje);
         inicioSemana.setDate(hoje.getDate() - hoje.getDay());
-        dataInicio = inicioSemana;
-        dataFim = new Date(inicioSemana);
-        dataFim.setDate(inicioSemana.getDate() + 6);
+        dataInicio = new Date(new Date(inicioSemana).setHours(0, 0, 0, 0));
+        const fim = new Date(inicioSemana);
+        fim.setDate(inicioSemana.getDate() + 6);
+        dataFim = new Date(new Date(fim).setHours(23, 59, 59, 999));
       } else if (activeTab === "mes") {
-        dataInicio = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
-        dataFim = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+        dataInicio = new Date(hoje.getFullYear(), hoje.getMonth(), 1, 0, 0, 0, 0);
+        dataFim = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0, 23, 59, 59, 999);
       }
 
       const { data, error } = await supabase
@@ -130,13 +139,13 @@ const DashboardVeterinarioAgenda = () => {
         .select(
           `
           *,
-          pacientes: paciente_id (nome, especie, raca),
+          pacientes: paciente_id (id, nome, especie, raca),
           tutores: tutor_id (nome, telefone, email)
         `
         )
-        .eq("veterinario_id", session.user.id)
-        .gte("data_consulta", dataInicio.toISOString().split("T")[0])
-        .lte("data_consulta", dataFim.toISOString().split("T")[0])
+        .eq("veterinario_id", vetId)
+        .gte("data_consulta", dataInicio.toISOString())
+        .lte("data_consulta", dataFim.toISOString())
         .order("data_consulta", { ascending: true });
 
       if (error) throw error;
@@ -217,10 +226,22 @@ const DashboardVeterinarioAgenda = () => {
       } = await supabase.auth.getSession();
       if (!session) throw new Error("Sessão expirada");
 
+      const { data: vet, error: vetError } = await supabase
+        .from("veterinarios")
+        .select("id_veterinarios")
+        .eq("id_usuario", session.user.id)
+        .single();
+      if (vetError || !vet) throw new Error("Veterinário não encontrado");
+
       const consultaData = {
-        ...novaConsulta,
-        veterinario_id: session.user.id,
-        data_criacao: new Date().toISOString(),
+        paciente_id: novaConsulta.paciente_id,
+        tutor_id: novaConsulta.tutor_id,
+        data_consulta: new Date(`${novaConsulta.data_consulta}T${novaConsulta.horario}:00`).toISOString(),
+        duracao: novaConsulta.duracao,
+        tipo: novaConsulta.tipo,
+        observacoes: novaConsulta.observacoes,
+        status: novaConsulta.status,
+        veterinario_id: vet.id_veterinarios,
       };
 
       const { error } = await supabase.from("consultas").insert(consultaData);
@@ -262,6 +283,24 @@ const DashboardVeterinarioAgenda = () => {
     // Implementar lógica de teleconsulta
     alert("Iniciando teleconsulta...");
     setShowModal(false);
+  };
+
+  const handleConfirmarConsulta = async (id) => {
+    try {
+      setLoading(true);
+      const { error } = await supabase
+        .from("consultas")
+        .update({ status: "confirmada" })
+        .eq("id", id);
+      if (error) throw error;
+      await fetchConsultas();
+      alert("Consulta confirmada com sucesso!");
+    } catch (error) {
+      console.error("Erro ao confirmar consulta:", error);
+      alert("Erro ao confirmar consulta: " + error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleAnterior = () => {
@@ -982,7 +1021,12 @@ const DashboardVeterinarioAgenda = () => {
               <FaTimes className="me-2" />
               Fechar
             </Button>
-            <Button variant="success" className="ms-2">
+            <Button
+              variant="success"
+              className="ms-2"
+              onClick={() => handleConfirmarConsulta(selectedConsulta.id)}
+              disabled={loading}
+            >
               <FaCheckCircle className="me-2" />
               Confirmar
             </Button>

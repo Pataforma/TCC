@@ -1,35 +1,31 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './PainelDuvidasVet.module.css';
-
-// Dados mockados de perguntas aguardando resposta
-const perguntasAguardando = [
-  {
-    id: 1,
-    pergunta: "Meu gato está espirrando muito e com secreção nasal. É gripe?",
-    data: "2024-01-16",
-    categoria: "Respiratória",
-    prioridade: "Média"
-  },
-  {
-    id: 2,
-    pergunta: "Cachorro não quer comer ração, só comida caseira. Como fazer a transição?",
-    data: "2024-01-15",
-    categoria: "Nutrição",
-    prioridade: "Baixa"
-  },
-  {
-    id: 3,
-    pergunta: "Pet está com manchas na pele e coçando muito. Pode ser alergia?",
-    data: "2024-01-14",
-    categoria: "Dermatologia",
-    prioridade: "Alta"
-  }
-];
+import { supabase } from '../../../utils/supabase';
 
 export default function PainelDuvidasVet() {
+  const [perguntasAguardando, setPerguntasAguardando] = useState([]);
   const [selectedPergunta, setSelectedPergunta] = useState(null);
   const [resposta, setResposta] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    const carregarPerguntas = async () => {
+      try {
+        // Busca perguntas pendentes de resposta
+        const { data, error } = await supabase
+          .from('qna_perguntas')
+          .select('id, pergunta, categoria, prioridade, data')
+          .eq('status', 'pendente')
+          .order('data', { ascending: false });
+        if (error) throw error;
+        setPerguntasAguardando(data || []);
+      } catch (error) {
+        console.error('Erro ao carregar perguntas:', error);
+        setPerguntasAguardando([]);
+      }
+    };
+    carregarPerguntas();
+  }, []);
 
   const handleResponder = (pergunta) => {
     setSelectedPergunta(pergunta);
@@ -37,23 +33,35 @@ export default function PainelDuvidasVet() {
   };
 
   const handleSubmitResposta = async () => {
-    if (!resposta.trim()) return;
-    
-    setIsSubmitting(true);
-    
-    // TODO: POST resposta to backend
-    console.log('Enviando resposta:', {
-      perguntaId: selectedPergunta.id,
-      resposta: resposta
-    });
-    
-    // Simular delay
-    setTimeout(() => {
-      setIsSubmitting(false);
+    if (!resposta.trim() || !selectedPergunta) return;
+    try {
+      setIsSubmitting(true);
+      // Inserir resposta e atualizar status da pergunta
+      const { error: insertError } = await supabase
+        .from('qna_respostas')
+        .insert({
+          pergunta_id: selectedPergunta.id,
+          conteudo: resposta.trim(),
+        });
+      if (insertError) throw insertError;
+
+      const { error: updError } = await supabase
+        .from('qna_perguntas')
+        .update({ status: 'respondida' })
+        .eq('id', selectedPergunta.id);
+      if (updError) throw updError;
+
       alert('Resposta enviada com sucesso!');
       setSelectedPergunta(null);
       setResposta('');
-    }, 1500);
+      // Remover da lista atual
+      setPerguntasAguardando((prev) => prev.filter((p) => p.id !== selectedPergunta.id));
+    } catch (error) {
+      console.error('Erro ao enviar resposta:', error);
+      alert('Erro ao enviar resposta: ' + error.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const getPrioridadeColor = (prioridade) => {

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Container,
   Row,
@@ -37,6 +37,7 @@ import {
 } from "react-icons/fa";
 import DashboardLayout from "../../../layouts/DashboardLayout";
 import { useUser } from "../../../contexts/UserContext";
+import { supabase } from "../../../utils/supabase";
 
 const EstoquePage = () => {
   const [showAddModal, setShowAddModal] = useState(false);
@@ -48,6 +49,7 @@ const EstoquePage = () => {
   const [filterStatus, setFilterStatus] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
+  const [editProduct, setEditProduct] = useState(null);
 
   // Estado para novo produto
   const [newProduct, setNewProduct] = useState({
@@ -69,147 +71,8 @@ const EstoquePage = () => {
     },
   });
 
-  // Dados mockados de produtos em estoque
-  const [produtos] = useState([
-    {
-      id: 1,
-      produto: "Amoxicilina 500mg",
-      categoria: "Antibióticos",
-      descricao: "Antibiótico de amplo espectro",
-      precoCusto: 15.5,
-      precoVenda: 25.0,
-      margemLucro: 61.3,
-      estoqueAtual: 45,
-      estoqueMinimo: 20,
-      unidade: "Comprimidos",
-      fornecedor: "Farmácia Central",
-      codigoBarras: "7891234567890",
-      status: "disponivel",
-      ultimaAtualizacao: "2024-01-15",
-      lotes: [
-        {
-          id: 1,
-          numero: "LOT001",
-          validade: "2025-06-30",
-          quantidade: 30,
-          precoCusto: 15.5,
-          dataEntrada: "2024-01-10",
-        },
-        {
-          id: 2,
-          numero: "LOT002",
-          validade: "2025-08-15",
-          quantidade: 15,
-          precoCusto: 15.5,
-          dataEntrada: "2024-01-15",
-        },
-      ],
-    },
-    {
-      id: 2,
-      produto: "Vacina V10",
-      categoria: "Vacinas",
-      descricao: "Vacina polivalente para cães",
-      precoCusto: 45.0,
-      precoVenda: 75.0,
-      margemLucro: 66.7,
-      estoqueAtual: 12,
-      estoqueMinimo: 15,
-      unidade: "Doses",
-      fornecedor: "Merial",
-      codigoBarras: "7891234567891",
-      status: "baixo",
-      ultimaAtualizacao: "2024-01-14",
-      lotes: [
-        {
-          id: 3,
-          numero: "LOT003",
-          validade: "2024-12-31",
-          quantidade: 12,
-          precoCusto: 45.0,
-          dataEntrada: "2024-01-05",
-        },
-      ],
-    },
-    {
-      id: 3,
-      produto: "Ração Premium Cães",
-      categoria: "Alimentação",
-      descricao: "Ração super premium para cães adultos",
-      precoCusto: 120.0,
-      precoVenda: 180.0,
-      margemLucro: 50.0,
-      estoqueAtual: 8,
-      estoqueMinimo: 10,
-      unidade: "Sacos 15kg",
-      fornecedor: "Royal Canin",
-      codigoBarras: "7891234567892",
-      status: "baixo",
-      ultimaAtualizacao: "2024-01-13",
-      lotes: [
-        {
-          id: 4,
-          numero: "LOT004",
-          validade: "2025-03-15",
-          quantidade: 8,
-          precoCusto: 120.0,
-          dataEntrada: "2024-01-01",
-        },
-      ],
-    },
-    {
-      id: 4,
-      produto: "Seringa 10ml",
-      categoria: "Material Médico",
-      descricao: "Seringa descartável 10ml",
-      precoCusto: 0.8,
-      precoVenda: 1.5,
-      margemLucro: 87.5,
-      estoqueAtual: 200,
-      estoqueMinimo: 50,
-      unidade: "Unidades",
-      fornecedor: "BD",
-      codigoBarras: "7891234567893",
-      status: "disponivel",
-      ultimaAtualizacao: "2024-01-12",
-      lotes: [
-        {
-          id: 5,
-          numero: "LOT005",
-          validade: "2026-01-31",
-          quantidade: 200,
-          precoCusto: 0.8,
-          dataEntrada: "2024-01-08",
-        },
-      ],
-    },
-    {
-      id: 5,
-      produto: "Anti-inflamatório",
-      categoria: "Medicamentos",
-      descricao: "Anti-inflamatório não esteroidal",
-      precoCusto: 8.5,
-      precoVenda: 15.0,
-      margemLucro: 76.5,
-      estoqueAtual: 35,
-      estoqueMinimo: 25,
-      unidade: "Comprimidos",
-      fornecedor: "Pfizer",
-      codigoBarras: "7891234567894",
-      status: "disponivel",
-      ultimaAtualizacao: "2024-01-11",
-      lotes: [
-        {
-          id: 6,
-          numero: "LOT006",
-          validade: "2025-09-30",
-          quantidade: 35,
-          precoCusto: 8.5,
-          dataEntrada: "2024-01-06",
-        },
-      ],
-    },
-  ]);
+  // Produtos vindos do banco
+  const [produtos, setProdutos] = useState([]);
 
   // Categorias disponíveis
   const categorias = [
@@ -263,6 +126,7 @@ const EstoquePage = () => {
 
   const handleEditProduct = (product) => {
     setSelectedProduct(product);
+    setEditProduct({ ...product });
     setShowEditModal(true);
   };
 
@@ -271,10 +135,15 @@ const EstoquePage = () => {
     setShowHistoryModal(true);
   };
 
-  const handleDeleteProduct = (productId) => {
-    if (window.confirm("Tem certeza que deseja excluir este produto?")) {
-      console.log("Produto excluído:", productId);
-      // Aqui seria implementada a exclusão real
+  const handleDeleteProduct = async (productId) => {
+    if (!window.confirm("Tem certeza que deseja excluir este produto?")) return;
+    try {
+      const { error } = await supabase.from('estoque_produtos').delete().eq('id', productId);
+      if (error) throw error;
+      // Remover localmente
+      setProdutos((prev) => prev.filter((p) => p.id !== productId));
+    } catch (error) {
+      alert('Erro ao excluir produto: ' + error.message);
     }
   };
 
@@ -310,6 +179,41 @@ const EstoquePage = () => {
   };
 
   const { user } = useUser();
+  useEffect(() => {
+    const carregarProdutos = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('estoque_produtos')
+          .select('*')
+          .order('produto');
+        if (error) throw error;
+        // Mapear para o formato esperado pela UI existente
+        setProdutos(
+          (data || []).map((p) => ({
+            id: p.id,
+            produto: p.produto,
+            categoria: p.categoria,
+            descricao: p.descricao,
+            precoCusto: Number(p.preco_custo) || 0,
+            precoVenda: Number(p.preco_venda) || 0,
+            margemLucro: p.preco_custo ? (((p.preco_venda - p.preco_custo) / p.preco_custo) * 100).toFixed(1) : 0,
+            estoqueAtual: p.estoque_atual,
+            estoqueMinimo: p.estoque_minimo,
+            unidade: p.unidade,
+            fornecedor: p.fornecedor,
+            codigoBarras: p.codigo_barras,
+            status: p.status,
+            ultimaAtualizacao: p.ultima_atualizacao,
+            lotes: Array.isArray(p.lotes) ? p.lotes : [],
+          }))
+        );
+      } catch (error) {
+        console.error('Erro ao carregar estoque:', error);
+        setProdutos([]);
+      }
+    };
+    carregarProdutos();
+  }, []);
   return (
     <DashboardLayout tipoUsuario="veterinario" nomeUsuario={user?.nome}>
       <Container fluid className="py-4">
@@ -834,9 +738,228 @@ const EstoquePage = () => {
             <Button variant="secondary" onClick={() => setShowAddModal(false)}>
               Cancelar
             </Button>
-            <Button variant="primary">
+            <Button variant="primary" onClick={async () => {
+              try {
+                const estoqueAtual = Number(newProduct.lote.quantidade) || 0;
+                const estoqueMin = Number(newProduct.estoqueMinimo) || 0;
+                const status = estoqueAtual === 0 ? 'esgotado' : (estoqueAtual < estoqueMin ? 'baixo' : 'disponivel');
+                const payload = {
+                  produto: newProduct.produto,
+                  categoria: newProduct.categoria,
+                  descricao: newProduct.descricao || null,
+                  preco_custo: newProduct.precoCusto === '' ? null : Number(newProduct.precoCusto),
+                  preco_venda: newProduct.precoVenda === '' ? null : Number(newProduct.precoVenda),
+                  estoque_minimo: estoqueMin,
+                  unidade: newProduct.unidade || null,
+                  fornecedor: newProduct.fornecedor || null,
+                  codigo_barras: newProduct.codigoBarras || null,
+                  estoque_atual: estoqueAtual,
+                  status,
+                  ultima_atualizacao: new Date().toISOString(),
+                };
+                const { data, error } = await supabase.from('estoque_produtos').insert(payload).select('id').single();
+                if (error) throw error;
+                setShowAddModal(false);
+                // Atualiza lista
+                setProdutos((prev) => [
+                  ...prev,
+                  {
+                    id: data.id,
+                    produto: payload.produto,
+                    categoria: payload.categoria,
+                    descricao: payload.descricao,
+                    precoCusto: payload.preco_custo,
+                    precoVenda: payload.preco_venda,
+                    margemLucro: payload.preco_custo ? (((payload.preco_venda - payload.preco_custo) / payload.preco_custo) * 100).toFixed(1) : 0,
+                    estoqueAtual: payload.estoque_atual,
+                    estoqueMinimo: payload.estoque_minimo,
+                    unidade: payload.unidade,
+                    fornecedor: payload.fornecedor,
+                    codigoBarras: payload.codigo_barras,
+                    status: payload.status,
+                    ultimaAtualizacao: payload.ultima_atualizacao,
+                    lotes: [],
+                  },
+                ]);
+              } catch (e) {
+                alert('Erro ao salvar produto: ' + e.message);
+              }
+            }}>
               <FaPlus className="me-2" />
               Adicionar Produto
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
+        {/* Modal Editar Produto */}
+        <Modal
+          show={showEditModal}
+          onHide={() => setShowEditModal(false)}
+          size="lg"
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>
+              <FaEdit className="me-2" />
+              Editar Produto
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            {editProduct && (
+              <Form>
+                <Row>
+                  <Col md={6}>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Nome do Produto *</Form.Label>
+                      <Form.Control
+                        type="text"
+                        value={editProduct.produto}
+                        onChange={(e) => setEditProduct({ ...editProduct, produto: e.target.value })}
+                      />
+                    </Form.Group>
+                  </Col>
+                  <Col md={6}>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Categoria *</Form.Label>
+                      <Form.Select
+                        value={editProduct.categoria}
+                        onChange={(e) => setEditProduct({ ...editProduct, categoria: e.target.value })}
+                      >
+                        <option value="">Selecione uma categoria</option>
+                        {categorias.map((cat) => (
+                          <option key={cat} value={cat}>
+                            {cat}
+                          </option>
+                        ))}
+                      </Form.Select>
+                    </Form.Group>
+                  </Col>
+                </Row>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>Descrição</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    rows={2}
+                    value={editProduct.descricao}
+                    onChange={(e) => setEditProduct({ ...editProduct, descricao: e.target.value })}
+                  />
+                </Form.Group>
+
+                <Row>
+                  <Col md={4}>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Preço de Custo *</Form.Label>
+                      <InputGroup>
+                        <InputGroup.Text>R$</InputGroup.Text>
+                        <Form.Control
+                          type="number"
+                          step="0.01"
+                          value={editProduct.precoCusto}
+                          onChange={(e) => setEditProduct({ ...editProduct, precoCusto: e.target.value })}
+                        />
+                      </InputGroup>
+                    </Form.Group>
+                  </Col>
+                  <Col md={4}>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Preço de Venda *</Form.Label>
+                      <InputGroup>
+                        <InputGroup.Text>R$</InputGroup.Text>
+                        <Form.Control
+                          type="number"
+                          step="0.01"
+                          value={editProduct.precoVenda}
+                          onChange={(e) => setEditProduct({ ...editProduct, precoVenda: e.target.value })}
+                        />
+                      </InputGroup>
+                    </Form.Group>
+                  </Col>
+                  <Col md={4}>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Estoque Mínimo *</Form.Label>
+                      <Form.Control
+                        type="number"
+                        value={editProduct.estoqueMinimo}
+                        onChange={(e) => setEditProduct({ ...editProduct, estoqueMinimo: e.target.value })}
+                      />
+                    </Form.Group>
+                  </Col>
+                </Row>
+
+                <Row>
+                  <Col md={6}>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Unidade</Form.Label>
+                      <Form.Control
+                        type="text"
+                        value={editProduct.unidade}
+                        onChange={(e) => setEditProduct({ ...editProduct, unidade: e.target.value })}
+                      />
+                    </Form.Group>
+                  </Col>
+                  <Col md={6}>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Fornecedor</Form.Label>
+                      <Form.Control
+                        type="text"
+                        value={editProduct.fornecedor}
+                        onChange={(e) => setEditProduct({ ...editProduct, fornecedor: e.target.value })}
+                      />
+                    </Form.Group>
+                  </Col>
+                </Row>
+
+                <Row>
+                  <Col md={6}>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Código de Barras</Form.Label>
+                      <Form.Control
+                        type="text"
+                        value={editProduct.codigoBarras}
+                        onChange={(e) => setEditProduct({ ...editProduct, codigoBarras: e.target.value })}
+                      />
+                    </Form.Group>
+                  </Col>
+                </Row>
+              </Form>
+            )}
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setShowEditModal(false)}>
+              Cancelar
+            </Button>
+            <Button variant="primary" onClick={async () => {
+              try {
+                const payload = {
+                  produto: editProduct.produto,
+                  categoria: editProduct.categoria,
+                  descricao: editProduct.descricao || null,
+                  preco_custo: editProduct.precoCusto === '' ? null : Number(editProduct.precoCusto),
+                  preco_venda: editProduct.precoVenda === '' ? null : Number(editProduct.precoVenda),
+                  estoque_minimo: editProduct.estoqueMinimo === '' ? 0 : Number(editProduct.estoqueMinimo),
+                  unidade: editProduct.unidade || null,
+                  fornecedor: editProduct.fornecedor || null,
+                  codigo_barras: editProduct.codigoBarras || null,
+                  ultima_atualizacao: new Date().toISOString(),
+                };
+                const { error } = await supabase
+                  .from('estoque_produtos')
+                  .update(payload)
+                  .eq('id', editProduct.id);
+                if (error) throw error;
+                setProdutos((prev) => prev.map((p) => p.id === editProduct.id ? {
+                  ...p,
+                  ...editProduct,
+                  ultimaAtualizacao: payload.ultima_atualizacao,
+                  margemLucro: payload.preco_custo ? (((payload.preco_venda - payload.preco_custo) / payload.preco_custo) * 100).toFixed(1) : 0,
+                } : p));
+                setShowEditModal(false);
+              } catch (e) {
+                alert('Erro ao atualizar produto: ' + e.message);
+              }
+            }}>
+              <FaEdit className="me-2" />
+              Salvar Alterações
             </Button>
           </Modal.Footer>
         </Modal>

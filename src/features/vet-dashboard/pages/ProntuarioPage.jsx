@@ -16,6 +16,8 @@ import {
 } from "react-bootstrap";
 import DashboardLayout from "../../../layouts/DashboardLayout";
 import { useUser } from "../../../contexts/UserContext";
+import { useParams } from "react-router-dom";
+import { supabase } from "../../../utils/supabase";
 import {
   FaPaw,
   FaUser,
@@ -76,240 +78,120 @@ const ProntuarioPage = () => {
     dataPrescricao: new Date().toISOString().split("T")[0],
   });
 
-  // Dados mockados do veterinário (para prescrição)
-  const [veterinario] = useState({
-    nome: "Dr. André Silva",
-    crmv: "CRMV-SP 12345",
-    endereco: "Rua das Flores, 123 - Centro, São Paulo - SP",
-    telefone: "(11) 99999-9999",
-    email: "andre.silva@pataforma.com",
-    assinatura: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...", // Mock da assinatura
+  // Dados do veterinário logado (para prescrição)
+  const [veterinario, setVeterinario] = useState({
+    nome: "",
+    crmv: "",
+    endereco: "",
+    telefone: "",
+    email: "",
+    assinatura: "",
   });
 
-  // Dados mockados de produtos disponíveis no estoque
-  const [produtosDisponiveis] = useState([
-    {
-      id: 1,
-      produto: "Insulina NPH",
-      categoria: "Medicamentos",
-      estoqueAtual: 5,
-      precoVenda: 45.9,
-      unidade: "frascos",
-      lote: "LOT2024001",
-    },
-    {
-      id: 2,
-      produto: "Vacina V10",
-      categoria: "Vacinas",
-      estoqueAtual: 8,
-      precoVenda: 35.0,
-      unidade: "doses",
-      lote: "LOT2024002",
-    },
-    {
-      id: 3,
-      produto: "Antibiótico Amoxicilina",
-      categoria: "Medicamentos",
-      estoqueAtual: 15,
-      precoVenda: 28.9,
-      unidade: "comprimidos",
-      lote: "LOT2024005",
-    },
-    {
-      id: 4,
-      produto: "Ração Premium Cães",
-      categoria: "Alimentação",
-      estoqueAtual: 25,
-      precoVenda: 89.9,
-      unidade: "sacos",
-      lote: "LOT2024003",
-    },
-  ]);
+  // Produtos disponíveis no estoque (carregados do banco)
+  const [produtosDisponiveis, setProdutosDisponiveis] = useState([]);
 
-  // Dados mockados do paciente
-  const [paciente] = useState({
-    id: 1,
-    nome: "Rex",
-    especie: "Cão",
-    raca: "Golden Retriever",
-    idade: 3,
-    peso: 28.5,
-    altura: 55,
-    tutor: "Maria Silva",
-    telefone: "(11) 99999-9999",
-    email: "maria@email.com",
-    foto: "https://via.placeholder.com/150x150/0DB2AC/FFFFFF?text=Rex",
-    dataNascimento: "2021-03-15",
-    sexo: "Macho",
-    cor: "Dourado",
-    microchip: "123456789012345",
+  // Paciente (carregado do banco)
+  const [paciente, setPaciente] = useState(null);
+  const [historicoClinico, setHistoricoClinico] = useState([]);
+  const [exames, setExames] = useState([]);
+  const [prescricoes, setPrescricoes] = useState([]);
+  const [documentos, setDocumentos] = useState([]);
+  const [produtosVendidos, setProdutosVendidos] = useState([]);
 
-    // Alertas importantes
-    alertas: [
-      {
-        tipo: "alergia",
-        descricao: "Alérgico a penicilina",
-        severidade: "alta",
-        data: "2023-06-15",
-      },
-      {
-        tipo: "condicao",
-        descricao: "Diabetes tipo 1",
-        severidade: "media",
-        data: "2023-08-20",
-      },
-      {
-        tipo: "medicacao",
-        descricao: "Insulina - 2x ao dia",
-        severidade: "alta",
-        data: "2023-08-20",
-      },
-    ],
+  const { id } = useParams();
 
-    // Histórico clínico
-    historicoClinico: [
-      {
-        id: 1,
-        data: "2024-01-10",
-        tipo: "Consulta de Rotina",
-        veterinario: "Dr. André Silva",
-        diagnostico: "Pet saudável, diabetes controlado",
-        prescricao: "Manter insulina 2x ao dia, dieta controlada",
-        observacoes: "Peso estável, glicemia controlada",
-      },
-      {
-        id: 2,
-        data: "2023-12-15",
-        tipo: "Vacinação",
-        veterinario: "Dr. André Silva",
-        diagnostico: "Vacina V10 aplicada",
-        prescricao: "Retornar em 1 ano para próxima vacina",
-        observacoes: "Sem reações adversas",
-      },
-      {
-        id: 3,
-        data: "2023-11-20",
-        tipo: "Exame de Sangue",
-        veterinario: "Dr. André Silva",
-        diagnostico: "Glicemia elevada",
-        prescricao: "Ajustar dose de insulina",
-        observacoes: "Monitorar glicemia diariamente",
-      },
-    ],
+  useEffect(() => {
+    const carregarDados = async () => {
+      try {
+        // Carregar dados do veterinário logado
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          const { data: vet, error: vetError } = await supabase
+            .from('usuario')
+            .select('nome, email')
+            .eq('id_usuario', session.user.id)
+            .single();
+          if (!vetError && vet) {
+            setVeterinario((prev) => ({ ...prev, nome: vet.nome || '', email: vet.email || '' }));
+          }
+        }
 
-    // Exames
-    exames: [
-      {
-        id: 1,
-        nome: "Hemograma Completo",
-        data: "2024-01-10",
-        resultado: "Normal",
-        arquivo: "hemograma_rex_2024.pdf",
-        tipo: "laboratorial",
-      },
-      {
-        id: 2,
-        nome: "Bioquímico",
-        data: "2024-01-10",
-        resultado: "Glicemia: 120 mg/dL (normal)",
-        arquivo: "bioquimico_rex_2024.pdf",
-        tipo: "laboratorial",
-      },
-      {
-        id: 3,
-        nome: "Radiografia Torácica",
-        data: "2023-11-20",
-        resultado: "Normal",
-        arquivo: "radiografia_rex_2023.pdf",
-        tipo: "imagem",
-      },
-    ],
+        // Carregar paciente e tutor
+        const { data: pet, error: petError } = await supabase
+          .from('pets')
+          .select(`
+            id, nome, especie, raca, data_nascimento, peso, sexo, cor, microchip, observacoes,
+            tutor:tutor_id (nome, telefone, email)
+          `)
+          .eq('id', id)
+          .maybeSingle();
+        if (petError) throw petError;
+        if (pet) {
+          setPaciente({
+            ...pet,
+            tutor: pet.tutor?.nome || 'N/A',
+            telefone: pet.tutor?.telefone || 'N/A',
+            email: pet.tutor?.email || 'N/A',
+            foto: "https://via.placeholder.com/150x150/0DB2AC/FFFFFF?text=PET",
+          });
+        }
 
-    // Prescrições
-    prescricoes: [
-      {
-        id: 1,
-        data: "2024-01-10",
-        medicamento: "Insulina NPH",
-        dosagem: "10 UI",
-        frequencia: "2x ao dia",
-        duracao: "Contínuo",
-        status: "ativa",
-        observacoes: "Aplicar 30 min antes das refeições",
-      },
-      {
-        id: 2,
-        data: "2023-12-15",
-        medicamento: "Ração Diabetes",
-        dosagem: "2 xícaras",
-        frequencia: "2x ao dia",
-        duracao: "Contínuo",
-        status: "ativa",
-        observacoes: "Manter horários fixos",
-      },
-      {
-        id: 3,
-        data: "2023-11-20",
-        medicamento: "Antibiótico",
-        dosagem: "500mg",
-        frequencia: "1x ao dia",
-        duracao: "7 dias",
-        status: "finalizada",
-        observacoes: "Tratamento concluído",
-      },
-    ],
+        // Carregar histórico clínico a partir de consultas
+        const { data: consultas, error: consError } = await supabase
+          .from('consultas')
+          .select('id, data_consulta, tipo, observacoes')
+          .eq('paciente_id', id)
+          .order('data_consulta', { ascending: false });
+        if (!consError && consultas) {
+          setHistoricoClinico(
+            consultas.map((c) => ({
+              id: c.id,
+              data: c.data_consulta,
+              tipo: c.tipo,
+              veterinario: 'Você',
+              diagnostico: c.observacoes || '-',
+              prescricao: '-',
+              observacoes: c.observacoes || '-',
+            }))
+          );
+        }
 
-    // Documentos
-    documentos: [
-      {
-        id: 1,
-        nome: "Certificado de Vacinação",
-        data: "2023-12-15",
-        tipo: "certificado",
-        arquivo: "certificado_vacina_rex.pdf",
-      },
-      {
-        id: 2,
-        nome: "Receituário Controle",
-        data: "2024-01-10",
-        tipo: "receituario",
-        arquivo: "receituario_rex_2024.pdf",
-      },
-      {
-        id: 3,
-        nome: "Termo de Responsabilidade",
-        data: "2021-03-15",
-        tipo: "contrato",
-        arquivo: "termo_responsabilidade_rex.pdf",
-      },
-    ],
+        // Carregar produtos disponíveis no estoque (se existirem as tabelas)
+        const { data: estoque, error: estError } = await supabase
+          .from('estoque_produtos')
+          .select('id, produto, categoria, estoque_atual, preco_venda, unidade, lote_atual');
+        if (!estError && Array.isArray(estoque)) {
+          setProdutosDisponiveis(
+            estoque.map((p) => ({
+              id: p.id,
+              produto: p.produto,
+              categoria: p.categoria,
+              estoqueAtual: p.estoque_atual,
+              precoVenda: Number(p.preco_venda) || 0,
+              unidade: p.unidade,
+              lote: p.lote_atual || '',
+            }))
+          );
+        } else {
+          setProdutosDisponiveis([]);
+        }
+      } catch (error) {
+        console.error('Erro ao carregar prontuário:', error);
+      }
+    };
+    if (id) carregarDados();
+  }, [id]);
 
-    // Produtos vendidos/aplicados
-    produtosVendidos: [
-      {
-        id: 1,
-        produto: "Insulina NPH",
-        tipo: "venda",
-        quantidade: 1,
-        precoUnitario: 45.9,
-        precoTotal: 45.9,
-        data: "2024-01-10",
-        lote: "LOT2024001",
-        observacoes: "Aplicada durante consulta",
-      },
-      {
-        id: 2,
-        produto: "Vacina V10",
-        tipo: "aplicacao",
-        quantidade: 1,
-        precoUnitario: 35.0,
-        precoTotal: 35.0,
-        data: "2023-12-15",
-        lote: "LOT2023120",
-        observacoes: "Vacina anual aplicada",
-      },
-    ],
-  });
+  const calcularIdade = (dataNascimento) => {
+    if (!dataNascimento) return null;
+    const hoje = new Date();
+    const nascimento = new Date(dataNascimento);
+    let idade = hoje.getFullYear() - nascimento.getFullYear();
+    const m = hoje.getMonth() - nascimento.getMonth();
+    if (m < 0 || (m === 0 && hoje.getDate() < nascimento.getDate())) idade--;
+    return idade;
+  };
 
   const getAlertaIcon = (tipo) => {
     switch (tipo) {
@@ -464,6 +346,17 @@ const ProntuarioPage = () => {
   };
 
   const { user } = useUser();
+  if (!paciente) {
+    return (
+      <DashboardLayout tipoUsuario="veterinario" nomeUsuario={user?.nome}>
+        <div className="container-fluid">
+          <div className="text-center py-5">
+            <span className="spinner-border" />
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
   return (
     <DashboardLayout tipoUsuario="veterinario" nomeUsuario={user?.nome}>
       <div className="container-fluid">
@@ -501,11 +394,11 @@ const ProntuarioPage = () => {
                   <div className="col-sm-6">
                     <p className="text-muted mb-1">
                       <FaCalendarAlt className="me-2" />
-                      <strong>Idade:</strong> {paciente.idade} anos
+                      <strong>Idade:</strong> {calcularIdade(paciente.data_nascimento) ?? 'N/A'} {calcularIdade(paciente.data_nascimento) ? 'anos' : ''}
                     </p>
                     <p className="text-muted mb-1">
                       <FaWeight className="me-2" />
-                      <strong>Peso:</strong> {paciente.peso} kg
+                      <strong>Peso:</strong> {paciente.peso ?? 'N/A'} {paciente.peso ? 'kg' : ''}
                     </p>
                   </div>
                 </div>
@@ -600,7 +493,7 @@ const ProntuarioPage = () => {
                         </h5>
                       </Card.Header>
                       <Card.Body>
-                        {paciente.alertas.map((alerta, index) => (
+                        {(paciente.alertas || []).map((alerta, index) => (
                           <Alert
                             key={index}
                             variant={getAlertaVariant(alerta.severidade)}
@@ -637,7 +530,7 @@ const ProntuarioPage = () => {
                               <strong>Raça:</strong> {paciente.raca}
                             </p>
                             <p>
-                              <strong>Idade:</strong> {paciente.idade} anos
+                              <strong>Idade:</strong> {calcularIdade(paciente.data_nascimento) ?? 'N/A'} {calcularIdade(paciente.data_nascimento) ? 'anos' : ''}
                             </p>
                             <p>
                               <strong>Sexo:</strong> {paciente.sexo}
@@ -645,7 +538,7 @@ const ProntuarioPage = () => {
                           </Col>
                           <Col sm={6}>
                             <p>
-                              <strong>Peso:</strong> {paciente.peso} kg
+                              <strong>Peso:</strong> {paciente.peso ?? 'N/A'} {paciente.peso ? 'kg' : ''}
                             </p>
                             <p>
                               <strong>Altura:</strong> {paciente.altura} cm
@@ -747,7 +640,7 @@ const ProntuarioPage = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {paciente.historicoClinico.map((entrada) => (
+                    {historicoClinico.map((entrada) => (
                       <tr key={entrada.id}>
                         <td>{formatarData(entrada.data)}</td>
                         <td>
@@ -792,7 +685,7 @@ const ProntuarioPage = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {paciente.exames.map((exame) => (
+                    {exames.map((exame) => (
                       <tr key={exame.id}>
                         <td>{formatarData(exame.data)}</td>
                         <td>{exame.nome}</td>
@@ -851,7 +744,7 @@ const ProntuarioPage = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {paciente.prescricoes.map((prescricao) => (
+                    {prescricoes.map((prescricao) => (
                       <tr key={prescricao.id}>
                         <td>{formatarData(prescricao.data)}</td>
                         <td>{prescricao.medicamento}</td>
@@ -899,7 +792,7 @@ const ProntuarioPage = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {paciente.documentos.map((documento) => (
+                    {documentos.map((documento) => (
                       <tr key={documento.id}>
                         <td>{formatarData(documento.data)}</td>
                         <td>{documento.nome}</td>
@@ -952,7 +845,7 @@ const ProntuarioPage = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {paciente.produtosVendidos.map((produto) => (
+                    {produtosVendidos.map((produto) => (
                       <tr key={produto.id}>
                         <td>{formatarData(produto.data)}</td>
                         <td>{produto.produto}</td>
