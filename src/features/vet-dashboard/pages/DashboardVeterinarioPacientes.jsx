@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Row,
   Col,
@@ -40,6 +41,8 @@ import {
 } from "react-icons/fa";
 
 const DashboardVeterinarioPacientes = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [showModal, setShowModal] = useState(false);
   const [showModalNovoPaciente, setShowModalNovoPaciente] = useState(false);
   const [selectedPaciente, setSelectedPaciente] = useState(null);
@@ -210,9 +213,15 @@ const DashboardVeterinarioPacientes = () => {
         {/* Header da Página */}
         <div className="d-flex justify-content-between align-items-center mb-4">
           <div>
-            <h2 className="fw-bold text-dark mb-1">Pacientes</h2>
+            <h2 className="fw-bold text-dark mb-1">
+              {location.pathname.includes("/prontuarios")
+                ? "Prontuários"
+                : "Pacientes"}
+            </h2>
             <p className="text-muted mb-0">
-              Gerencie o cadastro e histórico dos seus pacientes
+              {location.pathname.includes("/prontuarios")
+                ? "Acesse os prontuários médicos dos seus pacientes"
+                : "Gerencie o cadastro e histórico dos seus pacientes"}
             </p>
           </div>
           <div className="d-flex gap-2">
@@ -409,6 +418,19 @@ const DashboardVeterinarioPacientes = () => {
                           }}
                         >
                           <FaEye size={12} />
+                        </Button>
+                        <Button
+                          variant="outline-info"
+                          size="sm"
+                          title="Ver Prontuário"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(
+                              `/dashboard/veterinario/prontuario/${paciente.id}`
+                            );
+                          }}
+                        >
+                          <FaFileMedical size={12} />
                         </Button>
                         <Button
                           variant="outline-secondary"

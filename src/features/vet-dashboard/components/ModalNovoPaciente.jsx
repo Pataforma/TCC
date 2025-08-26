@@ -288,6 +288,12 @@ export default function ModalNovoPaciente({ show, onHide, onPacienteCriado }) {
       if (!formData.tutorNome.trim())
         novosErros.tutorNome = "Nome do tutor é obrigatório";
 
+      if (!formData.tutorEmail.trim()) {
+        novosErros.tutorEmail = "Email do tutor é obrigatório";
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.tutorEmail)) {
+        novosErros.tutorEmail = "Email inválido";
+      }
+
       if (!formData.tutorTelefone.trim()) {
         novosErros.tutorTelefone = "Telefone do tutor é obrigatório";
       } else if (limparMascara(formData.tutorTelefone).length < 10) {
@@ -562,14 +568,19 @@ export default function ModalNovoPaciente({ show, onHide, onPacienteCriado }) {
                 </Col>
                 <Col md={6}>
                   <Form.Group className="mb-3">
-                    <Form.Label>Email</Form.Label>
+                    <Form.Label>Email *</Form.Label>
                     <Form.Control
                       type="email"
                       name="tutorEmail"
                       value={formData.tutorEmail}
                       onChange={handleInputChange}
+                      isInvalid={!!errors.tutorEmail}
                       placeholder="email@exemplo.com"
+                      required
                     />
+                    <Form.Control.Feedback type="invalid">
+                      {errors.tutorEmail}
+                    </Form.Control.Feedback>
                   </Form.Group>
                 </Col>
               </Row>

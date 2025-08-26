@@ -51,42 +51,14 @@ const DashboardVeterinarioAgenda = () => {
     tutor_id: "",
     data_consulta: "",
     horario: "",
-    duracao: 30,
-    tipo: "Consulta de Rotina",
+    duracao: "",
+    tipo: "",
     observacoes: "",
-    status: "pendente",
+    status: "",
   });
 
-  // Dados mockados das tarefas
-  const [tarefas] = useState([
-    {
-      id: 1,
-      titulo: "Ligar para Maria Silva sobre Rex",
-      descricao: "Confirmar horário da consulta de amanhã",
-      prioridade: "alta",
-      status: "pendente",
-      data: "2024-01-15",
-      hora: "10:00",
-    },
-    {
-      id: 2,
-      titulo: "Revisar exames do Thor",
-      descricao: "Analisar resultados do hemograma",
-      prioridade: "media",
-      status: "pendente",
-      data: "2024-01-15",
-      hora: "14:00",
-    },
-    {
-      id: 3,
-      titulo: "Follow-up Luna",
-      descricao: "Verificar se a vacina fez efeito",
-      prioridade: "baixa",
-      status: "concluida",
-      data: "2024-01-14",
-      hora: "16:00",
-    },
-  ]);
+  // Estado para tarefas (será implementado futuramente)
+  const [tarefas] = useState([]);
 
   // Carregar dados do Supabase
   useEffect(() => {
@@ -130,8 +102,24 @@ const DashboardVeterinarioAgenda = () => {
         fim.setDate(inicioSemana.getDate() + 6);
         dataFim = new Date(new Date(fim).setHours(23, 59, 59, 999));
       } else if (activeTab === "mes") {
-        dataInicio = new Date(hoje.getFullYear(), hoje.getMonth(), 1, 0, 0, 0, 0);
-        dataFim = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0, 23, 59, 59, 999);
+        dataInicio = new Date(
+          hoje.getFullYear(),
+          hoje.getMonth(),
+          1,
+          0,
+          0,
+          0,
+          0
+        );
+        dataFim = new Date(
+          hoje.getFullYear(),
+          hoje.getMonth() + 1,
+          0,
+          23,
+          59,
+          59,
+          999
+        );
       }
 
       const { data, error } = await supabase
@@ -210,16 +198,24 @@ const DashboardVeterinarioAgenda = () => {
       tutor_id: "",
       data_consulta: "",
       horario: "",
-      duracao: 30,
-      tipo: "Consulta de Rotina",
+      duracao: "",
+      tipo: "",
       observacoes: "",
-      status: "pendente",
+      status: "",
     });
     setShowConsultaModal(true);
   };
 
   const handleSalvarConsulta = async () => {
     try {
+      // Validação dos campos obrigatórios
+      if (!novaConsulta.paciente_id || !novaConsulta.tutor_id || 
+          !novaConsulta.data_consulta || !novaConsulta.horario || 
+          !novaConsulta.duracao || !novaConsulta.tipo || !novaConsulta.status) {
+        alert("Por favor, preencha todos os campos obrigatórios.");
+        return;
+      }
+
       setLoading(true);
       const {
         data: { session },
@@ -233,14 +229,30 @@ const DashboardVeterinarioAgenda = () => {
         .single();
       if (vetError || !vet) throw new Error("Veterinário não encontrado");
 
+      // Mapear valores do frontend para valores do banco (se necessário)
+      const mapearTipoConsulta = (tipoFrontend) => {
+        const mapeamento = {
+          'consulta_rotina': 'consulta_rotina',
+          'vacina': 'vacina',
+          'exame': 'exame',
+          'consulta_emergencia': 'consulta_emergencia',
+          'cirurgia': 'cirurgia',
+          'retorno': 'retorno',
+          'outro': 'outro'
+        };
+        return mapeamento[tipoFrontend] || tipoFrontend;
+      };
+
       const consultaData = {
         paciente_id: novaConsulta.paciente_id,
         tutor_id: novaConsulta.tutor_id,
-        data_consulta: new Date(`${novaConsulta.data_consulta}T${novaConsulta.horario}:00`).toISOString(),
-        duracao: novaConsulta.duracao,
-        tipo: novaConsulta.tipo,
-        observacoes: novaConsulta.observacoes,
-        status: novaConsulta.status,
+        data_consulta: new Date(
+          `${novaConsulta.data_consulta}T${novaConsulta.horario}:00`
+        ).toISOString(),
+        duracao: parseInt(novaConsulta.duracao) || 30,
+        tipo: mapearTipoConsulta(novaConsulta.tipo),
+        observacoes: novaConsulta.observacoes || '',
+        status: novaConsulta.status || 'pendente',
         veterinario_id: vet.id_veterinarios,
       };
 
@@ -435,7 +447,13 @@ const DashboardVeterinarioAgenda = () => {
   const datas = gerarDatas();
 
   const consultasPorHorario = (horario) => {
-    return consultas.filter((consulta) => consulta.horario === horario);
+    return consultas.filter((consulta) => {
+      const consultaHorario = new Date(consulta.data_consulta).toLocaleTimeString("pt-BR", {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+      return consultaHorario === horario;
+    });
   };
 
   const consultasPorData = (data) => {
@@ -449,7 +467,13 @@ const DashboardVeterinarioAgenda = () => {
 
   const consultasPorDataHorario = (data, horario) => {
     const consultasData = consultasPorData(data);
-    return consultasData.filter((consulta) => consulta.horario === horario);
+    return consultasData.filter((consulta) => {
+      const consultaHorario = new Date(consulta.data_consulta).toLocaleTimeString("pt-BR", {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+      return consultaHorario === horario;
+    });
   };
 
   const formatarDataConsulta = (data) => {
@@ -509,7 +533,12 @@ const DashboardVeterinarioAgenda = () => {
                     onClick={() => handleConsultaClick(consulta)}
                   >
                     <td className="align-middle">
-                      <div className="fw-semibold">{consulta.horario}</div>
+                      <div className="fw-semibold">
+                        {new Date(consulta.data_consulta).toLocaleTimeString("pt-BR", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </div>
                       <small className="text-muted">
                         {formatarDataConsulta(consulta.data_consulta)} •{" "}
                         {consulta.duracao}min
@@ -542,7 +571,18 @@ const DashboardVeterinarioAgenda = () => {
                     </td>
                     <td className="align-middle">
                       <span className="badge bg-light text-dark">
-                        {consulta.tipo}
+                        {(() => {
+                          const tipos = {
+                            'consulta_rotina': 'Consulta de Rotina',
+                            'vacina': 'Vacinação',
+                            'exame': 'Exame',
+                            'consulta_emergencia': 'Consulta de Emergência',
+                            'cirurgia': 'Cirurgia',
+                            'retorno': 'Retorno',
+                            'outro': 'Outro'
+                          };
+                          return tipos[consulta.tipo] || consulta.tipo;
+                        })()}
                       </span>
                     </td>
                     <td className="align-middle">
@@ -876,9 +916,12 @@ const DashboardVeterinarioAgenda = () => {
                                   cursor: "pointer",
                                 }}
                                 onClick={() => handleConsultaClick(consulta)}
-                                title={`${consulta.horario} - ${
-                                  consulta.pacientes?.nome || "N/A"
-                                }`}
+                                                                 title={`${new Date(consulta.data_consulta).toLocaleTimeString("pt-BR", {
+                                   hour: "2-digit",
+                                   minute: "2-digit",
+                                 })} - ${
+                                   consulta.pacientes?.nome || "N/A"
+                                 }`}
                               >
                                 <div className="fw-semibold text-truncate">
                                   {consulta.horario}
@@ -977,20 +1020,36 @@ const DashboardVeterinarioAgenda = () => {
                   </label>
                   <div className="d-flex align-items-center gap-2">
                     <FaClock className="text-muted" />
-                    <span>
-                      {formatarDataConsulta(selectedConsulta.data_consulta)} às{" "}
-                      {selectedConsulta.horario} ({selectedConsulta.duracao}{" "}
-                      min)
-                    </span>
+                                         <span>
+                       {formatarDataConsulta(selectedConsulta.data_consulta)} às{" "}
+                       {new Date(selectedConsulta.data_consulta).toLocaleTimeString("pt-BR", {
+                         hour: "2-digit",
+                         minute: "2-digit",
+                       })} ({selectedConsulta.duracao}{" "}
+                       min)
+                     </span>
                   </div>
                 </div>
 
-                <div className="mb-3">
-                  <label className="form-label fw-semibold">Tipo</label>
-                  <div>
-                    <Badge bg="primary">{selectedConsulta.tipo}</Badge>
-                  </div>
-                </div>
+                                 <div className="mb-3">
+                   <label className="form-label fw-semibold">Tipo</label>
+                   <div>
+                     <Badge bg="primary">
+                       {(() => {
+                         const tipos = {
+                           'consulta_rotina': 'Consulta de Rotina',
+                           'vacina': 'Vacinação',
+                           'exame': 'Exame',
+                           'consulta_emergencia': 'Consulta de Emergência',
+                           'cirurgia': 'Cirurgia',
+                           'retorno': 'Retorno',
+                           'outro': 'Outro'
+                         };
+                         return tipos[selectedConsulta.tipo] || selectedConsulta.tipo;
+                       })()}
+                     </Badge>
+                   </div>
+                 </div>
 
                 <div className="mb-3">
                   <label className="form-label fw-semibold">Status</label>
@@ -1147,8 +1206,9 @@ const DashboardVeterinarioAgenda = () => {
                       })
                     }
                     min="15"
-                    max="120"
+                    max="180"
                     step="15"
+                    placeholder="Ex: 30"
                     required
                   />
                 </Form.Group>
@@ -1163,15 +1223,32 @@ const DashboardVeterinarioAgenda = () => {
                     }
                     required
                   >
-                    <option value="Consulta de Rotina">
-                      Consulta de Rotina
-                    </option>
-                    <option value="Vacinação">Vacinação</option>
-                    <option value="Exame">Exame</option>
-                    <option value="Consulta de Emergência">
-                      Consulta de Emergência
-                    </option>
-                    <option value="Cirurgia">Cirurgia</option>
+                    <option value="">Selecione o tipo de consulta</option>
+                    <option value="consulta_rotina">Consulta de Rotina</option>
+                    <option value="vacina">Vacinação</option>
+                    <option value="exame">Exame</option>
+                    <option value="consulta_emergencia">Consulta de Emergência</option>
+                    <option value="cirurgia">Cirurgia</option>
+                    <option value="retorno">Retorno</option>
+                    <option value="outro">Outro</option>
+                  </Form.Select>
+                </Form.Group>
+              </div>
+              <div className="col-md-6">
+                <Form.Group>
+                  <Form.Label>Status</Form.Label>
+                  <Form.Select
+                    value={novaConsulta.status}
+                    onChange={(e) =>
+                      setNovaConsulta({ ...novaConsulta, status: e.target.value })
+                    }
+                    required
+                  >
+                    <option value="">Selecione o status</option>
+                    <option value="pendente">Pendente</option>
+                    <option value="confirmada">Confirmada</option>
+                    <option value="cancelada">Cancelada</option>
+                    <option value="concluida">Concluída</option>
                   </Form.Select>
                 </Form.Group>
               </div>
@@ -1188,7 +1265,7 @@ const DashboardVeterinarioAgenda = () => {
                         observacoes: e.target.value,
                       })
                     }
-                    placeholder="Descreva os sintomas ou motivo da consulta..."
+                    placeholder="Descreva os sintomas, motivo da consulta ou observações importantes..."
                   />
                 </Form.Group>
               </div>

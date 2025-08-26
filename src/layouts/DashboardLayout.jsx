@@ -29,15 +29,20 @@ import {
   FaMapMarkerAlt,
 } from "react-icons/fa";
 
-const DashboardLayout = ({ children, tipoUsuario, nomeUsuario }) => {
+const DashboardLayout = ({
+  children,
+  tipoUsuario,
+  nomeUsuario,
+  estoqueBaixoCount = 0,
+}) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { user } = useUser();
 
   // Preferir dados do contexto (banco) sobre props hardcoded
-  const currentTipo = (user?.tipo_usuario) || tipoUsuario;
-  const currentNome = (user?.nome) || nomeUsuario;
+  const currentTipo = user?.tipo_usuario || tipoUsuario;
+  const currentNome = user?.nome || nomeUsuario;
 
   // Menus dinâmicos por tipo de usuário (removido "Meu Perfil" da sidebar)
   const menus = {
@@ -54,10 +59,15 @@ const DashboardLayout = ({ children, tipoUsuario, nomeUsuario }) => {
         icon: FaUsers,
       },
       {
+        label: "Prontuários",
+        to: "/dashboard/veterinario/prontuarios",
+        icon: FaFileMedical,
+      },
+      {
         label: "Estoque",
         to: "/dashboard/veterinario/estoque",
         icon: FaBox,
-        badge: "2",
+        badge: estoqueBaixoCount > 0 ? estoqueBaixoCount.toString() : null,
         badgeVariant: "warning",
       },
       {
@@ -74,15 +84,11 @@ const DashboardLayout = ({ children, tipoUsuario, nomeUsuario }) => {
         label: "Chat",
         to: "/dashboard/veterinario/chat",
         icon: FaComments,
-        badge: "5",
-        badgeVariant: "danger",
       },
       {
         label: "Notificações",
         to: "/dashboard/veterinario/notificacoes",
         icon: FaBell,
-        badge: "3",
-        badgeVariant: "primary",
       },
     ],
     tutor: [
@@ -108,8 +114,6 @@ const DashboardLayout = ({ children, tipoUsuario, nomeUsuario }) => {
         label: "Mensagens",
         to: "/dashboard/tutor/mensagens",
         icon: FaComments,
-        badge: "3",
-        badgeVariant: "danger",
       },
       {
         label: "Pet Perdido",

@@ -50,7 +50,7 @@ const DashboardVeterinarioMarketing = () => {
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState("perfil");
   const [activeTab, setActiveTab] = useState("perfil");
-  
+
   // Estados para novas funcionalidades
   const [showModalCampanha, setShowModalCampanha] = useState(false);
   const [showModalPost, setShowModalPost] = useState(false);
@@ -58,6 +58,18 @@ const DashboardVeterinarioMarketing = () => {
   const [showModalAvaliacoes, setShowModalAvaliacoes] = useState(false);
   const [showModalRelatorios, setShowModalRelatorios] = useState(false);
   const [showModalPerfil, setShowModalPerfil] = useState(false);
+
+  // Estados para validação de campanhas
+  const [novaCampanha, setNovaCampanha] = useState({
+    nome: "",
+    tipo: "",
+    orcamento: "",
+    dataInicio: "",
+    dataFim: "",
+    descricao: "",
+  });
+  const [errorsCampanha, setErrorsCampanha] = useState({});
+  const [validatedCampanha, setValidatedCampanha] = useState(false);
 
   // Dados mockados do perfil
   const [perfil] = useState({
@@ -89,7 +101,7 @@ const DashboardVeterinarioMarketing = () => {
       dataFim: "2024-03-31",
       visualizacoes: 1250,
       cliques: 89,
-      conversoes: 23
+      conversoes: 23,
     },
     {
       id: 2,
@@ -101,8 +113,8 @@ const DashboardVeterinarioMarketing = () => {
       dataFim: "2024-02-28",
       visualizacoes: 890,
       cliques: 67,
-      conversoes: 18
-    }
+      conversoes: 18,
+    },
   ]);
 
   // Dados mockados dos posts
@@ -114,7 +126,7 @@ const DashboardVeterinarioMarketing = () => {
       plataforma: "instagram",
       dataAgendamento: "2024-01-20T10:00:00",
       status: "agendado",
-      engajamento: 45
+      engajamento: 45,
     },
     {
       id: 2,
@@ -123,8 +135,8 @@ const DashboardVeterinarioMarketing = () => {
       plataforma: "facebook",
       dataAgendamento: "2024-01-18T15:00:00",
       status: "publicado",
-      engajamento: 78
-    }
+      engajamento: 78,
+    },
   ]);
 
   // Dados mockados das redes sociais
@@ -134,15 +146,15 @@ const DashboardVeterinarioMarketing = () => {
       plataforma: "instagram",
       url: "https://instagram.com/drandrevet",
       seguidores: 1250,
-      engajamento: 4.2
+      engajamento: 4.2,
     },
     {
       id: 2,
       plataforma: "facebook",
       url: "https://facebook.com/drandrevet",
       seguidores: 890,
-      engajamento: 3.8
-    }
+      engajamento: 3.8,
+    },
   ]);
 
   // Dados mockados das avaliações
@@ -153,7 +165,7 @@ const DashboardVeterinarioMarketing = () => {
       paciente: "Rex",
       nota: 5,
       comentario: "Excelente atendimento!",
-      data: "2024-01-15"
+      data: "2024-01-15",
     },
     {
       id: 2,
@@ -161,8 +173,8 @@ const DashboardVeterinarioMarketing = () => {
       paciente: "Luna",
       nota: 4,
       comentario: "Muito bom profissional",
-      data: "2024-01-14"
-    }
+      data: "2024-01-14",
+    },
   ]);
 
   const getStatusBadge = (status) => {
@@ -218,9 +230,9 @@ const DashboardVeterinarioMarketing = () => {
   };
 
   const formatarMoeda = (valor) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
     }).format(valor);
   };
 
@@ -230,12 +242,16 @@ const DashboardVeterinarioMarketing = () => {
 
   const handleExportarAvaliacoes = () => {
     // Simular exportação CSV
-    const csvContent = "data:text/csv;charset=utf-8," + 
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
       "Tutor,Paciente,Nota,Comentário,Data\n" +
-      avaliacoes.map(av => 
-        `${av.tutor},${av.paciente},${av.nota},"${av.comentario}",${av.data}`
-      ).join("\n");
-    
+      avaliacoes
+        .map(
+          (av) =>
+            `${av.tutor},${av.paciente},${av.nota},"${av.comentario}",${av.data}`
+        )
+        .join("\n");
+
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
@@ -243,6 +259,64 @@ const DashboardVeterinarioMarketing = () => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  // Funções de validação e salvamento para campanhas
+  const validarCampanha = () => {
+    const errors = {};
+
+    if (!novaCampanha.nome.trim()) {
+      errors.nome = "Nome da campanha é obrigatório";
+    }
+
+    if (!novaCampanha.tipo) {
+      errors.tipo = "Tipo da campanha é obrigatório";
+    }
+
+    if (!novaCampanha.dataInicio) {
+      errors.dataInicio = "Data de início é obrigatória";
+    }
+
+    setErrorsCampanha(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleSalvarCampanha = () => {
+    setValidatedCampanha(true);
+
+    if (validarCampanha()) {
+      // Aqui você implementaria a lógica para salvar no banco
+      console.log("Campanha válida:", novaCampanha);
+
+      // Limpar formulário
+      setNovaCampanha({
+        nome: "",
+        tipo: "",
+        orcamento: "",
+        dataInicio: "",
+        dataFim: "",
+        descricao: "",
+      });
+      setErrorsCampanha({});
+      setValidatedCampanha(false);
+      setShowModalCampanha(false);
+
+      // Mostrar mensagem de sucesso
+      alert("Campanha criada com sucesso!");
+    }
+  };
+
+  const resetarFormularioCampanha = () => {
+    setNovaCampanha({
+      nome: "",
+      tipo: "",
+      orcamento: "",
+      dataInicio: "",
+      dataFim: "",
+      descricao: "",
+    });
+    setErrorsCampanha({});
+    setValidatedCampanha(false);
   };
 
   const { user } = useUser();
@@ -261,22 +335,25 @@ const DashboardVeterinarioMarketing = () => {
             <Button
               variant="outline-primary"
               size="sm"
-              onClick={() => setShowModalCampanha(true)}
+              onClick={() => {
+                resetarFormularioCampanha();
+                setShowModalCampanha(true);
+              }}
             >
               <FaPlus className="me-2" />
               Nova Campanha
             </Button>
-            <Button 
-              variant="outline-info" 
-              size="sm" 
+            <Button
+              variant="outline-info"
+              size="sm"
               onClick={() => setShowModalPost(true)}
             >
               <FaPlus className="me-2" />
               Novo Post
             </Button>
-            <Button 
-              variant="outline-success" 
-              size="sm" 
+            <Button
+              variant="outline-success"
+              size="sm"
               onClick={() => setShowModalRedesSociais(true)}
             >
               <FaPlus className="me-2" />
@@ -328,10 +405,14 @@ const DashboardVeterinarioMarketing = () => {
                               style={{ width: 100, height: 100 }}
                             >
                               {perfil.foto_url ? (
-                                <Image 
-                                  src={perfil.foto_url} 
-                                  roundedCircle 
-                                  style={{ width: 100, height: 100, objectFit: 'cover' }}
+                                <Image
+                                  src={perfil.foto_url}
+                                  roundedCircle
+                                  style={{
+                                    width: 100,
+                                    height: 100,
+                                    objectFit: "cover",
+                                  }}
                                 />
                               ) : (
                                 <FaUser size={40} />
@@ -409,7 +490,9 @@ const DashboardVeterinarioMarketing = () => {
                         </div>
 
                         <div className="mt-4">
-                          <h6 className="fw-semibold mb-3">Horários de Atendimento</h6>
+                          <h6 className="fw-semibold mb-3">
+                            Horários de Atendimento
+                          </h6>
                           <p className="text-muted mb-0">{perfil.horarios}</p>
                         </div>
                       </Card.Body>
@@ -422,25 +505,37 @@ const DashboardVeterinarioMarketing = () => {
                         <div className="d-flex flex-column gap-3">
                           <div>
                             <div className="d-flex justify-content-between mb-1">
-                              <small className="text-muted">Avaliação Média</small>
-                              <small className="fw-semibold">{perfil.avaliacao}/5</small>
+                              <small className="text-muted">
+                                Avaliação Média
+                              </small>
+                              <small className="fw-semibold">
+                                {perfil.avaliacao}/5
+                              </small>
                             </div>
-                            <ProgressBar 
-                              now={(perfil.avaliacao / 5) * 100} 
-                              variant="warning" 
-                              style={{ height: '8px' }}
+                            <ProgressBar
+                              now={(perfil.avaliacao / 5) * 100}
+                              variant="warning"
+                              style={{ height: "8px" }}
                             />
                           </div>
                           <div>
                             <div className="d-flex justify-content-between mb-1">
-                              <small className="text-muted">Total de Avaliações</small>
-                              <small className="fw-semibold">{perfil.totalAvaliacoes}</small>
+                              <small className="text-muted">
+                                Total de Avaliações
+                              </small>
+                              <small className="fw-semibold">
+                                {perfil.totalAvaliacoes}
+                              </small>
                             </div>
                           </div>
                           <div>
                             <div className="d-flex justify-content-between mb-1">
-                              <small className="text-muted">Anos de Experiência</small>
-                              <small className="fw-semibold">{perfil.experiencia}</small>
+                              <small className="text-muted">
+                                Anos de Experiência
+                              </small>
+                              <small className="fw-semibold">
+                                {perfil.experiencia}
+                              </small>
                             </div>
                           </div>
                         </div>
@@ -454,8 +549,8 @@ const DashboardVeterinarioMarketing = () => {
               <Tab.Pane active={activeTab === "campanhas"}>
                 <div className="d-flex justify-content-between align-items-center mb-4">
                   <h5 className="fw-semibold mb-0">Campanhas de Marketing</h5>
-                  <Button 
-                    variant="primary" 
+                  <Button
+                    variant="primary"
                     size="sm"
                     onClick={() => setShowModalCampanha(true)}
                   >
@@ -471,7 +566,9 @@ const DashboardVeterinarioMarketing = () => {
                         <Card.Body>
                           <div className="d-flex justify-content-between align-items-start mb-3">
                             <div>
-                              <h6 className="fw-semibold mb-1">{campanha.nome}</h6>
+                              <h6 className="fw-semibold mb-1">
+                                {campanha.nome}
+                              </h6>
                               <div className="d-flex gap-2 mb-2">
                                 {getTipoBadge(campanha.tipo)}
                                 {getStatusBadge(campanha.status)}
@@ -479,32 +576,46 @@ const DashboardVeterinarioMarketing = () => {
                             </div>
                             <div className="text-end">
                               <small className="text-muted">Orçamento</small>
-                              <div className="fw-semibold">{formatarMoeda(campanha.orcamento)}</div>
+                              <div className="fw-semibold">
+                                {formatarMoeda(campanha.orcamento)}
+                              </div>
                             </div>
                           </div>
 
                           <div className="row g-3 mb-3">
                             <div className="col-6">
                               <small className="text-muted">Início</small>
-                              <div className="fw-semibold">{formatarData(campanha.dataInicio)}</div>
+                              <div className="fw-semibold">
+                                {formatarData(campanha.dataInicio)}
+                              </div>
                             </div>
                             <div className="col-6">
                               <small className="text-muted">Fim</small>
-                              <div className="fw-semibold">{formatarData(campanha.dataFim)}</div>
+                              <div className="fw-semibold">
+                                {formatarData(campanha.dataFim)}
+                              </div>
                             </div>
                           </div>
 
                           <div className="row g-3 mb-3">
                             <div className="col-4 text-center">
-                              <div className="fw-bold text-primary">{campanha.visualizacoes}</div>
-                              <small className="text-muted">Visualizações</small>
+                              <div className="fw-bold text-primary">
+                                {campanha.visualizacoes}
+                              </div>
+                              <small className="text-muted">
+                                Visualizações
+                              </small>
                             </div>
                             <div className="col-4 text-center">
-                              <div className="fw-bold text-info">{campanha.cliques}</div>
+                              <div className="fw-bold text-info">
+                                {campanha.cliques}
+                              </div>
                               <small className="text-muted">Cliques</small>
                             </div>
                             <div className="col-4 text-center">
-                              <div className="fw-bold text-success">{campanha.conversoes}</div>
+                              <div className="fw-bold text-success">
+                                {campanha.conversoes}
+                              </div>
                               <small className="text-muted">Conversões</small>
                             </div>
                           </div>
@@ -534,8 +645,8 @@ const DashboardVeterinarioMarketing = () => {
               <Tab.Pane active={activeTab === "posts"}>
                 <div className="d-flex justify-content-between align-items-center mb-4">
                   <h5 className="fw-semibold mb-0">Posts e Conteúdo</h5>
-                  <Button 
-                    variant="primary" 
+                  <Button
+                    variant="primary"
                     size="sm"
                     onClick={() => setShowModalPost(true)}
                   >
@@ -560,12 +671,16 @@ const DashboardVeterinarioMarketing = () => {
                       <tr key={post.id}>
                         <td>
                           <div className="fw-semibold">{post.titulo}</div>
-                          <small className="text-muted">{post.conteudo.substring(0, 50)}...</small>
+                          <small className="text-muted">
+                            {post.conteudo.substring(0, 50)}...
+                          </small>
                         </td>
                         <td>
                           <div className="d-flex align-items-center gap-2">
                             {getPlataformaIcon(post.plataforma)}
-                            <span className="text-capitalize">{post.plataforma}</span>
+                            <span className="text-capitalize">
+                              {post.plataforma}
+                            </span>
                           </div>
                         </td>
                         <td>{formatarData(post.dataAgendamento)}</td>
@@ -599,8 +714,8 @@ const DashboardVeterinarioMarketing = () => {
               <Tab.Pane active={activeTab === "redes-sociais"}>
                 <div className="d-flex justify-content-between align-items-center mb-4">
                   <h5 className="fw-semibold mb-0">Redes Sociais</h5>
-                  <Button 
-                    variant="primary" 
+                  <Button
+                    variant="primary"
                     size="sm"
                     onClick={() => setShowModalRedesSociais(true)}
                   >
@@ -618,7 +733,9 @@ const DashboardVeterinarioMarketing = () => {
                             <div className="d-flex align-items-center gap-3">
                               {getPlataformaIcon(rede.plataforma)}
                               <div>
-                                <h6 className="fw-semibold mb-1 text-capitalize">{rede.plataforma}</h6>
+                                <h6 className="fw-semibold mb-1 text-capitalize">
+                                  {rede.plataforma}
+                                </h6>
                                 <small className="text-muted">{rede.url}</small>
                               </div>
                             </div>
@@ -630,11 +747,15 @@ const DashboardVeterinarioMarketing = () => {
 
                           <div className="row g-3">
                             <div className="col-6 text-center">
-                              <div className="fw-bold text-primary">{rede.seguidores}</div>
+                              <div className="fw-bold text-primary">
+                                {rede.seguidores}
+                              </div>
                               <small className="text-muted">Seguidores</small>
                             </div>
                             <div className="col-6 text-center">
-                              <div className="fw-bold text-success">{rede.engajamento}%</div>
+                              <div className="fw-bold text-success">
+                                {rede.engajamento}%
+                              </div>
                               <small className="text-muted">Engajamento</small>
                             </div>
                           </div>
@@ -660,8 +781,8 @@ const DashboardVeterinarioMarketing = () => {
               <Tab.Pane active={activeTab === "avaliacoes"}>
                 <div className="d-flex justify-content-between align-items-center mb-4">
                   <h5 className="fw-semibold mb-0">Avaliações dos Clientes</h5>
-                  <Button 
-                    variant="primary" 
+                  <Button
+                    variant="primary"
                     size="sm"
                     onClick={handleExportarAvaliacoes}
                   >
@@ -693,7 +814,10 @@ const DashboardVeterinarioMarketing = () => {
                           </div>
                         </td>
                         <td>
-                          <div className="text-truncate" style={{ maxWidth: '200px' }}>
+                          <div
+                            className="text-truncate"
+                            style={{ maxWidth: "200px" }}
+                          >
                             {avaliacao.comentario}
                           </div>
                         </td>
@@ -718,8 +842,8 @@ const DashboardVeterinarioMarketing = () => {
               <Tab.Pane active={activeTab === "relatorios"}>
                 <div className="d-flex justify-content-between align-items-center mb-4">
                   <h5 className="fw-semibold mb-0">Relatórios e Métricas</h5>
-                  <Button 
-                    variant="primary" 
+                  <Button
+                    variant="primary"
                     size="sm"
                     onClick={() => setShowModalRelatorios(true)}
                   >
@@ -771,7 +895,9 @@ const DashboardVeterinarioMarketing = () => {
                   <Col lg={8}>
                     <Card className="border-0 shadow-sm">
                       <Card.Body>
-                        <h6 className="fw-semibold mb-3">Performance das Campanhas</h6>
+                        <h6 className="fw-semibold mb-3">
+                          Performance das Campanhas
+                        </h6>
                         <div className="text-center text-muted py-5">
                           <FaChartLine size={48} className="mb-3" />
                           <p>Grafícos de performance serão exibidos aqui</p>
@@ -785,11 +911,20 @@ const DashboardVeterinarioMarketing = () => {
                         <h6 className="fw-semibold mb-3">Top Posts</h6>
                         <div className="d-flex flex-column gap-3">
                           {posts.slice(0, 3).map((post, index) => (
-                            <div key={post.id} className="d-flex align-items-center gap-2">
-                              <div className="fw-bold text-primary">#{index + 1}</div>
+                            <div
+                              key={post.id}
+                              className="d-flex align-items-center gap-2"
+                            >
+                              <div className="fw-bold text-primary">
+                                #{index + 1}
+                              </div>
                               <div className="flex-grow-1">
-                                <div className="fw-semibold small">{post.titulo}</div>
-                                <small className="text-muted">{post.engajamento} engajamentos</small>
+                                <div className="fw-semibold small">
+                                  {post.titulo}
+                                </div>
+                                <small className="text-muted">
+                                  {post.engajamento} engajamentos
+                                </small>
                               </div>
                             </div>
                           ))}
@@ -804,7 +939,12 @@ const DashboardVeterinarioMarketing = () => {
         </Card>
 
         {/* Modal de Edição de Perfil */}
-        <Modal show={showModalPerfil} onHide={() => setShowModalPerfil(false)} size="lg" centered>
+        <Modal
+          show={showModalPerfil}
+          onHide={() => setShowModalPerfil(false)}
+          size="lg"
+          centered
+        >
           <Modal.Header closeButton>
             <Modal.Title>Editar Perfil Público</Modal.Title>
           </Modal.Header>
@@ -820,10 +960,14 @@ const DashboardVeterinarioMarketing = () => {
                         style={{ width: 80, height: 80 }}
                       >
                         {perfil.foto_url ? (
-                          <Image 
-                            src={perfil.foto_url} 
-                            roundedCircle 
-                            style={{ width: 80, height: 80, objectFit: 'cover' }}
+                          <Image
+                            src={perfil.foto_url}
+                            roundedCircle
+                            style={{
+                              width: 80,
+                              height: 80,
+                              objectFit: "cover",
+                            }}
                           />
                         ) : (
                           <FaUser size={32} />
@@ -845,20 +989,30 @@ const DashboardVeterinarioMarketing = () => {
                 <Col md={6}>
                   <Form.Group>
                     <Form.Label>Especialidade</Form.Label>
-                    <Form.Control type="text" defaultValue={perfil.especialidade} />
+                    <Form.Control
+                      type="text"
+                      defaultValue={perfil.especialidade}
+                    />
                   </Form.Group>
                 </Col>
                 <Col md={12}>
                   <Form.Group>
                     <Form.Label>Descrição</Form.Label>
-                    <Form.Control as="textarea" rows={4} defaultValue={perfil.descricao} />
+                    <Form.Control
+                      as="textarea"
+                      rows={4}
+                      defaultValue={perfil.descricao}
+                    />
                   </Form.Group>
                 </Col>
               </Row>
             </Form>
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="secondary" onClick={() => setShowModalPerfil(false)}>
+            <Button
+              variant="secondary"
+              onClick={() => setShowModalPerfil(false)}
+            >
               Cancelar
             </Button>
             <Button variant="primary">
@@ -869,62 +1023,146 @@ const DashboardVeterinarioMarketing = () => {
         </Modal>
 
         {/* Modal de Nova Campanha */}
-        <Modal show={showModalCampanha} onHide={() => setShowModalCampanha(false)} size="lg" centered>
+        <Modal
+          show={showModalCampanha}
+          onHide={() => setShowModalCampanha(false)}
+          size="lg"
+          centered
+        >
           <Modal.Header closeButton>
             <Modal.Title>Nova Campanha de Marketing</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <Form>
+            <Form noValidate validated={validatedCampanha}>
               <Row className="g-3">
                 <Col md={12}>
                   <Form.Group>
-                    <Form.Label>Nome da Campanha</Form.Label>
-                    <Form.Control type="text" placeholder="Ex: Campanha de Vacinação 2024" />
+                    <Form.Label>Nome da Campanha *</Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder="Ex: Campanha de Vacinação 2024"
+                      value={novaCampanha.nome}
+                      onChange={(e) =>
+                        setNovaCampanha({
+                          ...novaCampanha,
+                          nome: e.target.value,
+                        })
+                      }
+                      required
+                      isInvalid={!!errorsCampanha.nome}
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {errorsCampanha.nome}
+                    </Form.Control.Feedback>
                   </Form.Group>
                 </Col>
                 <Col md={6}>
                   <Form.Group>
-                    <Form.Label>Tipo</Form.Label>
-                    <Form.Select>
-                      <option>Promoção</option>
-                      <option>Desconto</option>
-                      <option>Evento</option>
-                      <option>Educativo</option>
+                    <Form.Label>Tipo *</Form.Label>
+                    <Form.Select
+                      value={novaCampanha.tipo}
+                      onChange={(e) =>
+                        setNovaCampanha({
+                          ...novaCampanha,
+                          tipo: e.target.value,
+                        })
+                      }
+                      required
+                      isInvalid={!!errorsCampanha.tipo}
+                    >
+                      <option value="">Selecione o tipo</option>
+                      <option value="promocao">Promoção</option>
+                      <option value="desconto">Desconto</option>
+                      <option value="evento">Evento</option>
+                      <option value="educativo">Educativo</option>
                     </Form.Select>
+                    <Form.Control.Feedback type="invalid">
+                      {errorsCampanha.tipo}
+                    </Form.Control.Feedback>
                   </Form.Group>
                 </Col>
                 <Col md={6}>
                   <Form.Group>
-                    <Form.Label>Orçamento</Form.Label>
-                    <Form.Control type="number" placeholder="0.00" />
+                    <Form.Label>Orçamento (R$)</Form.Label>
+                    <Form.Control
+                      type="number"
+                      placeholder="0.00"
+                      value={novaCampanha.orcamento}
+                      onChange={(e) =>
+                        setNovaCampanha({
+                          ...novaCampanha,
+                          orcamento: e.target.value,
+                        })
+                      }
+                      step="0.01"
+                      min="0"
+                    />
                   </Form.Group>
                 </Col>
                 <Col md={6}>
                   <Form.Group>
-                    <Form.Label>Data de Início</Form.Label>
-                    <Form.Control type="date" />
+                    <Form.Label>Data de Início *</Form.Label>
+                    <Form.Control
+                      type="date"
+                      value={novaCampanha.dataInicio}
+                      onChange={(e) =>
+                        setNovaCampanha({
+                          ...novaCampanha,
+                          dataInicio: e.target.value,
+                        })
+                      }
+                      required
+                      isInvalid={!!errorsCampanha.dataInicio}
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {errorsCampanha.dataInicio}
+                    </Form.Control.Feedback>
                   </Form.Group>
                 </Col>
                 <Col md={6}>
                   <Form.Group>
                     <Form.Label>Data de Fim</Form.Label>
-                    <Form.Control type="date" />
+                    <Form.Control
+                      type="date"
+                      value={novaCampanha.dataFim}
+                      onChange={(e) =>
+                        setNovaCampanha({
+                          ...novaCampanha,
+                          dataFim: e.target.value,
+                        })
+                      }
+                      min={novaCampanha.dataInicio}
+                    />
                   </Form.Group>
                 </Col>
                 <Col md={12}>
                   <Form.Group>
                     <Form.Label>Descrição</Form.Label>
-                    <Form.Control as="textarea" rows={4} placeholder="Descreva a campanha..." />
+                    <Form.Control
+                      as="textarea"
+                      rows={4}
+                      placeholder="Descreva a campanha..."
+                      value={novaCampanha.descricao}
+                      onChange={(e) =>
+                        setNovaCampanha({
+                          ...novaCampanha,
+                          descricao: e.target.value,
+                        })
+                      }
+                    />
                   </Form.Group>
                 </Col>
               </Row>
             </Form>
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="secondary" onClick={() => setShowModalCampanha(false)}>
+            <Button
+              variant="secondary"
+              onClick={() => setShowModalCampanha(false)}
+            >
               Cancelar
             </Button>
-            <Button variant="primary">
+            <Button variant="primary" onClick={handleSalvarCampanha}>
               <FaSave className="me-2" />
               Criar Campanha
             </Button>
@@ -932,7 +1170,12 @@ const DashboardVeterinarioMarketing = () => {
         </Modal>
 
         {/* Modal de Novo Post */}
-        <Modal show={showModalPost} onHide={() => setShowModalPost(false)} size="lg" centered>
+        <Modal
+          show={showModalPost}
+          onHide={() => setShowModalPost(false)}
+          size="lg"
+          centered
+        >
           <Modal.Header closeButton>
             <Modal.Title>Novo Post</Modal.Title>
           </Modal.Header>
@@ -942,7 +1185,10 @@ const DashboardVeterinarioMarketing = () => {
                 <Col md={12}>
                   <Form.Group>
                     <Form.Label>Título do Post</Form.Label>
-                    <Form.Control type="text" placeholder="Ex: Dicas para o verão" />
+                    <Form.Control
+                      type="text"
+                      placeholder="Ex: Dicas para o verão"
+                    />
                   </Form.Group>
                 </Col>
                 <Col md={6}>
@@ -965,7 +1211,11 @@ const DashboardVeterinarioMarketing = () => {
                 <Col md={12}>
                   <Form.Group>
                     <Form.Label>Conteúdo</Form.Label>
-                    <Form.Control as="textarea" rows={6} placeholder="Escreva o conteúdo do post..." />
+                    <Form.Control
+                      as="textarea"
+                      rows={6}
+                      placeholder="Escreva o conteúdo do post..."
+                    />
                   </Form.Group>
                 </Col>
                 <Col md={12}>
@@ -989,7 +1239,12 @@ const DashboardVeterinarioMarketing = () => {
         </Modal>
 
         {/* Modal de Redes Sociais */}
-        <Modal show={showModalRedesSociais} onHide={() => setShowModalRedesSociais(false)} size="lg" centered>
+        <Modal
+          show={showModalRedesSociais}
+          onHide={() => setShowModalRedesSociais(false)}
+          size="lg"
+          centered
+        >
           <Modal.Header closeButton>
             <Modal.Title>Configurar Redes Sociais</Modal.Title>
           </Modal.Header>
@@ -1016,14 +1271,21 @@ const DashboardVeterinarioMarketing = () => {
                 <Col md={12}>
                   <Form.Group>
                     <Form.Label>Descrição</Form.Label>
-                    <Form.Control as="textarea" rows={3} placeholder="Breve descrição da rede social..." />
+                    <Form.Control
+                      as="textarea"
+                      rows={3}
+                      placeholder="Breve descrição da rede social..."
+                    />
                   </Form.Group>
                 </Col>
               </Row>
             </Form>
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="secondary" onClick={() => setShowModalRedesSociais(false)}>
+            <Button
+              variant="secondary"
+              onClick={() => setShowModalRedesSociais(false)}
+            >
               Cancelar
             </Button>
             <Button variant="primary">
@@ -1034,7 +1296,12 @@ const DashboardVeterinarioMarketing = () => {
         </Modal>
 
         {/* Modal de Relatórios */}
-        <Modal show={showModalRelatorios} onHide={() => setShowModalRelatorios(false)} size="xl" centered>
+        <Modal
+          show={showModalRelatorios}
+          onHide={() => setShowModalRelatorios(false)}
+          size="xl"
+          centered
+        >
           <Modal.Header closeButton>
             <Modal.Title>Gerar Relatório</Modal.Title>
           </Modal.Header>
@@ -1106,7 +1373,10 @@ const DashboardVeterinarioMarketing = () => {
             </Form>
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="secondary" onClick={() => setShowModalRelatorios(false)}>
+            <Button
+              variant="secondary"
+              onClick={() => setShowModalRelatorios(false)}
+            >
               Cancelar
             </Button>
             <Button variant="primary">

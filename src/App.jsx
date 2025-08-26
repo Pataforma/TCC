@@ -100,6 +100,9 @@ const VeterinarioPerfil = lazy(() =>
 const ProntuarioPage = lazy(() =>
   import("./features/vet-dashboard/pages/ProntuarioPage")
 );
+const ProntuariosPage = lazy(() =>
+  import("./features/vet-dashboard/pages/ProntuariosPage")
+);
 const EstoquePage = lazy(() =>
   import("./features/vet-dashboard/pages/EstoquePage")
 );
@@ -333,6 +336,14 @@ function App() {
               element={
                 <VeterinarioRoute>
                   <DashboardVeterinarioPacientes />
+                </VeterinarioRoute>
+              }
+            />
+            <Route
+              path="/dashboard/veterinario/prontuarios"
+              element={
+                <VeterinarioRoute>
+                  <ProntuariosPage />
                 </VeterinarioRoute>
               }
             />

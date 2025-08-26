@@ -74,23 +74,49 @@ const EstoquePage = () => {
   // Produtos vindos do banco
   const [produtos, setProdutos] = useState([]);
 
-  // Categorias disponíveis
+  // Estado para produtos com estoque baixo
+  const [produtosEstoqueBaixo, setProdutosEstoqueBaixo] = useState([]);
+
+  // Categorias disponíveis - baseadas no enum do banco
   const categorias = [
-    "Antibióticos",
-    "Vacinas",
-    "Alimentação",
-    "Material Médico",
-    "Medicamentos",
-    "Higiene",
-    "Acessórios",
+    "medicamentos",
+    "vacinas",
+    "antibioticos",
+    "material_medico",
+    "alimentacao",
+    "higiene",
+    "acessorios",
   ];
+
+  // Labels amigáveis para as categorias
+  const categoriasLabels = {
+    medicamentos: "Medicamentos",
+    vacinas: "Vacinas",
+    antibioticos: "Antibióticos",
+    material_medico: "Material Médico",
+    alimentacao: "Alimentação (Ração)",
+    higiene: "Higiene & Limpeza",
+    acessorios: "Acessórios & Brinquedos",
+  };
+
+  // Categorias que precisam de controle de lote
+  const categoriasComLote = [
+    "medicamentos",
+    "vacinas",
+    "antibioticos",
+    "alimentacao", // Ração também pode ter lote/validade
+  ];
+
+  // Função para verificar se categoria precisa de lote
+  const precisaLote = (categoria) => categoriasComLote.includes(categoria);
 
   // Funções de filtro e busca
   const filteredProducts = produtos.filter((product) => {
     const matchesSearch =
       product.produto.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.descricao.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.codigoBarras.includes(searchTerm);
+      (product.descricao &&
+        product.descricao.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (product.codigoBarras && product.codigoBarras.includes(searchTerm));
 
     const matchesCategory =
       filterCategory === "" || product.categoria === filterCategory;
@@ -109,18 +135,114 @@ const EstoquePage = () => {
   );
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
 
-  // Funções de manipulação
-  const handleAddProduct = () => {
-    // Calcular margem de lucro automaticamente
-    const custo = parseFloat(newProduct.precoCusto) || 0;
-    const venda = parseFloat(newProduct.precoVenda) || 0;
-    const margem = custo > 0 ? ((venda - custo) / custo) * 100 : 0;
+  // Funções de cálculo de preços
+  const calcularMargemLucro = (precoCusto, precoVenda) => {
+    const custo = parseFloat(precoCusto) || 0;
+    const venda = parseFloat(precoVenda) || 0;
+    return custo > 0 ? ((venda - custo) / custo) * 100 : 0;
+  };
+
+  const calcularPrecoVenda = (precoCusto, margemLucro) => {
+    const custo = parseFloat(precoCusto) || 0;
+    const margem = parseFloat(margemLucro) || 0;
+    return custo > 0 ? custo + custo * (margem / 100) : 0;
+  };
+
+  const calcularPrecoCusto = (precoVenda, margemLucro) => {
+    const venda = parseFloat(precoVenda) || 0;
+    const margem = parseFloat(margemLucro) || 0;
+    return margem > 0 ? venda / (1 + margem / 100) : 0;
+  };
+
+  // Funções de manipulação de campos
+  const handlePrecoCustoChange = (valor) => {
+    const precoCusto = valor;
+    const precoVenda = newProduct.precoVenda;
+    const margemLucro = calcularMargemLucro(precoCusto, precoVenda);
 
     setNewProduct({
       ...newProduct,
-      margemLucro: margem.toFixed(1),
+      precoCusto,
+      margemLucro: margemLucro.toFixed(1),
     });
+  };
 
+  const handlePrecoVendaChange = (valor) => {
+    const precoVenda = valor;
+    const precoCusto = newProduct.precoCusto;
+    const margemLucro = calcularMargemLucro(precoCusto, precoVenda);
+
+    setNewProduct({
+      ...newProduct,
+      precoVenda,
+      margemLucro: margemLucro.toFixed(1),
+    });
+  };
+
+  const handleMargemLucroChange = (valor) => {
+    const margemLucro = valor;
+    const precoCusto = newProduct.precoCusto;
+
+    if (precoCusto) {
+      const precoVenda = calcularPrecoVenda(precoCusto, margemLucro);
+      setNewProduct({
+        ...newProduct,
+        margemLucro,
+        precoVenda: precoVenda.toFixed(2),
+      });
+    } else {
+      setNewProduct({
+        ...newProduct,
+        margemLucro,
+      });
+    }
+  };
+
+  // Função para limpar campos de lote quando categoria muda
+  const handleCategoriaChange = (novaCategoria) => {
+    const novoProduct = {
+      ...newProduct,
+      categoria: novaCategoria,
+    };
+
+    // Se a nova categoria não precisa de lote, limpar os campos
+    if (!precisaLote(novaCategoria)) {
+      novoProduct.lote = {
+        numero: "",
+        validade: "",
+        quantidade: "",
+        precoCusto: "",
+      };
+    }
+
+    setNewProduct(novoProduct);
+  };
+
+  // Função para resetar formulário
+  const resetNewProduct = () => {
+    setNewProduct({
+      produto: "",
+      categoria: "",
+      descricao: "",
+      precoCusto: "",
+      precoVenda: "",
+      margemLucro: "",
+      estoqueMinimo: "",
+      unidade: "",
+      fornecedor: "",
+      codigoBarras: "",
+      lote: {
+        numero: "",
+        validade: "",
+        quantidade: "",
+        precoCusto: "",
+      },
+    });
+  };
+
+  // Funções de manipulação
+  const handleAddProduct = () => {
+    resetNewProduct();
     setShowAddModal(true);
   };
 
@@ -138,12 +260,15 @@ const EstoquePage = () => {
   const handleDeleteProduct = async (productId) => {
     if (!window.confirm("Tem certeza que deseja excluir este produto?")) return;
     try {
-      const { error } = await supabase.from('estoque_produtos').delete().eq('id', productId);
+      const { error } = await supabase
+        .from("produtos")
+        .delete()
+        .eq("id", productId);
       if (error) throw error;
-      // Remover localmente
-      setProdutos((prev) => prev.filter((p) => p.id !== productId));
+      // Recarregar produtos para atualizar alertas
+      await recarregarProdutos();
     } catch (error) {
-      alert('Erro ao excluir produto: ' + error.message);
+      alert("Erro ao excluir produto: " + error.message);
     }
   };
 
@@ -179,43 +304,163 @@ const EstoquePage = () => {
   };
 
   const { user } = useUser();
-  useEffect(() => {
-    const carregarProdutos = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('estoque_produtos')
-          .select('*')
-          .order('produto');
-        if (error) throw error;
-        // Mapear para o formato esperado pela UI existente
-        setProdutos(
-          (data || []).map((p) => ({
-            id: p.id,
-            produto: p.produto,
-            categoria: p.categoria,
-            descricao: p.descricao,
-            precoCusto: Number(p.preco_custo) || 0,
-            precoVenda: Number(p.preco_venda) || 0,
-            margemLucro: p.preco_custo ? (((p.preco_venda - p.preco_custo) / p.preco_custo) * 100).toFixed(1) : 0,
-            estoqueAtual: p.estoque_atual,
-            estoqueMinimo: p.estoque_minimo,
-            unidade: p.unidade,
-            fornecedor: p.fornecedor,
-            codigoBarras: p.codigo_barras,
-            status: p.status,
-            ultimaAtualizacao: p.ultima_atualizacao,
-            lotes: Array.isArray(p.lotes) ? p.lotes : [],
-          }))
-        );
-      } catch (error) {
-        console.error('Erro ao carregar estoque:', error);
-        setProdutos([]);
+
+  // Função para recarregar produtos e atualizar alertas
+  const recarregarProdutos = async () => {
+    try {
+      console.log("🔄 Recarregando produtos...");
+
+      if (!user) {
+        console.log("❌ recarregarProdutos - Usuário não encontrado");
+        return;
       }
-    };
-    carregarProdutos();
-  }, []);
+
+      console.log(
+        "🔍 recarregarProdutos - Buscando veterinário para usuário:",
+        user.id_usuario
+      );
+
+      // Buscar ID do veterinário
+      const { data: vetData, error: vetError } = await supabase
+        .from("veterinarios")
+        .select("id_veterinarios")
+        .eq("id_usuario", user.id_usuario)
+        .single();
+
+      if (vetError || !vetData) {
+        console.error("Erro ao buscar veterinário:", vetError);
+        return;
+      }
+
+      console.log("✅ recarregarProdutos - Veterinário encontrado:", vetData);
+      console.log(
+        "🆔 recarregarProdutos - ID do veterinário:",
+        vetData.id_veterinarios
+      );
+
+      // Simplificar a consulta - remover o JOIN complexo que estava causando erro 400
+      const { data, error } = await supabase
+        .from("produtos")
+        .select("*")
+        .eq("veterinario_id", vetData.id_veterinarios)
+        .order("nome_produto", { ascending: true });
+
+      if (error) {
+        console.error("❌ Erro ao buscar produtos:", error);
+        return;
+      }
+
+      console.log("✅ Produtos encontrados:", data);
+
+      const produtosMapeados = (data || []).map((p) => ({
+        id: p.id,
+        produto: p.nome_produto,
+        categoria: p.categoria,
+        descricao: p.descricao,
+        precoCusto: Number(p.preco_custo) || 0,
+        precoVenda: Number(p.preco_venda) || 0,
+        margemLucro: p.preco_custo
+          ? (((p.preco_venda - p.preco_custo) / p.preco_custo) * 100).toFixed(1)
+          : 0,
+        estoqueAtual: p.estoque_atual,
+        estoqueMinimo: p.estoque_minimo || 0,
+        unidade: p.unidade,
+        fornecedor: p.fornecedor_id ? "Fornecedor" : "Sem fornecedor", // Simplificado
+        codigoBarras: p.codigo_barras,
+        ultimaAtualizacao: p.ultima_atualizacao,
+        // Calcular status baseado no estoque
+        status:
+          p.estoque_atual === 0
+            ? "esgotado"
+            : p.estoque_atual < (p.estoque_minimo || 0)
+            ? "baixo"
+            : "disponivel",
+        lotes: [], // Por enquanto vazio, pode ser implementado depois
+      }));
+
+      setProdutos(produtosMapeados);
+
+      // Calcular produtos com estoque baixo
+      const produtosBaixoEstoque = produtosMapeados.filter(
+        (p) => p.estoqueAtual < p.estoqueMinimo
+      );
+      setProdutosEstoqueBaixo(produtosBaixoEstoque);
+    } catch (error) {
+      console.error("Erro ao recarregar estoque:", error);
+      setProdutos([]);
+      setProdutosEstoqueBaixo([]);
+    }
+  };
+
+  useEffect(() => {
+    // Log para debug - verificar se o usuário está carregado
+    console.log("EstoquePage - Usuário atual:", user);
+    console.log("EstoquePage - user.id_usuario:", user?.id_usuario);
+
+    if (user?.id_usuario) {
+      recarregarProdutos();
+      // Verificar estrutura da tabela
+      verificarEstruturaTabela();
+    } else {
+      console.log("EstoquePage - Usuário ainda não carregado, aguardando...");
+    }
+  }, [user]);
+
+  // Função para verificar a estrutura da tabela
+  const verificarEstruturaTabela = async () => {
+    try {
+      if (!user) return;
+
+      // Buscar ID do veterinário
+      const { data: vetData, error: vetError } = await supabase
+        .from("veterinarios")
+        .select("id_veterinarios")
+        .eq("id_usuario", user.id_usuario)
+        .single();
+
+      if (vetError || !vetData) {
+        console.error("Erro ao buscar veterinário:", vetError);
+        console.error("Dados do veterinário:", vetData);
+        return;
+      }
+
+      console.log(
+        "verificarEstruturaTabela - Veterinário encontrado:",
+        vetData
+      );
+      console.log(
+        "verificarEstruturaTabela - ID do veterinário:",
+        vetData.id_veterinarios
+      );
+
+      const { data, error } = await supabase
+        .from("produtos")
+        .select("*")
+        .eq("veterinario_id", vetData.id_veterinarios)
+        .limit(1);
+
+      if (error) {
+        console.error("Erro ao verificar tabela:", error);
+        if (error.code === "PGRST116") {
+          console.error("Tabela 'produtos' não encontrada!");
+          alert(
+            "Tabela 'produtos' não encontrada. Verifique se ela existe no banco de dados."
+          );
+        }
+      } else {
+        console.log("Estrutura da tabela verificada com sucesso");
+        console.log("Primeiro registro:", data);
+      }
+    } catch (error) {
+      console.error("Erro ao verificar estrutura da tabela:", error);
+    }
+  };
   return (
-    <DashboardLayout tipoUsuario="veterinario" nomeUsuario={user?.nome}>
+    <DashboardLayout
+      tipoUsuario="veterinario"
+      nomeUsuario={user?.nome}
+      estoqueBaixoCount={produtosEstoqueBaixo.length}
+    >
       <Container fluid className="py-4">
         {/* Header */}
         <Row className="mb-4">
@@ -238,20 +483,44 @@ const EstoquePage = () => {
           </Col>
         </Row>
 
-        {/* Alertas de Estoque Baixo */}
-        <Row className="mb-4">
-          <Col>
-            <Alert variant="warning" className="d-flex align-items-center">
-              <FaExclamationTriangle className="me-2" />
-              <div>
-                <strong>Atenção:</strong> 2 produtos com estoque baixo.{" "}
-                <Button variant="link" className="p-0 ms-1">
-                  Ver detalhes
-                </Button>
-              </div>
-            </Alert>
-          </Col>
-        </Row>
+        {/* Alertas de Estoque */}
+        {produtosEstoqueBaixo.length > 0 ? (
+          <Row className="mb-4">
+            <Col>
+              <Alert variant="warning" className="d-flex align-items-center">
+                <FaExclamationTriangle className="me-2" />
+                <div>
+                  <strong>Atenção:</strong> {produtosEstoqueBaixo.length}{" "}
+                  produto{produtosEstoqueBaixo.length > 1 ? "s" : ""} com
+                  estoque baixo.{" "}
+                  <Button
+                    variant="link"
+                    className="p-0 ms-1"
+                    onClick={() => {
+                      setFilterStatus("baixo");
+                      setSearchTerm("");
+                      setFilterCategory("");
+                    }}
+                  >
+                    Ver detalhes
+                  </Button>
+                </div>
+              </Alert>
+            </Col>
+          </Row>
+        ) : (
+          <Row className="mb-4">
+            <Col>
+              <Alert variant="success" className="d-flex align-items-center">
+                <FaCheckCircle className="me-2" />
+                <div>
+                  <strong>Ótimo!</strong> Todos os produtos estão com estoque
+                  adequado.
+                </div>
+              </Alert>
+            </Col>
+          </Row>
+        )}
 
         {/* Filtros e Busca */}
         <Row className="mb-4">
@@ -276,7 +545,7 @@ const EstoquePage = () => {
               <option value="">Todas as Categorias</option>
               {categorias.map((cat) => (
                 <option key={cat} value={cat}>
-                  {cat}
+                  {categoriasLabels[cat]}
                 </option>
               ))}
             </Form.Select>
@@ -347,7 +616,8 @@ const EstoquePage = () => {
                           </td>
                           <td>
                             <Badge bg="light" text="dark">
-                              {product.categoria}
+                              {categoriasLabels[product.categoria] ||
+                                product.categoria}
                             </Badge>
                           </td>
                           <td>
@@ -490,17 +760,12 @@ const EstoquePage = () => {
                     <Form.Label>Categoria *</Form.Label>
                     <Form.Select
                       value={newProduct.categoria}
-                      onChange={(e) =>
-                        setNewProduct({
-                          ...newProduct,
-                          categoria: e.target.value,
-                        })
-                      }
+                      onChange={(e) => handleCategoriaChange(e.target.value)}
                     >
                       <option value="">Selecione uma categoria</option>
                       {categorias.map((cat) => (
                         <option key={cat} value={cat}>
-                          {cat}
+                          {categoriasLabels[cat]}
                         </option>
                       ))}
                     </Form.Select>
@@ -531,12 +796,7 @@ const EstoquePage = () => {
                         type="number"
                         step="0.01"
                         value={newProduct.precoCusto}
-                        onChange={(e) =>
-                          setNewProduct({
-                            ...newProduct,
-                            precoCusto: e.target.value,
-                          })
-                        }
+                        onChange={(e) => handlePrecoCustoChange(e.target.value)}
                         placeholder="0,00"
                       />
                     </InputGroup>
@@ -551,12 +811,7 @@ const EstoquePage = () => {
                         type="number"
                         step="0.01"
                         value={newProduct.precoVenda}
-                        onChange={(e) =>
-                          setNewProduct({
-                            ...newProduct,
-                            precoVenda: e.target.value,
-                          })
-                        }
+                        onChange={(e) => handlePrecoVendaChange(e.target.value)}
                         placeholder="0,00"
                       />
                     </InputGroup>
@@ -564,16 +819,23 @@ const EstoquePage = () => {
                 </Col>
                 <Col md={4}>
                   <Form.Group className="mb-3">
-                    <Form.Label>Margem de Lucro</Form.Label>
+                    <Form.Label>Margem de Lucro *</Form.Label>
                     <InputGroup>
                       <Form.Control
-                        type="text"
+                        type="number"
+                        step="0.1"
                         value={newProduct.margemLucro}
-                        readOnly
-                        className="bg-light"
+                        onChange={(e) =>
+                          handleMargemLucroChange(e.target.value)
+                        }
+                        placeholder="0.0"
                       />
                       <InputGroup.Text>%</InputGroup.Text>
                     </InputGroup>
+                    <Form.Text className="text-muted">
+                      Alterar este valor recalculará o preço de venda
+                      automaticamente
+                    </Form.Text>
                   </Form.Group>
                 </Col>
               </Row>
@@ -648,143 +910,299 @@ const EstoquePage = () => {
                 </Col>
               </Row>
 
-              <hr />
+              {precisaLote(newProduct.categoria) && (
+                <>
+                  <hr />
+                  <h6 className="mb-3">
+                    <FaBox className="me-2" />
+                    Informações do Lote Inicial
+                  </h6>
+                  <Alert variant="info" className="mb-3">
+                    <small>
+                      <strong>Controle de lote obrigatório</strong> para{" "}
+                      {categoriasLabels[newProduct.categoria]}. Produtos como
+                      medicamentos, vacinas e antibióticos precisam de
+                      rastreabilidade completa por exigência sanitária.
+                    </small>
+                  </Alert>
+                </>
+              )}
+              {precisaLote(newProduct.categoria) && (
+                <>
+                  <Row>
+                    <Col md={6}>
+                      <Form.Group className="mb-3">
+                        <Form.Label>Número do Lote *</Form.Label>
+                        <Form.Control
+                          type="text"
+                          value={newProduct.lote.numero}
+                          onChange={(e) =>
+                            setNewProduct({
+                              ...newProduct,
+                              lote: {
+                                ...newProduct.lote,
+                                numero: e.target.value,
+                              },
+                            })
+                          }
+                          placeholder="Ex: LOT001, BATCH202401"
+                          required
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={6}>
+                      <Form.Group className="mb-3">
+                        <Form.Label>Data de Validade *</Form.Label>
+                        <Form.Control
+                          type="date"
+                          value={newProduct.lote.validade}
+                          onChange={(e) =>
+                            setNewProduct({
+                              ...newProduct,
+                              lote: {
+                                ...newProduct.lote,
+                                validade: e.target.value,
+                              },
+                            })
+                          }
+                          required
+                        />
+                      </Form.Group>
+                    </Col>
+                  </Row>
 
-              <h6 className="mb-3">Informações do Lote Inicial</h6>
-              <Row>
-                <Col md={6}>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Número do Lote</Form.Label>
-                    <Form.Control
-                      type="text"
-                      value={newProduct.lote.numero}
-                      onChange={(e) =>
-                        setNewProduct({
-                          ...newProduct,
-                          lote: { ...newProduct.lote, numero: e.target.value },
-                        })
-                      }
-                      placeholder="Ex: LOT001"
-                    />
-                  </Form.Group>
-                </Col>
-                <Col md={6}>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Data de Validade</Form.Label>
-                    <Form.Control
-                      type="date"
-                      value={newProduct.lote.validade}
-                      onChange={(e) =>
-                        setNewProduct({
-                          ...newProduct,
-                          lote: {
-                            ...newProduct.lote,
-                            validade: e.target.value,
-                          },
-                        })
-                      }
-                    />
-                  </Form.Group>
-                </Col>
-              </Row>
-
-              <Row>
-                <Col md={6}>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Quantidade</Form.Label>
-                    <Form.Control
-                      type="number"
-                      value={newProduct.lote.quantidade}
-                      onChange={(e) =>
-                        setNewProduct({
-                          ...newProduct,
-                          lote: {
-                            ...newProduct.lote,
-                            quantidade: e.target.value,
-                          },
-                        })
-                      }
-                      placeholder="0"
-                    />
-                  </Form.Group>
-                </Col>
-                <Col md={6}>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Preço de Custo do Lote</Form.Label>
-                    <InputGroup>
-                      <InputGroup.Text>R$</InputGroup.Text>
-                      <Form.Control
-                        type="number"
-                        step="0.01"
-                        value={newProduct.lote.precoCusto}
-                        onChange={(e) =>
-                          setNewProduct({
-                            ...newProduct,
-                            lote: {
-                              ...newProduct.lote,
-                              precoCusto: e.target.value,
-                            },
-                          })
-                        }
-                        placeholder="0,00"
-                      />
-                    </InputGroup>
-                  </Form.Group>
-                </Col>
-              </Row>
+                  <Row>
+                    <Col md={6}>
+                      <Form.Group className="mb-3">
+                        <Form.Label>Quantidade do Lote *</Form.Label>
+                        <Form.Control
+                          type="number"
+                          value={newProduct.lote.quantidade}
+                          onChange={(e) =>
+                            setNewProduct({
+                              ...newProduct,
+                              lote: {
+                                ...newProduct.lote,
+                                quantidade: e.target.value,
+                              },
+                            })
+                          }
+                          placeholder="0"
+                          required
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={6}>
+                      <Form.Group className="mb-3">
+                        <Form.Label>Preço de Custo do Lote</Form.Label>
+                        <InputGroup>
+                          <InputGroup.Text>R$</InputGroup.Text>
+                          <Form.Control
+                            type="number"
+                            step="0.01"
+                            value={newProduct.lote.precoCusto}
+                            onChange={(e) =>
+                              setNewProduct({
+                                ...newProduct,
+                                lote: {
+                                  ...newProduct.lote,
+                                  precoCusto: e.target.value,
+                                },
+                              })
+                            }
+                            placeholder="0,00"
+                          />
+                        </InputGroup>
+                        <Form.Text className="text-muted">
+                          Opcional - para controle de custo específico do lote
+                        </Form.Text>
+                      </Form.Group>
+                    </Col>
+                  </Row>
+                </>
+              )}
             </Form>
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="secondary" onClick={() => setShowAddModal(false)}>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                resetNewProduct();
+                setShowAddModal(false);
+              }}
+            >
               Cancelar
             </Button>
-            <Button variant="primary" onClick={async () => {
-              try {
-                const estoqueAtual = Number(newProduct.lote.quantidade) || 0;
-                const estoqueMin = Number(newProduct.estoqueMinimo) || 0;
-                const status = estoqueAtual === 0 ? 'esgotado' : (estoqueAtual < estoqueMin ? 'baixo' : 'disponivel');
-                const payload = {
-                  produto: newProduct.produto,
-                  categoria: newProduct.categoria,
-                  descricao: newProduct.descricao || null,
-                  preco_custo: newProduct.precoCusto === '' ? null : Number(newProduct.precoCusto),
-                  preco_venda: newProduct.precoVenda === '' ? null : Number(newProduct.precoVenda),
-                  estoque_minimo: estoqueMin,
-                  unidade: newProduct.unidade || null,
-                  fornecedor: newProduct.fornecedor || null,
-                  codigo_barras: newProduct.codigoBarras || null,
-                  estoque_atual: estoqueAtual,
-                  status,
-                  ultima_atualizacao: new Date().toISOString(),
-                };
-                const { data, error } = await supabase.from('estoque_produtos').insert(payload).select('id').single();
-                if (error) throw error;
-                setShowAddModal(false);
-                // Atualiza lista
-                setProdutos((prev) => [
-                  ...prev,
-                  {
-                    id: data.id,
-                    produto: payload.produto,
-                    categoria: payload.categoria,
-                    descricao: payload.descricao,
-                    precoCusto: payload.preco_custo,
-                    precoVenda: payload.preco_venda,
-                    margemLucro: payload.preco_custo ? (((payload.preco_venda - payload.preco_custo) / payload.preco_custo) * 100).toFixed(1) : 0,
-                    estoqueAtual: payload.estoque_atual,
-                    estoqueMinimo: payload.estoque_minimo,
-                    unidade: payload.unidade,
-                    fornecedor: payload.fornecedor,
-                    codigoBarras: payload.codigo_barras,
-                    status: payload.status,
-                    ultimaAtualizacao: payload.ultima_atualizacao,
-                    lotes: [],
-                  },
-                ]);
-              } catch (e) {
-                alert('Erro ao salvar produto: ' + e.message);
-              }
-            }}>
+            <Button
+              variant="primary"
+              onClick={async () => {
+                let payload; // Declarar payload no início para estar disponível no catch
+                try {
+                  // Validações básicas
+                  if (!newProduct.produto.trim()) {
+                    alert("Nome do produto é obrigatório");
+                    return;
+                  }
+                  if (!newProduct.categoria) {
+                    alert("Categoria é obrigatória");
+                    return;
+                  }
+                  if (!newProduct.precoCusto || !newProduct.precoVenda) {
+                    alert("Preço de custo e venda são obrigatórios");
+                    return;
+                  }
+                  if (
+                    !newProduct.margemLucro ||
+                    parseFloat(newProduct.margemLucro) < 0
+                  ) {
+                    alert("Margem de lucro deve ser maior que zero");
+                    return;
+                  }
+                  if (!newProduct.estoqueMinimo) {
+                    alert("Estoque mínimo é obrigatório");
+                    return;
+                  }
+
+                  // Validações específicas para produtos com lote
+                  if (precisaLote(newProduct.categoria)) {
+                    if (!newProduct.lote.numero.trim()) {
+                      alert(
+                        "Número do lote é obrigatório para " +
+                          newProduct.categoria
+                      );
+                      return;
+                    }
+                    if (!newProduct.lote.validade) {
+                      alert(
+                        "Data de validade é obrigatória para " +
+                          newProduct.categoria
+                      );
+                      return;
+                    }
+                    if (
+                      !newProduct.lote.quantidade ||
+                      Number(newProduct.lote.quantidade) <= 0
+                    ) {
+                      alert(
+                        "Quantidade do lote deve ser maior que zero para " +
+                          newProduct.categoria
+                      );
+                      return;
+                    }
+
+                    // Verificar se a data de validade não é passada
+                    const hoje = new Date();
+                    const dataValidade = new Date(newProduct.lote.validade);
+                    if (dataValidade <= hoje) {
+                      const confirmar = window.confirm(
+                        "A data de validade informada já passou ou é hoje. Deseja continuar mesmo assim?"
+                      );
+                      if (!confirmar) return;
+                    }
+                  }
+
+                  const estoqueAtual = Number(newProduct.lote.quantidade) || 0;
+                  const estoqueMin = Number(newProduct.estoqueMinimo) || 0;
+                  const status =
+                    estoqueAtual === 0
+                      ? "esgotado"
+                      : estoqueAtual < estoqueMin
+                      ? "baixo"
+                      : "disponivel";
+
+                  // Usar o usuário já obtido no topo do componente
+                  if (!user) {
+                    alert("Usuário não encontrado");
+                    return;
+                  }
+
+                  const { data: vetData, error: vetError } = await supabase
+                    .from("veterinarios")
+                    .select("id_veterinarios")
+                    .eq("id_usuario", user.id_usuario)
+                    .single();
+
+                  if (vetError || !vetData) {
+                    alert("Erro ao buscar veterinário");
+                    return;
+                  }
+
+                  // Payload correto para a tabela produtos
+                  payload = {
+                    veterinario_id: vetData.id_veterinarios,
+                    nome_produto: newProduct.produto.trim(),
+                    categoria: newProduct.categoria,
+                    descricao: newProduct.descricao.trim() || null,
+                    preco_custo: Number(newProduct.precoCusto),
+                    preco_venda: Number(newProduct.precoVenda),
+                    estoque_minimo: estoqueMin,
+                    estoque_atual: estoqueAtual,
+                    unidade: newProduct.unidade.trim() || null,
+                    codigo_barras: newProduct.codigoBarras.trim() || null,
+                  };
+
+                  // Verificar se há valores undefined ou null
+                  Object.keys(payload).forEach((key) => {
+                    if (payload[key] === undefined || payload[key] === null) {
+                      console.warn(
+                        `Campo ${key} tem valor problemático:`,
+                        payload[key]
+                      );
+                    }
+                  });
+
+                  // Log para debug
+                  console.log(
+                    "Payload final:",
+                    JSON.stringify(payload, null, 2)
+                  );
+                  console.log("Tentando inserir payload:", payload);
+
+                  // Inserir na tabela produtos
+                  const { error: insertError } = await supabase
+                    .from("produtos")
+                    .insert(payload);
+
+                  if (insertError) {
+                    console.error("Erro na inserção:", insertError);
+                    throw insertError;
+                  }
+
+                  console.log("Produto inserido com sucesso!");
+
+                  // Agora buscando o ID
+                  const { data, error: selectError } = await supabase
+                    .from("produtos")
+                    .select("id")
+                    .eq("nome_produto", payload.nome_produto)
+                    .eq("categoria", payload.categoria)
+                    .eq("veterinario_id", payload.veterinario_id)
+                    .single();
+
+                  if (selectError) {
+                    console.error("Erro ao buscar ID:", selectError);
+                    // Não vamos falhar aqui, apenas logar o erro
+                  }
+                  resetNewProduct();
+                  setShowAddModal(false);
+                  // Recarregar produtos para atualizar alertas
+                  await recarregarProdutos();
+                } catch (e) {
+                  console.error("Erro completo:", e);
+                  if (payload) {
+                    console.error("Payload enviado:", payload);
+                  } else {
+                    console.error(
+                      "Payload não foi definido - erro ocorreu antes da criação"
+                    );
+                  }
+                  alert(
+                    "Erro ao salvar produto: " +
+                      (e.message || e.details || "Erro desconhecido")
+                  );
+                }
+              }}
+            >
               <FaPlus className="me-2" />
               Adicionar Produto
             </Button>
@@ -813,7 +1231,12 @@ const EstoquePage = () => {
                       <Form.Control
                         type="text"
                         value={editProduct.produto}
-                        onChange={(e) => setEditProduct({ ...editProduct, produto: e.target.value })}
+                        onChange={(e) =>
+                          setEditProduct({
+                            ...editProduct,
+                            produto: e.target.value,
+                          })
+                        }
                       />
                     </Form.Group>
                   </Col>
@@ -822,7 +1245,12 @@ const EstoquePage = () => {
                       <Form.Label>Categoria *</Form.Label>
                       <Form.Select
                         value={editProduct.categoria}
-                        onChange={(e) => setEditProduct({ ...editProduct, categoria: e.target.value })}
+                        onChange={(e) =>
+                          setEditProduct({
+                            ...editProduct,
+                            categoria: e.target.value,
+                          })
+                        }
                       >
                         <option value="">Selecione uma categoria</option>
                         {categorias.map((cat) => (
@@ -841,7 +1269,12 @@ const EstoquePage = () => {
                     as="textarea"
                     rows={2}
                     value={editProduct.descricao}
-                    onChange={(e) => setEditProduct({ ...editProduct, descricao: e.target.value })}
+                    onChange={(e) =>
+                      setEditProduct({
+                        ...editProduct,
+                        descricao: e.target.value,
+                      })
+                    }
                   />
                 </Form.Group>
 
@@ -855,7 +1288,12 @@ const EstoquePage = () => {
                           type="number"
                           step="0.01"
                           value={editProduct.precoCusto}
-                          onChange={(e) => setEditProduct({ ...editProduct, precoCusto: e.target.value })}
+                          onChange={(e) =>
+                            setEditProduct({
+                              ...editProduct,
+                              precoCusto: e.target.value,
+                            })
+                          }
                         />
                       </InputGroup>
                     </Form.Group>
@@ -869,7 +1307,12 @@ const EstoquePage = () => {
                           type="number"
                           step="0.01"
                           value={editProduct.precoVenda}
-                          onChange={(e) => setEditProduct({ ...editProduct, precoVenda: e.target.value })}
+                          onChange={(e) =>
+                            setEditProduct({
+                              ...editProduct,
+                              precoVenda: e.target.value,
+                            })
+                          }
                         />
                       </InputGroup>
                     </Form.Group>
@@ -880,7 +1323,12 @@ const EstoquePage = () => {
                       <Form.Control
                         type="number"
                         value={editProduct.estoqueMinimo}
-                        onChange={(e) => setEditProduct({ ...editProduct, estoqueMinimo: e.target.value })}
+                        onChange={(e) =>
+                          setEditProduct({
+                            ...editProduct,
+                            estoqueMinimo: e.target.value,
+                          })
+                        }
                       />
                     </Form.Group>
                   </Col>
@@ -893,7 +1341,12 @@ const EstoquePage = () => {
                       <Form.Control
                         type="text"
                         value={editProduct.unidade}
-                        onChange={(e) => setEditProduct({ ...editProduct, unidade: e.target.value })}
+                        onChange={(e) =>
+                          setEditProduct({
+                            ...editProduct,
+                            unidade: e.target.value,
+                          })
+                        }
                       />
                     </Form.Group>
                   </Col>
@@ -903,7 +1356,12 @@ const EstoquePage = () => {
                       <Form.Control
                         type="text"
                         value={editProduct.fornecedor}
-                        onChange={(e) => setEditProduct({ ...editProduct, fornecedor: e.target.value })}
+                        onChange={(e) =>
+                          setEditProduct({
+                            ...editProduct,
+                            fornecedor: e.target.value,
+                          })
+                        }
                       />
                     </Form.Group>
                   </Col>
@@ -916,7 +1374,12 @@ const EstoquePage = () => {
                       <Form.Control
                         type="text"
                         value={editProduct.codigoBarras}
-                        onChange={(e) => setEditProduct({ ...editProduct, codigoBarras: e.target.value })}
+                        onChange={(e) =>
+                          setEditProduct({
+                            ...editProduct,
+                            codigoBarras: e.target.value,
+                          })
+                        }
                       />
                     </Form.Group>
                   </Col>
@@ -928,36 +1391,43 @@ const EstoquePage = () => {
             <Button variant="secondary" onClick={() => setShowEditModal(false)}>
               Cancelar
             </Button>
-            <Button variant="primary" onClick={async () => {
-              try {
-                const payload = {
-                  produto: editProduct.produto,
-                  categoria: editProduct.categoria,
-                  descricao: editProduct.descricao || null,
-                  preco_custo: editProduct.precoCusto === '' ? null : Number(editProduct.precoCusto),
-                  preco_venda: editProduct.precoVenda === '' ? null : Number(editProduct.precoVenda),
-                  estoque_minimo: editProduct.estoqueMinimo === '' ? 0 : Number(editProduct.estoqueMinimo),
-                  unidade: editProduct.unidade || null,
-                  fornecedor: editProduct.fornecedor || null,
-                  codigo_barras: editProduct.codigoBarras || null,
-                  ultima_atualizacao: new Date().toISOString(),
-                };
-                const { error } = await supabase
-                  .from('estoque_produtos')
-                  .update(payload)
-                  .eq('id', editProduct.id);
-                if (error) throw error;
-                setProdutos((prev) => prev.map((p) => p.id === editProduct.id ? {
-                  ...p,
-                  ...editProduct,
-                  ultimaAtualizacao: payload.ultima_atualizacao,
-                  margemLucro: payload.preco_custo ? (((payload.preco_venda - payload.preco_custo) / payload.preco_custo) * 100).toFixed(1) : 0,
-                } : p));
-                setShowEditModal(false);
-              } catch (e) {
-                alert('Erro ao atualizar produto: ' + e.message);
-              }
-            }}>
+            <Button
+              variant="primary"
+              onClick={async () => {
+                try {
+                  const payload = {
+                    nome_produto: editProduct.produto,
+                    categoria: editProduct.categoria,
+                    descricao: editProduct.descricao || null,
+                    preco_custo:
+                      editProduct.precoCusto === ""
+                        ? null
+                        : Number(editProduct.precoCusto),
+                    preco_venda:
+                      editProduct.precoVenda === ""
+                        ? null
+                        : Number(editProduct.precoVenda),
+                    estoque_minimo:
+                      editProduct.estoqueMinimo === ""
+                        ? 0
+                        : Number(editProduct.estoqueMinimo),
+                    unidade: editProduct.unidade || null,
+                    codigo_barras: editProduct.codigoBarras || null,
+                    ultima_atualizacao: new Date().toISOString(),
+                  };
+                  const { error } = await supabase
+                    .from("produtos")
+                    .update(payload)
+                    .eq("id", editProduct.id);
+                  if (error) throw error;
+                  setShowEditModal(false);
+                  // Recarregar produtos para atualizar alertas
+                  await recarregarProdutos();
+                } catch (e) {
+                  alert("Erro ao atualizar produto: " + e.message);
+                }
+              }}
+            >
               <FaEdit className="me-2" />
               Salvar Alterações
             </Button>

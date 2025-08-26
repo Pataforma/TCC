@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import styles from './EtapaInformacoesEmpresa.module.css';
+import React, { useState, useEffect } from "react";
+import { validarCNPJ } from "../../../../utils/validations";
+import styles from "./EtapaInformacoesEmpresa.module.css";
 
 export default function EtapaInformacoesEmpresa({ data, onUpdate, onNext }) {
   const [formData, setFormData] = useState({
-    nomeEmpresa: data?.nomeEmpresa || '',
-    cnpj: data?.cnpj || '',
-    logoEmpresa: data?.logoEmpresa || null
+    nomeEmpresa: data?.nomeEmpresa || "",
+    cnpj: data?.cnpj || "",
+    logoEmpresa: data?.logoEmpresa || null,
   });
 
   const [errors, setErrors] = useState({});
@@ -19,13 +20,16 @@ export default function EtapaInformacoesEmpresa({ data, onUpdate, onNext }) {
     const newErrors = {};
 
     if (!formData.nomeEmpresa.trim()) {
-      newErrors.nomeEmpresa = 'Nome da empresa é obrigatório';
+      newErrors.nomeEmpresa = "Nome da empresa é obrigatório";
     } else if (formData.nomeEmpresa.trim().length < 3) {
-      newErrors.nomeEmpresa = 'Nome deve ter pelo menos 3 caracteres';
+      newErrors.nomeEmpresa = "Nome deve ter pelo menos 3 caracteres";
     }
 
-    if (formData.cnpj && formData.cnpj.replace(/\D/g, '').length !== 14) {
-      newErrors.cnpj = 'CNPJ deve ter 14 dígitos';
+    if (formData.cnpj) {
+      const validacaoCNPJ = validarCNPJ(formData.cnpj);
+      if (!validacaoCNPJ.valido) {
+        newErrors.cnpj = validacaoCNPJ.erro;
+      }
     }
 
     setErrors(newErrors);
@@ -33,17 +37,17 @@ export default function EtapaInformacoesEmpresa({ data, onUpdate, onNext }) {
   };
 
   const handleInputChange = (field, value) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
   const handleCNPJChange = (value) => {
     // Máscara para CNPJ: XX.XXX.XXX/XXXX-XX
-    const cnpj = value.replace(/\D/g, '');
-    let maskedCNPJ = '';
-    
+    const cnpj = value.replace(/\D/g, "");
+    let maskedCNPJ = "";
+
     if (cnpj.length <= 2) {
       maskedCNPJ = cnpj;
     } else if (cnpj.length <= 5) {
@@ -51,12 +55,18 @@ export default function EtapaInformacoesEmpresa({ data, onUpdate, onNext }) {
     } else if (cnpj.length <= 8) {
       maskedCNPJ = `${cnpj.slice(0, 2)}.${cnpj.slice(2, 5)}.${cnpj.slice(5)}`;
     } else if (cnpj.length <= 12) {
-      maskedCNPJ = `${cnpj.slice(0, 2)}.${cnpj.slice(2, 5)}.${cnpj.slice(5, 8)}/${cnpj.slice(8)}`;
+      maskedCNPJ = `${cnpj.slice(0, 2)}.${cnpj.slice(2, 5)}.${cnpj.slice(
+        5,
+        8
+      )}/${cnpj.slice(8)}`;
     } else {
-      maskedCNPJ = `${cnpj.slice(0, 2)}.${cnpj.slice(2, 5)}.${cnpj.slice(5, 8)}/${cnpj.slice(8, 12)}-${cnpj.slice(12, 14)}`;
+      maskedCNPJ = `${cnpj.slice(0, 2)}.${cnpj.slice(2, 5)}.${cnpj.slice(
+        5,
+        8
+      )}/${cnpj.slice(8, 12)}-${cnpj.slice(12, 14)}`;
     }
 
-    handleInputChange('cnpj', maskedCNPJ);
+    handleInputChange("cnpj", maskedCNPJ);
   };
 
   const handleFileChange = (e) => {
@@ -64,9 +74,9 @@ export default function EtapaInformacoesEmpresa({ data, onUpdate, onNext }) {
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
-          logoEmpresa: e.target.result
+          logoEmpresa: e.target.result,
         }));
       };
       reader.readAsDataURL(file);
@@ -89,58 +99,48 @@ export default function EtapaInformacoesEmpresa({ data, onUpdate, onNext }) {
 
       <form className={styles.form} onSubmit={(e) => e.preventDefault()}>
         <div className={styles.field}>
-          <label className={styles.label}>
-            Nome do Negócio/Empresa *
-          </label>
+          <label className={styles.label}>Nome do Negócio/Empresa *</label>
           <input
             type="text"
-            className={`${styles.input} ${errors.nomeEmpresa ? styles.error : ''}`}
+            className={`${styles.input} ${
+              errors.nomeEmpresa ? styles.error : ""
+            }`}
             value={formData.nomeEmpresa}
-            onChange={(e) => handleInputChange('nomeEmpresa', e.target.value)}
+            onChange={(e) => handleInputChange("nomeEmpresa", e.target.value)}
             placeholder="Digite o nome da sua empresa"
           />
           {errors.nomeEmpresa && (
-            <div className={styles.errorText}>
-              {errors.nomeEmpresa}
-            </div>
+            <div className={styles.errorText}>{errors.nomeEmpresa}</div>
           )}
         </div>
 
         <div className={styles.field}>
-          <label className={styles.label}>
-            CNPJ (Opcional)
-          </label>
+          <label className={styles.label}>CNPJ (Opcional)</label>
           <input
             type="text"
-            className={`${styles.input} ${errors.cnpj ? styles.error : ''}`}
+            className={`${styles.input} ${errors.cnpj ? styles.error : ""}`}
             value={formData.cnpj}
             onChange={(e) => handleCNPJChange(e.target.value)}
             placeholder="00.000.000/0000-00"
             maxLength={18}
           />
-          {errors.cnpj && (
-            <div className={styles.errorText}>
-              {errors.cnpj}
-            </div>
-          )}
+          {errors.cnpj && <div className={styles.errorText}>{errors.cnpj}</div>}
         </div>
 
         <div className={styles.field}>
-          <label className={styles.label}>
-            Logo da Empresa (Opcional)
-          </label>
+          <label className={styles.label}>Logo da Empresa (Opcional)</label>
           <div className={styles.uploadArea}>
             {formData.logoEmpresa ? (
               <div className={styles.previewContainer}>
-                <img 
-                  src={formData.logoEmpresa} 
-                  alt="Logo Preview" 
+                <img
+                  src={formData.logoEmpresa}
+                  alt="Logo Preview"
                   className={styles.preview}
                 />
                 <button
                   type="button"
                   className={styles.removeButton}
-                  onClick={() => handleInputChange('logoEmpresa', null)}
+                  onClick={() => handleInputChange("logoEmpresa", null)}
                 >
                   ✕
                 </button>
@@ -178,4 +178,4 @@ export default function EtapaInformacoesEmpresa({ data, onUpdate, onNext }) {
       </form>
     </div>
   );
-} 
+}

@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Form, Button, Card, Row, Col } from "react-bootstrap";
 import { FaStore, FaMapMarkerAlt, FaPhone, FaShieldAlt } from "react-icons/fa";
+import {
+  validarCNPJ,
+  validarEmail,
+  validarTelefone,
+  validarCEP,
+} from "../../../../utils/validations";
 import styles from "./EtapaIdentificacao.module.css";
 
 export default function EtapaIdentificacao({ data, onUpdate, onNext, onBack }) {
@@ -52,14 +58,20 @@ export default function EtapaIdentificacao({ data, onUpdate, onNext, onBack }) {
 
     if (!formData.telefone.trim()) {
       newErrors.telefone = "Telefone/WhatsApp é obrigatório";
-    } else if (formData.telefone.replace(/\D/g, "").length < 10) {
-      newErrors.telefone = "Telefone deve ter pelo menos 10 dígitos";
+    } else {
+      const validacaoTelefone = validarTelefone(formData.telefone);
+      if (!validacaoTelefone.valido) {
+        newErrors.telefone = validacaoTelefone.erro;
+      }
     }
 
     if (!formData.cnpj.trim()) {
       newErrors.cnpj = "CNPJ é obrigatório";
-    } else if (formData.cnpj.replace(/\D/g, "").length !== 14) {
-      newErrors.cnpj = "CNPJ deve ter 14 dígitos";
+    } else {
+      const validacaoCNPJ = validarCNPJ(formData.cnpj);
+      if (!validacaoCNPJ.valido) {
+        newErrors.cnpj = validacaoCNPJ.erro;
+      }
     }
 
     if (!formData.descricao.trim()) {
