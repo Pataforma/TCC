@@ -1,0 +1,44 @@
+.statCard {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    background: white;
+    height: 100%;
+}
+
+.statCard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.statCard .card-body {
+    padding: 1.5rem;
+}
+
+.statCard h3 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.statCard small {
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .statCard .card-body {
+        padding: 1rem;
+    }
+
+    .statCard h3 {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .statCard {
+        margin-bottom: 1rem;
+    }
+}

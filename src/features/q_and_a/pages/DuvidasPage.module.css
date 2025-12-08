@@ -1,0 +1,8 @@
+/* Background para a seção hero */
+.duvidas-bg {
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+        url('../assets/imgs/veterinarios-bg.jpg') center/cover no-repeat;
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+}

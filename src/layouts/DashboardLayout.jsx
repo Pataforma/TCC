@@ -1,0 +1,398 @@
+import React, { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import logo from "../assets/imgs/logo.png";
+import HeaderActions from "../components/ui/HeaderActions";
+import ProfileSwitcher from "../components/ProfileSwitcher";
+import { useUser } from "../contexts/UserContext";
+import {
+  FaBars,
+  FaTimes,
+  FaHome,
+  FaUser,
+  FaPaw,
+  FaPlus,
+  FaList,
+  FaCalendarAlt,
+  FaUsers,
+  FaChartBar,
+  FaMoneyBill,
+  FaBullhorn,
+  FaStore,
+  FaHeart,
+  FaCog,
+  FaSignOutAlt,
+  FaArrowLeft,
+  FaBox,
+  FaFileMedical,
+  FaBell,
+  FaComments,
+  FaSyringe,
+  FaMapMarkerAlt,
+} from "react-icons/fa";
+
+const DashboardLayout = ({
+  children,
+  tipoUsuario,
+  nomeUsuario,
+  estoqueBaixoCount = 0,
+}) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { user } = useUser();
+
+  // Preferir dados do contexto (banco) sobre props hardcoded
+  const currentTipo = user?.tipo_usuario || tipoUsuario;
+  const currentNome = user?.nome || nomeUsuario;
+
+  // Menus dinâmicos por tipo de usuário (removido "Meu Perfil" da sidebar)
+  const menus = {
+    veterinario: [
+      { label: "Dashboard", to: "/dashboard/veterinario", icon: FaHome },
+      {
+        label: "Agenda",
+        to: "/dashboard/veterinario/agenda",
+        icon: FaCalendarAlt,
+      },
+      {
+        label: "Solicitações",
+        to: "/dashboard/veterinario/solicitacoes",
+        icon: FaBell,
+      },
+      {
+        label: "Pacientes",
+        to: "/dashboard/veterinario/pacientes",
+        icon: FaUsers,
+      },
+      {
+        label: "Prontuários",
+        to: "/dashboard/veterinario/prontuarios",
+        icon: FaFileMedical,
+      },
+      {
+        label: "Estoque",
+        to: "/dashboard/veterinario/estoque",
+        icon: FaBox,
+        badge: estoqueBaixoCount > 0 ? estoqueBaixoCount.toString() : null,
+        badgeVariant: "warning",
+      },
+      {
+        label: "Financeiro",
+        to: "/dashboard/veterinario/financeiro",
+        icon: FaMoneyBill,
+      },
+      {
+        label: "Marketing",
+        to: "/dashboard/veterinario/marketing",
+        icon: FaBullhorn,
+      },
+      {
+        label: "Chat",
+        to: "/dashboard/veterinario/chat",
+        icon: FaComments,
+      },
+      {
+        label: "Notificações",
+        to: "/dashboard/veterinario/notificacoes",
+        icon: FaBell,
+      },
+    ],
+    tutor: [
+      { label: "Dashboard", to: "/dashboard/tutor", icon: FaHome },
+      { label: "Meus Pets", to: "/dashboard/tutor/meus-pets", icon: FaPaw },
+      {
+        label: "Agendamentos",
+        to: "/dashboard/tutor/agendamentos",
+        icon: FaCalendarAlt,
+      },
+      { label: "Vacinas", to: "/dashboard/tutor/vacinas", icon: FaSyringe },
+      {
+        label: "Financeiro",
+        to: "/dashboard/tutor/financeiro",
+        icon: FaMoneyBill,
+      },
+      {
+        label: "Serviços Locais",
+        to: "/dashboard/tutor/servicos",
+        icon: FaMapMarkerAlt,
+      },
+      {
+        label: "Mensagens",
+        to: "/dashboard/tutor/mensagens",
+        icon: FaComments,
+      },
+      {
+        label: "Pet Perdido",
+        to: "/dashboard/tutor/pet-perdido",
+        icon: FaPlus,
+      },
+      { label: "Adoção", to: "/dashboard/tutor/adocao", icon: FaHeart },
+    ],
+    anunciante: [
+      { label: "Dashboard", to: "/dashboard/anunciante", icon: FaHome },
+      {
+        label: "Meus Eventos",
+        to: "/dashboard/anunciante/meus-eventos",
+        icon: FaCalendarAlt,
+      },
+      {
+        label: "Criar Campanha",
+        to: "/dashboard/anunciante/criar-campanha",
+        icon: FaPlus,
+      },
+      {
+        label: "Gestão de Campanhas",
+        to: "/dashboard/anunciante/gestao-campanhas",
+        icon: FaBullhorn,
+      },
+      {
+        label: "Orçamento",
+        to: "/dashboard/anunciante/orcamento-duracao",
+        icon: FaMoneyBill,
+      },
+      {
+        label: "Financeiro",
+        to: "/dashboard/anunciante/financeiro",
+        icon: FaMoneyBill,
+      },
+    ],
+    parceiro: [
+      { label: "Dashboard", to: "/dashboard/parceiro", icon: FaHome },
+      {
+        label: "Meu Perfil Público",
+        to: "/dashboard/parceiro/perfil",
+        icon: FaUser,
+      },
+      {
+        label: "Meus Serviços",
+        to: "/dashboard/parceiro/servicos",
+        icon: FaList,
+      },
+      {
+        label: "Meus Produtos",
+        to: "/dashboard/parceiro/produtos",
+        icon: FaStore,
+      },
+      {
+        label: "Avaliações",
+        to: "/dashboard/parceiro/avaliacoes",
+        icon: FaChartBar,
+      },
+      {
+        label: "Financeiro",
+        to: "/dashboard/parceiro/financeiro",
+        icon: FaMoneyBill,
+      },
+    ],
+  };
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
+
+  const closeSidebar = () => {
+    setSidebarOpen(false);
+  };
+
+  const isActiveRoute = (route) => {
+    // Verifica se a rota atual é exatamente igual ou se é uma sub-rota
+    if (location.pathname === route) return true;
+
+    // Para rotas específicas que podem ter parâmetros
+    if (route === "/patients/:id" && location.pathname.startsWith("/patients/"))
+      return true;
+    if (
+      route === "/dashboard/veterinario/prontuario/:id" &&
+      location.pathname.startsWith("/dashboard/veterinario/prontuario/")
+    )
+      return true;
+
+    return false;
+  };
+
+  return (
+    <div className="d-flex min-vh-100">
+      {/* Sidebar Desktop */}
+      <nav
+        className="d-none d-lg-flex flex-column position-fixed top-0 start-0 h-100 bg-white shadow-sm"
+        style={{
+          width: 280,
+          zIndex: 1040,
+          borderRight: "1px solid #e9ecef",
+        }}
+      >
+        {/* Logo e Header do Sidebar */}
+        <div className="p-4 border-bottom">
+          <div className="d-flex align-items-center gap-3">
+            <img
+              src={logo}
+              alt="Logo"
+              style={{ height: 40, borderRadius: 8 }}
+            />
+            <span className="fw-bold fs-5 text-main">Pataforma</span>
+          </div>
+        </div>
+
+        {/* Menu de Navegação */}
+        <div className="flex-grow-1 p-3">
+          <div className="d-flex flex-column gap-2">
+            {menus[currentTipo]?.map((item, idx) => {
+              const active = isActiveRoute(item.to);
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.to}
+                  className={`btn d-flex align-items-center gap-3 px-3 py-3 rounded-3 border-0 text-start w-100 ${
+                    active
+                      ? "bg-main text-white shadow-sm"
+                      : "bg-transparent text-dark hover-bg-light"
+                  }`}
+                  style={{
+                    fontSize: 15,
+                    fontWeight: active ? 600 : 500,
+                    transition: "all 0.2s ease",
+                  }}
+                  onClick={() => navigate(item.to)}
+                  title={item.label}
+                  aria-label={`Navegar para ${item.label}`}
+                >
+                  <Icon size={18} />
+                  <span className="flex-grow-1">{item.label}</span>
+                  {item.badge && (
+                    <span
+                      className={`badge rounded-pill ${
+                        item.badgeVariant === "warning"
+                          ? "bg-warning text-dark"
+                          : item.badgeVariant === "danger"
+                          ? "bg-danger"
+                          : "bg-primary"
+                      }`}
+                      style={{ fontSize: "10px" }}
+                    >
+                      {item.badge}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </nav>
+
+      {/* Sidebar Mobile */}
+      <nav
+        className={`d-lg-none position-fixed top-0 start-0 h-100 bg-white shadow-lg`}
+        style={{
+          width: 280,
+          zIndex: 2000,
+          transform: sidebarOpen ? "translateX(0)" : "translateX(-100%)",
+          transition: "transform 0.3s ease-in-out",
+        }}
+      >
+        {/* Header Mobile */}
+        <div className="p-4 border-bottom d-flex justify-content-between align-items-center">
+          <div className="d-flex align-items-center gap-3">
+            <img
+              src={logo}
+              alt="Logo"
+              style={{ height: 35, borderRadius: 8 }}
+            />
+            <span className="fw-bold fs-6 text-main">Pataforma</span>
+          </div>
+          <button
+            className="btn btn-link text-muted p-0"
+            onClick={closeSidebar}
+            aria-label="Fechar menu lateral"
+          >
+            <FaTimes size={20} />
+          </button>
+        </div>
+
+        {/* Menu Mobile */}
+        <div className="flex-grow-1 p-3">
+          <div className="d-flex flex-column gap-2">
+            {menus[currentTipo]?.map((item, idx) => {
+              const active = isActiveRoute(item.to);
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.to}
+                  className={`btn d-flex align-items-center gap-3 px-3 py-3 rounded-3 border-0 text-start w-100 ${
+                    active
+                      ? "bg-main text-white shadow-sm"
+                      : "bg-transparent text-dark"
+                  }`}
+                  style={{
+                    fontSize: 15,
+                    fontWeight: active ? 600 : 500,
+                  }}
+                  onClick={() => {
+                    navigate(item.to);
+                    closeSidebar();
+                  }}
+                >
+                  <Icon size={18} />
+                  {item.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </nav>
+
+      {/* Overlay Mobile */}
+      {sidebarOpen && (
+        <div
+          className="d-lg-none position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50"
+          style={{ zIndex: 1999 }}
+          onClick={closeSidebar}
+        />
+      )}
+
+      {/* Conteúdo principal */}
+      <div
+        className="flex-grow-1"
+        style={{ marginLeft: 280, minHeight: "100vh" }}
+      >
+        {/* Header Principal */}
+        <header
+          className="d-flex align-items-center justify-content-between p-3 bg-white shadow-sm sticky-top"
+          style={{ zIndex: 1050 }}
+        >
+          {/* Lado esquerdo - Botão menu mobile e título */}
+          <div className="d-flex align-items-center gap-3">
+            <button
+              className="btn btn-outline-secondary d-lg-none d-flex align-items-center gap-2"
+              onClick={toggleSidebar}
+              style={{ fontSize: 15 }}
+              aria-label="Abrir menu lateral"
+            >
+              <FaBars />
+            </button>
+
+            <button
+              className="btn btn-outline-secondary d-none d-lg-flex align-items-center gap-2"
+              onClick={() => navigate("/tipo-usuario")}
+              style={{ fontSize: 15 }}
+            >
+              <FaArrowLeft /> Voltar para escolha de perfil
+            </button>
+
+            <span className="fw-bold d-lg-none">Pataforma</span>
+          </div>
+
+          {/* Lado direito - Ações do header */}
+          <div className="d-flex align-items-center gap-3">
+            <ProfileSwitcher />
+            <HeaderActions tipoUsuario={currentTipo} nomeUsuario={currentNome} />
+          </div>
+        </header>
+
+        {/* Conteúdo da página */}
+        <main className="p-4">{children}</main>
+      </div>
+    </div>
+  );
+};
+
+export default DashboardLayout;

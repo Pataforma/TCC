@@ -1,0 +1,911 @@
+/* ===== VARIÁVEIS CSS ===== */
+
+:root {
+  --main-color: #0DB2AC;
+  --secondary-color: #FABA32;
+  --bg-button: #089691;
+  --elements-color: #fa745a;
+  /* Cores com melhor contraste para acessibilidade */
+  --text-dark: #2c3e50;
+  --text-light: #ffffff;
+  --text-muted: #6c757d;
+  --bg-light: #f8f9fa;
+  --border-color: #dee2e6;
+}
+
+/* ===== ESTILOS GLOBAIS ===== */
+
+body {
+  font-family: 'Inter', 'Roboto', sans-serif;
+  overflow-x: hidden;
+}
+
+.text-bold {
+  font-weight: bold;
+}
+
+.custom-btn {
+  background-color: var(--secondary-color);
+  border-bottom: 3px solid var(--bg-button);
+  font-size: 20px;
+}
+
+.custom-btn:hover {
+  background-color: var(--elements-color);
+  border-bottom: 3px solid var(--main-color);
+}
+
+.bg-main {
+  background-color: var(--main-color);
+}
+
+.bg-elements {
+  background-color: var(--elements-color);
+}
+
+.bg-button {
+  background-color: var(--bg-button);
+}
+
+.text-elements {
+  color: var(--main-color);
+}
+
+.text-secondary {
+  color: var(--secondary-color);
+}
+
+/* Melhorias de acessibilidade para contraste */
+.text-dark {
+  color: var(--text-dark) !important;
+}
+
+.text-light {
+  color: var(--text-light) !important;
+}
+
+.text-muted {
+  color: var(--text-muted) !important;
+}
+
+/* Botões com melhor contraste */
+.btn-primary {
+  background-color: var(--main-color);
+  border-color: var(--main-color);
+  color: var(--text-light);
+}
+
+.btn-primary:hover {
+  background-color: var(--bg-button);
+  border-color: var(--bg-button);
+  color: var(--text-light);
+}
+
+.btn-secondary {
+  background-color: var(--secondary-color);
+  border-color: var(--secondary-color);
+  color: var(--text-dark);
+}
+
+.btn-secondary:hover {
+  background-color: #e6a91a;
+  border-color: #e6a91a;
+  color: var(--text-dark);
+}
+
+/* Dashboard Styles */
+.hover-lift {
+  transition: all 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* Custom scrollbar for dashboard */
+.dashboard-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dashboard-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.dashboard-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--main-color);
+  border-radius: 3px;
+}
+
+.dashboard-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--bg-button);
+}
+
+/* Animation classes */
+
+/* Card hover effects */
+.card-hover {
+  transition: all 0.2s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Status badges */
+.badge-custom {
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.5rem;
+}
+
+/* Button styles */
+.btn-custom {
+  border-radius: 0.75rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn-custom:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Table styles */
+.table-custom th {
+  font-weight: 600;
+  color: #495057;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.table-custom td {
+  vertical-align: middle;
+}
+
+/* Modal styles */
+.modal-custom .modal-header {
+  border-bottom: 1px solid #e9ecef;
+  padding: 1.5rem;
+}
+
+/* Modal de Comentários estilo Instagram */
+.modal-comentarios .modal-dialog {
+  max-width: 900px;
+  margin: 1.75rem auto;
+}
+
+.modal-comentarios .modal-content {
+  border-radius: 4px;
+  overflow: hidden;
+  border: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.modal-custom .modal-footer {
+  border-top: 1px solid #e9ecef;
+  padding: 1.5rem;
+}
+
+/* Form styles */
+.form-control-custom {
+  border-radius: 0.5rem;
+  border: 1px solid #dee2e6;
+  transition: all 0.2s ease;
+}
+
+.form-control-custom:focus {
+  border-color: var(--main-color);
+  box-shadow: 0 0 0 0.2rem rgba(13, 178, 172, 0.25);
+}
+
+/* Nav tabs custom */
+.nav-tabs-custom .nav-link {
+  border: none;
+  border-radius: 0.5rem;
+  margin-right: 0.5rem;
+  font-weight: 500;
+  color: #6c757d;
+  transition: all 0.2s ease;
+}
+
+.nav-tabs-custom .nav-link:hover {
+  color: var(--main-color);
+  background-color: rgba(13, 178, 172, 0.1);
+}
+
+.nav-tabs-custom .nav-link.active {
+  background-color: var(--main-color);
+  color: white;
+}
+
+#bg-pata {
+  position: absolute;
+  z-index: -1;
+  height: 450px;
+  opacity: 0.3;
+  rotate: 15deg;
+}
+
+@media (max-width: 768px) {
+  #bg-pata {
+    height: 300px;
+  }
+}
+
+.logo {
+  width: 4rem;
+}
+
+@media (max-width: 576px) {
+  .logo {
+    width: 3rem;
+  }
+}
+
+.intro-dog {
+  position: relative;
+  z-index: 1;
+  /* Garante que a imagem do cachorro fique abaixo do header */
+  margin-top: -50px;
+  /* Ajuste para subir a imagem do cachorro para não cobrir o header */
+}
+
+.header {
+  z-index: 1000;
+  /* Garante que o header tenha um z-index maior que o da imagem */
+  position: absolute;
+  width: 100%;
+  top: 0;
+  left: 0;
+  box-shadow: 0 0 12px 4px rgba(0, 0, 0, 0.6);
+}
+
+.text-hover-header {
+  color: white;
+}
+
+.text-hover-header:hover {
+  color: var(--elements-color);
+  transition: ease 150ms;
+}
+
+.espacamento-header {
+  padding-top: 9rem;
+  padding-bottom: 6rem;
+}
+
+@media (max-width: 768px) {
+  .espacamento-header {
+    padding-top: 7rem;
+    padding-bottom: 4rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .espacamento-header {
+    padding-top: 6rem;
+    padding-bottom: 3rem;
+  }
+}
+
+/* Estilo geral da seção do carrossel */
+.carrossel-section {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  position: relative;
+  padding: 2rem 0;
+}
+
+/* Título com cor da paleta */
+.carrossel-section h3 {
+  color: var(--elements-color);
+  font-weight: bold;
+  margin-bottom: 2rem;
+}
+
+/* Grupo de imagens do carrossel */
+.carousel-img-group {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem 0;
+  position: relative;
+}
+
+@media (max-width: 768px) {
+  .carousel-img-group {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+/* Imagens */
+.carousel-img-group img {
+  width: 300px;
+  height: 300px;
+  border-radius: 10px;
+  object-fit: cover;
+  box-shadow: 0 0 12px 4px rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 768px) {
+  .carousel-img-group img {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+    aspect-ratio: 1/1;
+    margin-bottom: 1rem;
+  }
+}
+
+/* Texto sobreposto no carrossel */
+.carousel-overlay {
+  position: absolute;
+  bottom: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.5);
+  /* fundo escuro transparente */
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  text-align: center;
+  color: #fff;
+  backdrop-filter: blur(5px);
+  z-index: 2;
+  max-width: 80%;
+}
+
+@media (max-width: 576px) {
+  .carousel-overlay {
+    width: 90%;
+    padding: 0.75rem 1rem;
+  }
+}
+
+/* Botão com cores da paleta */
+.btn-paleta {
+  background-color: var(--secondary-color);
+  border: none;
+  color: var(--text-color);
+  padding: 0.5rem 1.2rem;
+  margin-top: 0.5rem;
+  font-weight: 500;
+  border-radius: 5px;
+}
+
+.btn-paleta:hover {
+  background-color: var(--elements-color);
+  color: white;
+}
+
+.custom-carousel .carousel-control-prev,
+.custom-carousel .carousel-control-next {
+  width: 50px;
+  height: 50px;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.custom-carousel .carousel-control-prev-icon,
+.custom-carousel .carousel-control-next-icon {
+  width: 20px;
+  height: 20px;
+}
+
+@media (max-width: 576px) {
+
+  .custom-carousel .carousel-control-prev-icon,
+  .custom-carousel .carousel-control-next-icon {
+    width: 15px;
+    height: 15px;
+  }
+}
+
+.custom-carousel .carousel-control-prev {
+  left: 10px;
+}
+
+.custom-carousel .carousel-control-next {
+  right: 10px;
+}
+
+.custom-carousel .carousel-control-prev:hover,
+.custom-carousel .carousel-control-next:hover {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.custom-carousel:hover .carousel-control-prev,
+.custom-carousel:hover .carousel-control-next {
+  opacity: 1;
+}
+
+.carousel-caption-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+  padding: 2rem 1rem 1rem;
+}
+
+@media (max-width: 576px) {
+  .carousel-caption-container {
+    padding: 1rem 0.5rem 0.5rem;
+  }
+}
+
+.carousel-caption-custom {
+  position: static;
+  text-align: center;
+  color: white;
+  padding: 0;
+  margin: 0;
+}
+
+.carousel-caption-custom h3 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.carousel-caption-custom p {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.custom-carousel .carousel-indicators {
+  bottom: 20px;
+  margin-bottom: 0;
+}
+
+.custom-carousel .carousel-indicators [data-bs-target] {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.5);
+  border: none;
+  margin: 0 4px;
+}
+
+.custom-carousel .carousel-indicators .active {
+  background-color: white;
+}
+
+.custom-carousel .carousel-inner {
+  border-radius: 12px;
+}
+
+.agenda-bg {
+  background-image: url("/src/assets/imgs/agenda-bg.jpg");
+}
+
+.animais-bg {
+  background-image: url("/src/assets/imgs/animais-bg.jpg");
+}
+
+.sobre-bg {
+  background-image: url("/src/assets/imgs/sobre-bg.jpg");
+}
+
+.contato-bg {
+  background-image: url("/src/assets/imgs/contato-bg.jpg");
+}
+
+.veterinarios-bg {
+  background-image: url("/src/assets/imgs/veterinarios-bg.jpg");
+}
+
+.agenda-bg,
+.animais-bg,
+.sobre-bg,
+.contato-bg,
+.veterinarios-bg {
+  background-size: cover;
+  background-position: center 30%;
+  background-attachment: local;
+  position: relative;
+  min-height: 500px;
+  padding-top: 60px;
+  padding-bottom: 60px;
+}
+
+.agenda-bg::before,
+.animais-bg::before,
+.sobre-bg::before,
+.contato-bg::before,
+.veterinarios-bg::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.35);
+  z-index: 1;
+}
+
+@media (max-width: 768px) {
+  .animais-bg {
+    min-height: 220px;
+    background-attachment: scroll;
+  }
+}
+
+.nav-link {
+  color: var(--main-color);
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.nav-link-tab {
+  color: var(--main-color);
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover,
+.nav-link-tab:hover {
+  color: var(--elements-color);
+}
+
+.nav-link::after,
+.nav-link-tab::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 0;
+  left: 50%;
+  background-color: var(--elements-color);
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+
+.nav-link:hover::after,
+.nav-link-tab:hover::after {
+  width: 100%;
+}
+
+.nav-link.active,
+.nav-link-tab.active {
+  color: var(--elements-color);
+  border-bottom: none !important;
+}
+
+.nav-link.active::after,
+.nav-link-tab.active::after {
+  width: 0;
+  display: none;
+}
+
+.loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.loader-sm {
+  width: 20px;
+  height: 20px;
+}
+
+.loader-md {
+  width: 40px;
+  height: 40px;
+}
+
+.loader-lg {
+  width: 60px;
+  height: 60px;
+}
+
+.loader-primary {
+  border-color: var(--main-color);
+}
+
+.loader-secondary {
+  border-color: var(--secondary-color);
+}
+
+.loader-elements {
+  border-color: var(--elements-color);
+}
+
+.loader-paw {
+  width: 40px;
+  height: 40px;
+  position: relative;
+}
+
+.paw-print {
+  width: 100%;
+  height: 100%;
+  background: var(--main-color);
+  border-radius: 50%;
+  animation: pulse 1.5s infinite;
+}
+
+.paw-main {
+  width: 20px;
+  height: 20px;
+  background: var(--elements-color);
+  border-radius: 50%;
+  position: absolute;
+  top: 5px;
+  left: 10px;
+  animation: pulse 1.5s infinite 0.2s;
+}
+
+.paw-pad1 {
+  width: 12px;
+  height: 12px;
+  background: var(--secondary-color);
+  border-radius: 50%;
+  position: absolute;
+  top: 15px;
+  left: 5px;
+  animation: pulse 1.5s infinite 0.4s;
+}
+
+.paw-pad2 {
+  width: 12px;
+  height: 12px;
+  background: var(--secondary-color);
+  border-radius: 50%;
+  position: absolute;
+  top: 15px;
+  right: 5px;
+  animation: pulse 1.5s infinite 0.6s;
+}
+
+.paw-pad3 {
+  width: 12px;
+  height: 12px;
+  background: var(--secondary-color);
+  border-radius: 50%;
+  position: absolute;
+  bottom: 5px;
+  left: 8px;
+  animation: pulse 1.5s infinite 0.8s;
+}
+
+.paw-pad4 {
+  width: 12px;
+  height: 12px;
+  background: var(--secondary-color);
+  border-radius: 50%;
+  position: absolute;
+  bottom: 5px;
+  right: 8px;
+  animation: pulse 1.5s infinite 1s;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.1);
+    opacity: 0.7;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.loading-transition {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--main-color) 0%, var(--bg-button) 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  transition: opacity 0.5s ease;
+}
+
+.loading-content {
+  text-align: center;
+  color: white;
+}
+
+.loading-message {
+  margin-top: 20px;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.progress-container {
+  width: 300px;
+  height: 6px;
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+  margin: 20px auto;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: white;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+  animation: progress 2s ease-in-out infinite;
+}
+
+.progress-text {
+  font-size: 14px;
+  margin-top: 10px;
+  opacity: 0.8;
+}
+
+.loading-transition {
+  animation: fadeIn 0.5s ease;
+}
+
+.loading-transition.hide {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+/* Page Transition Styles */
+.transition-wrapper {
+  min-height: 100vh;
+  transition: all 0.3s ease;
+}
+
+.page-transitioning {
+  opacity: 0.8;
+  transform: scale(0.98);
+}
+
+.page-loaded {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Fade in animation for page content */
+.fade-in {
+  animation: fadeInPage 0.3s ease-in-out;
+}
+
+@keyframes fadeInPage {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Smooth page transitions */
+.page-enter {
+  opacity: 0;
+  transform: translateX(50px);
+}
+
+.page-enter-active {
+  opacity: 1;
+  transform: translateX(0%);
+  transition: all 0.2s ease-in-out;
+}
+
+.page-exit {
+  opacity: 1;
+  transform: translateX(0%);
+}
+
+.page-exit-active {
+  opacity: 0;
+  transform: translateX(-50px);
+  transition: all 0.2s ease-in-out;
+}
+
+/* Loading overlay improvements */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9998;
+  backdrop-filter: blur(5px);
+}
+
+/* Progress animation */
+@keyframes progress {
+  0% {
+    width: 0%;
+  }
+
+  50% {
+    width: 70%;
+  }
+
+  100% {
+    width: 100%;
+  }
+}
+
+/* Barras de progresso do estoque - sem animação incorreta */
+.stock-progress-bar {
+  animation: none !important;
+}
+
+.stock-progress-bar .progress-bar {
+  animation: none !important;
+}
+
+/* Remover borda laranja dos botões das abas */
+.nav-tabs .nav-link,
+.nav-tabs .nav-link.active,
+.nav-tabs .nav-link:hover {
+  border-bottom: none !important;
+}
+
+/* Remover qualquer borda laranja de botões */
+button[style*="border-bottom"],
+.nav-link[style*="border-bottom"] {
+  border-bottom: none !important;
+}
+
+/* Remover pseudo-elementos dos botões das abas */
+.nav-tabs .nav-link::after,
+.nav-tabs .nav-link::before {
+  display: none !important;
+  content: none !important;
+}
+
+/* Regra mais específica para garantir que não há pseudo-elementos */
+.nav-tabs .nav-link.active::after,
+.nav-tabs .nav-link.active::before,
+.nav-tabs .nav-link:hover::after,
+.nav-tabs .nav-link:hover::before {
+  display: none !important;
+  content: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}

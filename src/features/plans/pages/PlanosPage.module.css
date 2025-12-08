@@ -1,0 +1,31 @@
+/* Background para a seção hero */
+.planos-bg {
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+        url('../assets/imgs/veterinarios-bg.jpg') center/cover no-repeat;
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+}
+
+.plansGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+    justify-items: center;
+}
+
+
+
+@media (max-width: 768px) {
+  .plansGrid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .plansGrid {
+    gap: 1rem;
+  }
+}

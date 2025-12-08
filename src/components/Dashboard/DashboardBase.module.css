@@ -1,0 +1,42 @@
+.dashboardContainer {
+    background-color: #f5f7fa;
+}
+
+.header {
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+    margin: 0;
+    color: #333;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.sidebar {
+    width: 250px;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+}
+
+.menuLink {
+    color: #666;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.menuLink:hover {
+    background-color: #f0f7ff;
+    color: var(--main-color);
+    text-decoration: none;
+}
+
+.mainContent {
+    background-color: #f8f9fa;
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+    }
+}

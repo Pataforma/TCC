@@ -1,0 +1,133 @@
+/* Avaliações List Styles */
+.avaliacoesList {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.avaliacaoItem {
+    padding: 1.5rem;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.2s ease;
+}
+
+.avaliacaoItem:hover {
+    background-color: #f8f9fa;
+}
+
+.avaliacaoItem:last-child {
+    border-bottom: none;
+}
+
+.avaliacaoHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.clienteInfo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.clienteAvatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.avaliacaoMeta {
+    text-align: right;
+}
+
+.rating {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-bottom: 0.5rem;
+}
+
+.avaliacaoContent {
+    margin-left: 64px;
+    /* Alinhar com o texto do cliente */
+}
+
+.avaliacaoActions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.utilidade {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.resposta {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.respostaHeader {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    color: #6c757d;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .avaliacaoHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .avaliacaoMeta {
+        text-align: left;
+    }
+
+    .rating {
+        justify-content: flex-start;
+    }
+
+    .avaliacaoContent {
+        margin-left: 0;
+    }
+
+    .avaliacaoActions {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .utilidade {
+        order: 2;
+    }
+
+    .acoes {
+        order: 1;
+    }
+}
+
+@media (max-width: 576px) {
+    .avaliacaoItem {
+        padding: 1rem;
+    }
+
+    .clienteInfo {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .clienteAvatar {
+        width: 40px;
+        height: 40px;
+    }
+}
