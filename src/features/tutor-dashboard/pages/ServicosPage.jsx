@@ -34,8 +34,11 @@ import {
   FaMoneyBill,
 } from "react-icons/fa";
 import DashboardLayout from "../../../layouts/DashboardLayout";
+import { api } from "../../../utils/api";
+import { useUser } from "../../../contexts/UserContext";
 
 const ServicosPage = () => {
+  const { user } = useUser();
   const [nomeUsuario, setNomeUsuario] = useState("");
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
@@ -43,172 +46,35 @@ const ServicosPage = () => {
   const [filtroTipo, setFiltroTipo] = useState("");
   const [filtroAvaliacao, setFiltroAvaliacao] = useState("");
   const [ordenacao, setOrdenacao] = useState("distancia");
+  const [loading, setLoading] = useState(true);
 
-  // Dados mockados de serviços
-  const [servicos] = useState([
-    {
-      id: 1,
-      nome: "Clínica Veterinária Pataforma",
-      tipo: "Veterinário",
-      especialidades: ["Clínica Geral", "Cirurgia", "Emergência"],
-      endereco: "Rua das Flores, 123 - Centro",
-      cidade: "São Paulo",
-      estado: "SP",
-      telefone: "(11) 99999-9999",
-      whatsapp: "(11) 99999-9999",
-      email: "contato@pataforma.com.br",
-      website: "https://pataforma.com.br",
-      distancia: "0.5 km",
-      avaliacao: 4.8,
-      totalAvaliacoes: 127,
-      horarioFuncionamento: "Seg-Sex: 8h-18h, Sáb: 8h-12h",
-      precoMedio: "R$ 120,00",
-      destaque: true,
-      fotos: [
-        "https://via.placeholder.com/300x200/4ecdc4/ffffff?text=Clínica+1",
-        "https://via.placeholder.com/300x200/45b7d1/ffffff?text=Clínica+2",
-      ],
-      servicos: [
-        "Consultas de Rotina",
-        "Vacinação",
-        "Cirurgias",
-        "Exames Laboratoriais",
-        "Emergências 24h",
-      ],
-      descricao:
-        "Clínica veterinária completa com atendimento 24 horas para emergências. Equipe especializada em cães e gatos.",
-    },
-    {
-      id: 2,
-      nome: "Pet Shop Cão & Gato",
-      tipo: "Pet Shop",
-      especialidades: ["Banho e Tosa", "Hospedagem", "Adestramento"],
-      endereco: "Av. Paulista, 456 - Bela Vista",
-      cidade: "São Paulo",
-      estado: "SP",
-      telefone: "(11) 88888-8888",
-      whatsapp: "(11) 88888-8888",
-      email: "contato@caoegato.com.br",
-      website: "https://caoegato.com.br",
-      distancia: "1.2 km",
-      avaliacao: 4.5,
-      totalAvaliacoes: 89,
-      horarioFuncionamento: "Seg-Sáb: 8h-20h, Dom: 9h-17h",
-      precoMedio: "R$ 80,00",
-      destaque: false,
-      fotos: [
-        "https://via.placeholder.com/300x200/ff6b6b/ffffff?text=Pet+Shop+1",
-      ],
-      servicos: [
-        "Banho e Tosa",
-        "Hospedagem",
-        "Adestramento",
-        "Venda de Produtos",
-        "Creche Canina",
-      ],
-      descricao:
-        "Pet shop completo com banho e tosa, hospedagem e adestramento. Ambiente familiar e acolhedor.",
-    },
-    {
-      id: 3,
-      nome: "Hotel para Cães Max",
-      tipo: "Hospedagem",
-      especialidades: ["Hospedagem", "Creche", "Passeios"],
-      endereco: "Rua Augusta, 789 - Consolação",
-      cidade: "São Paulo",
-      estado: "SP",
-      telefone: "(11) 77777-7777",
-      whatsapp: "(11) 77777-7777",
-      email: "contato@hotelmax.com.br",
-      website: "https://hotelmax.com.br",
-      distancia: "2.1 km",
-      avaliacao: 4.7,
-      totalAvaliacoes: 156,
-      horarioFuncionamento: "24 horas",
-      precoMedio: "R$ 120,00",
-      destaque: true,
-      fotos: [
-        "https://via.placeholder.com/300x200/96ceb4/ffffff?text=Hotel+1",
-        "https://via.placeholder.com/300x200/feca57/ffffff?text=Hotel+2",
-      ],
-      servicos: [
-        "Hospedagem 24h",
-        "Creche Canina",
-        "Passeios Guiados",
-        "Alimentação Premium",
-        "Monitoramento por Câmera",
-      ],
-      descricao:
-        "Hotel para cães com acomodações confortáveis, área de lazer e monitoramento 24 horas.",
-    },
-    {
-      id: 4,
-      nome: "Adestramento Profissional",
-      tipo: "Adestramento",
-      especialidades: ["Adestramento", "Comportamento", "Obediência"],
-      endereco: "Rua Oscar Freire, 321 - Jardins",
-      cidade: "São Paulo",
-      estado: "SP",
-      telefone: "(11) 66666-6666",
-      whatsapp: "(11) 66666-6666",
-      email: "contato@adestramento.com.br",
-      website: "https://adestramento.com.br",
-      distancia: "3.5 km",
-      avaliacao: 4.9,
-      totalAvaliacoes: 203,
-      horarioFuncionamento: "Seg-Sex: 7h-19h, Sáb: 8h-16h",
-      precoMedio: "R$ 150,00",
-      destaque: false,
-      fotos: [
-        "https://via.placeholder.com/300x200/ff9ff3/ffffff?text=Adestramento+1",
-      ],
-      servicos: [
-        "Adestramento Básico",
-        "Adestramento Avançado",
-        "Correção de Comportamento",
-        "Aulas em Grupo",
-        "Aulas Particulares",
-      ],
-      descricao:
-        "Adestramento profissional com métodos positivos. Especialistas em comportamento canino.",
-    },
-    {
-      id: 5,
-      nome: "Transporte Pet Seguro",
-      tipo: "Transporte",
-      especialidades: ["Transporte", "Emergência", "Viagens"],
-      endereco: "Av. Brigadeiro Faria Lima, 654 - Itaim Bibi",
-      cidade: "São Paulo",
-      estado: "SP",
-      telefone: "(11) 55555-5555",
-      whatsapp: "(11) 55555-5555",
-      email: "contato@transportepet.com.br",
-      website: "https://transportepet.com.br",
-      distancia: "4.2 km",
-      avaliacao: 4.6,
-      totalAvaliacoes: 78,
-      horarioFuncionamento: "24 horas",
-      precoMedio: "R$ 60,00",
-      destaque: false,
-      fotos: [
-        "https://via.placeholder.com/300x200/54a0ff/ffffff?text=Transporte+1",
-      ],
-      servicos: [
-        "Transporte para Clínicas",
-        "Viagens Interestaduais",
-        "Emergências",
-        "Transporte com Caixa",
-        "Acompanhamento",
-      ],
-      descricao:
-        "Serviço de transporte especializado para pets com segurança e conforto.",
-    },
-  ]);
+  // Dados reais de serviços
+  const [servicos, setServicos] = useState([]);
 
   useEffect(() => {
-    // TODO: Buscar dados do usuário do Supabase
-    setNomeUsuario("Maria Silva");
-  }, []);
+    if (user) {
+      setNomeUsuario(user.nome || "");
+    }
+    fetchServicosLocais();
+  }, [user, filtroLocalizacao, filtroTipo, filtroAvaliacao]);
+
+  const fetchServicosLocais = async () => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams();
+      if (filtroLocalizacao) params.append("cidade", filtroLocalizacao);
+      if (filtroTipo) params.append("tipo", filtroTipo);
+      if (filtroAvaliacao) params.append("avaliacao_minima", filtroAvaliacao);
+
+      const data = await api.get(`/servicos-locais?${params.toString()}`);
+      setServicos(data);
+    } catch (error) {
+      console.error("Erro ao buscar serviços:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   const getTipoIcon = (tipo) => {
     switch (tipo) {
@@ -277,31 +143,18 @@ const ServicosPage = () => {
     );
   };
 
-  const servicosFiltrados = servicos.filter((servico) => {
-    const matchLocalizacao =
-      !filtroLocalizacao ||
-      servico.cidade.toLowerCase().includes(filtroLocalizacao.toLowerCase()) ||
-      servico.endereco.toLowerCase().includes(filtroLocalizacao.toLowerCase());
-
-    const matchTipo = !filtroTipo || servico.tipo === filtroTipo;
-
-    const matchAvaliacao =
-      !filtroAvaliacao || servico.avaliacao >= parseFloat(filtroAvaliacao);
-
-    return matchLocalizacao && matchTipo && matchAvaliacao;
-  });
-
-  const servicosOrdenados = [...servicosFiltrados].sort((a, b) => {
+  // Filtros já são aplicados no backend, mas podemos fazer filtros adicionais no frontend se necessário
+  const servicosOrdenados = [...servicos].sort((a, b) => {
     switch (ordenacao) {
       case "distancia":
-        return parseFloat(a.distancia) - parseFloat(b.distancia);
+        // Por enquanto, manter ordem original já que distância é mock
+        return 0;
       case "avaliacao":
         return b.avaliacao - a.avaliacao;
       case "preco":
-        return (
-          parseFloat(a.precoMedio.replace(/\D/g, "")) -
-          parseFloat(b.precoMedio.replace(/\D/g, ""))
-        );
+        const precoA = parseFloat(a.precoMedio.replace(/[^\d,]/g, "").replace(",", ".")) || 0;
+        const precoB = parseFloat(b.precoMedio.replace(/[^\d,]/g, "").replace(",", ".")) || 0;
+        return precoA - precoB;
       default:
         return 0;
     }
@@ -410,14 +263,27 @@ const ServicosPage = () => {
           <Col>
             <div className="d-flex justify-content-between align-items-center mb-3">
               <h5 className="mb-0">
-                {servicosOrdenados.length} serviço(s) encontrado(s)
+                {loading ? (
+                  <span>Carregando serviços...</span>
+                ) : (
+                  <span>{servicosOrdenados.length} serviço(s) encontrado(s)</span>
+                )}
               </h5>
             </div>
           </Col>
         </Row>
 
-        <Row className="g-4">
-          {servicosOrdenados.map((servico) => (
+        {loading ? (
+          <Row>
+            <Col className="text-center py-5">
+              <div className="spinner-border text-primary" role="status">
+                <span className="visually-hidden">Carregando...</span>
+              </div>
+            </Col>
+          </Row>
+        ) : (
+          <Row className="g-4">
+            {servicosOrdenados.map((servico) => (
             <Col key={servico.id} lg={6} xl={4}>
               <Card className="border-0 shadow-sm h-100">
                 {servico.destaque && (
@@ -529,10 +395,11 @@ const ServicosPage = () => {
                 </Card.Body>
               </Card>
             </Col>
-          ))}
-        </Row>
+            ))}
+          </Row>
+        )}
 
-        {servicosOrdenados.length === 0 && (
+        {!loading && servicosOrdenados.length === 0 && (
           <Row>
             <Col>
               <Alert variant="info" className="text-center py-5">
@@ -568,12 +435,21 @@ const ServicosPage = () => {
               <div>
                 {/* Carrossel de Fotos */}
                 <div className="mb-4">
-                  <img
-                    src={selectedService.fotos[0]}
-                    alt={selectedService.nome}
-                    className="img-fluid rounded"
-                    style={{ width: "100%", height: 250, objectFit: "cover" }}
-                  />
+                  {selectedService.fotos && selectedService.fotos.length > 0 ? (
+                    <img
+                      src={selectedService.fotos[0]}
+                      alt={selectedService.nome}
+                      className="img-fluid rounded"
+                      style={{ width: "100%", height: 250, objectFit: "cover" }}
+                    />
+                  ) : (
+                    <div
+                      className="bg-light d-flex align-items-center justify-content-center rounded"
+                      style={{ width: "100%", height: 250 }}
+                    >
+                      <span className="text-muted">Sem foto</span>
+                    </div>
+                  )}
                 </div>
 
                 <Row>

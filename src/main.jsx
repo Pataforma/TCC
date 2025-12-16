@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import { UserProvider } from "./contexts/UserContext";
+import { NotificationProvider } from "./contexts/NotificationContext";
 import { ErrorBoundary } from "./utils/errorHandler.jsx";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "@fortawesome/fontawesome-free/css/all.css";
@@ -20,7 +21,9 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <ErrorBoundary>
       <BrowserRouter basename={import.meta.env.BASE_URL}>
         <UserProvider>
-          <App />
+          <NotificationProvider>
+            <App />
+          </NotificationProvider>
         </UserProvider>
       </BrowserRouter>
     </ErrorBoundary>

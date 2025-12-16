@@ -26,23 +26,61 @@ const OnboardingTutor = () => {
 
   const handleComplete = async (formData) => {
     try {
-      console.log("Onboarding Tutor completo:", formData);
+      console.log("DEBUG: Iniciando processo de onboarding tutor");
+      console.log("DEBUG: Dados do formulário:", formData);
 
       // Verificar autenticação
       if (!auth.isAuthenticated() || !user || !user.id_usuario) {
         throw new Error("Usuário não autenticado. Por favor, faça login novamente.");
       }
 
-      // Atualizar dados pessoais e tipo de usuário
+      const userId = user.id_usuario;
+
+      // PASSO 1: Atualizar dados pessoais e tipo de usuário
+      console.log("DEBUG: PASSO 1 - Atualizando dados pessoais...");
+      
       await api.put("/usuarios/perfil", {
         nome: formData.nomeCompleto || formData.nome || user.nome,
         telefone: formData.telefone || user.telefone,
         tipo_usuario: "tutor",
+        perfil_completo: false,
+      });
+
+      console.log("DEBUG: PASSO 1 concluído - Dados pessoais atualizados");
+
+      // PASSO 2: Validação dos campos obrigatórios
+      console.log("DEBUG: PASSO 2 - Validando campos obrigatórios...");
+      
+      if (!formData.nomeCompleto && !formData.nome && !user.nome) {
+        throw new Error("Nome é obrigatório");
+      }
+
+      console.log("DEBUG: Todos os campos obrigatórios estão preenchidos");
+
+      // PASSO 3: Criar/atualizar dados do tutor
+      console.log("DEBUG: PASSO 3 - Salvando dados do tutor...");
+      
+      await api.post("/tutores/me", {
+        nome: formData.nomeCompleto || formData.nome || user.nome,
+        telefone: formData.telefone || user.telefone,
+        email: user.email,
+      });
+
+      console.log("DEBUG: PASSO 3 concluído - Dados do tutor salvos");
+
+      // PASSO 4: Marcar perfil_completo = true
+      console.log("DEBUG: PASSO 4 - Finalizando perfil...");
+      
+      await api.put("/usuarios/perfil", {
+        tipo_usuario: "tutor",
         perfil_completo: true,
       });
 
-      // Se houver pets no formData, criar eles
+      console.log("DEBUG: PASSO 4 concluído - Perfil marcado como completo");
+
+      // PASSO 5: Criar pets se houver
       if (formData.pets && Array.isArray(formData.pets) && formData.pets.length > 0) {
+        console.log("DEBUG: PASSO 5 - Criando pets...");
         for (const pet of formData.pets) {
           try {
             await api.post("/pets", {
@@ -57,13 +95,23 @@ const OnboardingTutor = () => {
             // Continua mesmo se houver erro ao criar pet
           }
         }
+        console.log("DEBUG: PASSO 5 concluído - Pets criados");
       }
 
-      // Atualizar contexto
-      await fetchUserData();
+      // Atualizar contexto do usuário
+      try {
+        await fetchUserData();
+      } catch (e) {
+        console.warn("DEBUG: Falha ao atualizar contexto após onboarding:", e);
+      }
+
+      console.log("DEBUG: Onboarding tutor concluído com sucesso!");
+      console.log("DEBUG: Redirecionando para dashboard...");
 
       // Redirecionar para dashboard
       navigate("/dashboard/tutor/perfil", { replace: true });
+
+      return true;
     } catch (error) {
       console.error("Erro ao salvar dados do tutor:", error);
       let errorMessage = "Erro ao salvar dados. Tente novamente.";

@@ -11,6 +11,7 @@ import {
   FaUser,
   FaBullhorn,
   FaHashtag,
+  FaComments,
 } from "react-icons/fa";
 import {
   Container,
@@ -38,6 +39,27 @@ const RedeSocial = () => {
   const [especialidades, setEspecialidades] = useState([]);
   const [loading, setLoading] = useState(false);
   const [buscando, setBuscando] = useState(false);
+
+  const handleEntrarEmContato = async (veterinario) => {
+    if (!user) {
+      alert('Você precisa estar logado como tutor para entrar em contato');
+      navigate('/login');
+      return;
+    }
+
+    try {
+      // Criar conversa
+      const conversa = await api.post('/conversas', {
+        veterinario_id: veterinario.id_veterinarios,
+      });
+      
+      // Redirecionar para página de mensagens com a conversa aberta
+      navigate(`/dashboard-tutor/mensagens?conversa=${conversa.id}`);
+    } catch (error) {
+      console.error('Erro ao criar conversa:', error);
+      alert(error.message || 'Erro ao entrar em contato. Tente novamente.');
+    }
+  };
 
   useEffect(() => {
     if (activeTab === "feed" && !termoBusca) {
@@ -400,16 +422,29 @@ const RedeSocial = () => {
                                     {vet.posts_count || 0} posts • {vet.seguidores_count || 0} seguidores
                                   </small>
                                 </div>
-                                <Button
-                                  variant="primary"
-                                  size="sm"
-                                  className="w-100"
-                                  onClick={() =>
-                                    navigate(`/rede-social/veterinario/${vet.id_veterinarios}`)
-                                  }
-                                >
-                                  Ver Perfil
-                                </Button>
+                                <div className="d-grid gap-2">
+                                  {vet.permitir_contato !== false && vet.permitir_contato !== 0 && (
+                                    <Button
+                                      variant="success"
+                                      size="sm"
+                                      className="w-100"
+                                      onClick={() => handleEntrarEmContato(vet)}
+                                    >
+                                      <FaComments className="me-2" />
+                                      Entrar em Contato
+                                    </Button>
+                                  )}
+                                  <Button
+                                    variant="primary"
+                                    size="sm"
+                                    className="w-100"
+                                    onClick={() =>
+                                      navigate(`/rede-social/veterinario/${vet.id_veterinarios}`)
+                                    }
+                                  >
+                                    Ver Perfil
+                                  </Button>
+                                </div>
                               </Card.Body>
                             </Card>
                           </Col>

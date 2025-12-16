@@ -34,117 +34,108 @@ import {
   FaChartBar,
 } from "react-icons/fa";
 import DashboardLayout from "../../../layouts/DashboardLayout";
+import { api } from "../../../utils/api";
+import { useUser } from "../../../contexts/UserContext";
 
 const AgendamentosPage = () => {
+  const { user } = useUser();
   const [activeTab, setActiveTab] = useState("pendentes");
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [nomeUsuario, setNomeUsuario] = useState("");
-
-  // Dados mockados de agendamentos
-  const [agendamentos] = useState({
-    pendentes: [
-      {
-        id: 1,
-        pet: "Thor",
-        tipo: "Consulta de Rotina",
-        data: "2024-01-20",
-        horario: "14:30",
-        veterinario: "Dr. André Silva",
-        clinica: "Clínica Veterinária Pataforma",
-        endereco: "Rua das Flores, 123 - Centro",
-        telefone: "(11) 99999-9999",
-        whatsapp: "(11) 99999-9999",
-        valor: 120.0,
-        status: "confirmado",
-        isTelemedicina: true,
-        observacoes: "Thor está com uma pequena ferida na pata direita",
-        sintomas: "Ferida superficial, sem sangramento",
-      },
-      {
-        id: 2,
-        pet: "Luna",
-        tipo: "Vacinação",
-        data: "2024-01-25",
-        horario: "10:00",
-        veterinario: "Dra. Juliana Santos",
-        clinica: "Clínica Veterinária Pataforma",
-        endereco: "Rua das Flores, 123 - Centro",
-        telefone: "(11) 99999-9999",
-        whatsapp: "(11) 99999-9999",
-        valor: 75.0,
-        status: "pendente",
-        isTelemedicina: false,
-        observacoes: "Vacina antirrábica anual",
-        sintomas: "Preventivo",
-      },
-      {
-        id: 3,
-        pet: "Max",
-        tipo: "Retorno Pós-Cirurgia",
-        data: "2024-01-28",
-        horario: "16:00",
-        veterinario: "Dr. André Silva",
-        clinica: "Clínica Veterinária Pataforma",
-        endereco: "Rua das Flores, 123 - Centro",
-        telefone: "(11) 99999-9999",
-        whatsapp: "(11) 99999-9999",
-        valor: 80.0,
-        status: "confirmado",
-        isTelemedicina: false,
-        observacoes: "Retorno para retirar pontos da cirurgia de castração",
-        sintomas: "Pós-operatório",
-      },
-    ],
-    completos: [
-      {
-        id: 4,
-        pet: "Thor",
-        tipo: "Consulta de Emergência",
-        data: "2024-01-10",
-        horario: "20:30",
-        veterinario: "Dr. André Silva",
-        clinica: "Clínica Veterinária Pataforma",
-        endereco: "Rua das Flores, 123 - Centro",
-        telefone: "(11) 99999-9999",
-        whatsapp: "(11) 99999-9999",
-        valor: 200.0,
-        status: "realizado",
-        isTelemedicina: false,
-        observacoes: "Thor estava com vômito e diarreia",
-        sintomas: "Vômito, diarreia, apatia",
-        diagnostico: "Gastrite aguda",
-        prescricao: "Antiemético e dieta especial por 3 dias",
-        proximoRetorno: "2024-01-20",
-      },
-      {
-        id: 5,
-        pet: "Max",
-        tipo: "Cirurgia de Castração",
-        data: "2024-01-05",
-        horario: "08:00",
-        veterinario: "Dr. André Silva",
-        clinica: "Clínica Veterinária Pataforma",
-        endereco: "Rua das Flores, 123 - Centro",
-        telefone: "(11) 99999-9999",
-        whatsapp: "(11) 99999-9999",
-        valor: 450.0,
-        status: "realizado",
-        isTelemedicina: false,
-        observacoes: "Cirurgia de castração eletiva",
-        sintomas: "Procedimento eletivo",
-        diagnostico: "Castração realizada com sucesso",
-        prescricao: "Antibiótico por 7 dias, colar elisabetano por 10 dias",
-        proximoRetorno: "2024-01-28",
-      },
-    ],
+  const [agendamentos, setAgendamentos] = useState({
+    pendentes: [],
+    completos: [],
   });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // TODO: Buscar dados do usuário do Supabase
-    setNomeUsuario("Maria Silva");
-  }, []);
+    if (user) {
+      setNomeUsuario(user.nome || user.email || "");
+    }
+    fetchAgendamentos();
+  }, [user]);
+
+  const fetchAgendamentos = async () => {
+    setLoading(true);
+    try {
+      const data = await api.get("/consultas");
+      
+      // Separar em pendentes e completos baseado em status e data
+      const agora = new Date();
+      const pendentes = data
+        .filter((c) => {
+          const dataConsulta = new Date(c.data_consulta);
+          return (
+            c.status !== "realizado" &&
+            c.status !== "cancelado" &&
+            dataConsulta >= agora
+          );
+        })
+        .map(formatarConsulta);
+      
+      const completos = data
+        .filter((c) => {
+          const dataConsulta = new Date(c.data_consulta);
+          return (
+            c.status === "realizado" ||
+            (c.status !== "cancelado" && dataConsulta < agora)
+          );
+        })
+        .map(formatarConsulta);
+
+      setAgendamentos({ pendentes, completos });
+    } catch (error) {
+      console.error("Erro ao buscar agendamentos:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatarConsulta = (c) => {
+    const dataConsulta = new Date(c.data_consulta);
+    const dataStr = dataConsulta.toISOString().split("T")[0];
+    const horarioStr = dataConsulta.toTimeString().slice(0, 5);
+
+    // Obter nome do pet
+    const petNome =
+      c.pacientes?.nome ||
+      c.pet?.nome ||
+      "Pet não informado";
+
+    // Obter dados do veterinário
+    const veterinarioNome =
+      c.veterinario?.nome || "Veterinário não informado";
+    const clinicaNome =
+      c.veterinario?.nome_clinica || "Clínica não informada";
+    const endereco =
+      c.veterinario?.endereco_clinica ||
+      `${c.veterinario?.cidade_clinica || ""} ${c.veterinario?.estado_clinica || ""}`.trim() ||
+      "Endereço não informado";
+    const telefone = c.veterinario?.telefone_clinica || "Não informado";
+
+    return {
+      id: c.id,
+      pet: petNome,
+      tipo: c.tipo || "Consulta",
+      data: dataStr,
+      horario: horarioStr,
+      veterinario: veterinarioNome,
+      clinica: clinicaNome,
+      endereco: endereco,
+      telefone: telefone,
+      whatsapp: telefone,
+      valor: 0, // TODO: Adicionar campo valor nas consultas
+      status: c.status || "pendente",
+      isTelemedicina: false, // TODO: Adicionar campo isTelemedicina
+      observacoes: c.observacoes || "",
+      sintomas: c.observacoes || "",
+      diagnostico: null, // TODO: Buscar de prontuário se existir
+      prescricao: null, // TODO: Buscar de prescrições se existir
+      proximoRetorno: null, // TODO: Buscar de prontuário se existir
+    };
+  };
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString("pt-BR");
@@ -182,14 +173,22 @@ const AgendamentosPage = () => {
     alert(`Iniciando chamada de telemedicina para ${appointment.pet}...`);
   };
 
-  const handleCancelAppointment = (appointment) => {
+  const handleCancelAppointment = async (appointment) => {
     if (
       window.confirm(
         `Tem certeza que deseja cancelar a consulta de ${appointment.pet}?`
       )
     ) {
-      // TODO: Implementar cancelamento via API
-      alert("Consulta cancelada com sucesso!");
+      try {
+        await api.put(`/consultas/${appointment.id}/status`, {
+          status: "cancelado",
+        });
+        alert("Consulta cancelada com sucesso!");
+        fetchAgendamentos(); // Atualizar lista
+      } catch (error) {
+        console.error("Erro ao cancelar consulta:", error);
+        alert("Erro ao cancelar consulta: " + (error.message || "Erro desconhecido"));
+      }
     }
   };
 
@@ -204,11 +203,25 @@ const AgendamentosPage = () => {
   };
 
   const totalGasto = agendamentos.completos.reduce(
-    (sum, apt) => sum + apt.valor,
+    (sum, apt) => sum + (apt.valor || 0),
     0
   );
   const mediaMensal = totalGasto / 12; // Simulando 12 meses
   const totalConsultas = agendamentos.completos.length;
+
+  if (loading) {
+    return (
+      <DashboardLayout tipoUsuario="tutor" nomeUsuario={nomeUsuario}>
+        <Container fluid className="py-4">
+          <div className="text-center p-5">
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Carregando...</span>
+            </div>
+          </div>
+        </Container>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout tipoUsuario="tutor" nomeUsuario={nomeUsuario}>

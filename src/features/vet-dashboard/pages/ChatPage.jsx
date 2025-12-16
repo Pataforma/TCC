@@ -14,7 +14,6 @@ import {
   Modal,
   Alert,
 } from "react-bootstrap";
-import { supabase } from "../../../utils/supabase";
 import {
   FaPaperclip,
   FaPaperPlane,
@@ -35,11 +34,16 @@ import {
   FaSmile,
   FaMicrophone,
   FaPaw,
+  FaToggleOn,
+  FaToggleOff,
 } from "react-icons/fa";
 import DashboardLayout from "../../../layouts/DashboardLayout";
 import { useUser } from "../../../contexts/UserContext";
+import { api } from "../../../utils/api";
+import { connectSocket, disconnectSocket, getSocket } from "../../../utils/socket";
 
 const ChatPage = () => {
+  const { user } = useUser();
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [newMessage, setNewMessage] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
@@ -47,90 +51,122 @@ const ChatPage = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
+  const messagesContainerRef = useRef(null);
 
   const [conversations, setConversations] = useState([]);
+  const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [currentUserId, setCurrentUserId] = useState(null);
+  const [permitirContato, setPermitirContato] = useState(true);
 
-  // Carregar conversas do Supabase
+  // Conectar WebSocket e escutar mensagens (independente da conversa selecionada)
   useEffect(() => {
-    fetchConversations();
-  }, []);
+    if (user) {
+      const token = localStorage.getItem('token');
+      if (token) {
+        const socket = connectSocket(token);
+        
+        // Escutar novas mensagens (sempre ativo)
+        const handleNewMessage = (mensagem) => {
+          console.log('[ChatPage] Nova mensagem recebida via WebSocket:', mensagem);
+          console.log('[ChatPage] Conversa ativa:', selectedConversation?.id);
+          console.log('[ChatPage] Mensagem conversa_id:', mensagem.conversa_id);
+          
+          // Se a conversa estiver aberta, adicionar mensagem à lista
+          if (selectedConversation && mensagem.conversa_id === selectedConversation.id) {
+            console.log('[ChatPage] Adicionando mensagem à lista de mensagens');
+            setMessages((prev) => {
+              // Verificar se a mensagem já existe para evitar duplicação
+              const existe = prev.some((msg) => msg.id === mensagem.id);
+              if (!existe) {
+                return [...prev, mensagem];
+              }
+              return prev;
+            });
+          } else {
+            console.log('[ChatPage] Conversa não está aberta, apenas atualizando lista');
+          }
+          // Sempre atualizar lista de conversas para mostrar novas mensagens
+          fetchConversations();
+        };
+        
+        socket?.on('new:message', handleNewMessage);
+        
+        // Escutar mensagem lida
+        socket?.on('message:read', (data) => {
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.id === data.mensagemId ? { ...msg, lida: true } : msg
+            )
+          );
+        });
+        
+        return () => {
+          socket?.off('new:message', handleNewMessage);
+          socket?.off('message:read');
+        };
+      }
+    }
+  }, [user, selectedConversation]);
+
+  // Carregar conversas e configurações
+  useEffect(() => {
+    if (user) {
+      fetchConversations();
+      fetchPermitirContato();
+    }
+  }, [user]);
 
   const fetchConversations = async () => {
     try {
       setLoading(true);
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
-
-      setCurrentUserId(session.user.id);
-
-      // Buscar conversas onde o veterinário é destinatário ou remetente
-      const { data, error } = await supabase
-        .from('mensagens')
-        .select(`
-          *,
-          remetente: remetente_id (id, nome, email),
-          destinatario: destinatario_id (id, nome, email),
-          pacientes: paciente_id (nome, especie)
-        `)
-        .or(`remetente_id.eq.${session.user.id},destinatario_id.eq.${session.user.id}`)
-        .order('data_envio', { ascending: false });
-
-      if (error) throw error;
-
-      // Agrupar mensagens por conversa
-      const conversasAgrupadas = groupMessagesByConversation(data || []);
-      setConversations(conversasAgrupadas);
+      const data = await api.get('/conversas');
+      setConversations(data || []);
     } catch (error) {
-      console.error('Erro ao carregar conversas:', error);
+      console.error('Erro ao buscar conversas:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const groupMessagesByConversation = (mensagens) => {
-    const conversas = {};
-    
-    mensagens.forEach(msg => {
-      // Determinar o outro participante da conversa
-      const isRemetente = msg.remetente_id === currentUserId;
-      const outroParticipante = isRemetente ? msg.destinatario : msg.remetente;
-      const paciente = msg.pacientes;
-      
-      const conversaKey = `${outroParticipante.id}_${msg.paciente_id || 'sem_paciente'}`;
-      
-      if (!conversas[conversaKey]) {
-        conversas[conversaKey] = {
-          id: conversaKey,
-          tutor: outroParticipante,
-          paciente: paciente,
-          lastMessage: msg.conteudo,
-          lastMessageTime: formatMessageTime(msg.data_envio),
-          unreadCount: isRemetente ? 0 : (msg.lida ? 0 : 1),
-          isOnline: false, // Por enquanto sempre false
-          messages: []
-        };
-      }
-      
-      conversas[conversaKey].messages.push({
-        id: msg.id,
-        sender: isRemetente ? 'vet' : 'tutor',
-        text: msg.conteudo,
-        timestamp: formatMessageTime(msg.data_envio),
-        status: msg.lida ? 'read' : 'sent',
-        attachments: msg.anexos || []
-      });
-      
-      // Atualizar última mensagem se for mais recente
-      if (new Date(msg.data_envio) > new Date(conversas[conversaKey].lastMessageTime)) {
-        conversas[conversaKey].lastMessage = msg.conteudo;
-        conversas[conversaKey].lastMessageTime = formatMessageTime(msg.data_envio);
-      }
-    });
-    
-    return Object.values(conversas);
+  const fetchPermitirContato = async () => {
+    try {
+      const vet = await api.get('/veterinarios/me');
+      setPermitirContato(vet.permitir_contato !== false && vet.permitir_contato !== 0);
+    } catch (error) {
+      console.error('Erro ao buscar configuração:', error);
+    }
   };
+
+  const handleTogglePermitirContato = async () => {
+    try {
+      await api.put('/veterinarios/me', {
+        permitir_contato: !permitirContato,
+      });
+      setPermitirContato(!permitirContato);
+    } catch (error) {
+      console.error('Erro ao atualizar configuração:', error);
+      alert('Erro ao atualizar configuração. Tente novamente.');
+    }
+  };
+
+  const fetchMensagens = async (conversaId) => {
+    try {
+      const data = await api.get(`/conversas/${conversaId}/mensagens`);
+      setMessages(data || []);
+      
+      // Marcar todas como lidas
+      await api.put(`/conversas/${conversaId}/mensagens/lidas`);
+      
+      // Entrar na sala da conversa via WebSocket
+      const socket = getSocket();
+      if (socket) {
+        socket.emit('join:conversa', conversaId);
+      }
+    } catch (error) {
+      console.error('Erro ao buscar mensagens:', error);
+    }
+  };
+
 
   const formatMessageTime = (timestamp) => {
     const date = new Date(timestamp);
@@ -156,102 +192,61 @@ const ChatPage = () => {
 
   const handleConversationSelect = (conversation) => {
     setSelectedConversation(conversation);
-    
-    // Marcar mensagens como lidas
-    if (conversation.unreadCount > 0) {
-      markMessagesAsRead(conversation);
-    }
-  };
-
-  const markMessagesAsRead = async (conversation) => {
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
-
-      // Buscar mensagens não lidas desta conversa
-      const { data: unreadMessages, error } = await supabase
-        .from('mensagens')
-        .select('id')
-        .eq('destinatario_id', session.user.id)
-        .eq('remetente_id', conversation.tutor.id)
-        .eq('lida', false);
-
-      if (error) throw error;
-
-      // Marcar como lidas
-      if (unreadMessages && unreadMessages.length > 0) {
-        const messageIds = unreadMessages.map(msg => msg.id);
-        await supabase
-          .from('mensagens')
-          .update({ lida: true })
-          .in('id', messageIds);
-      }
-
-      // Atualizar conversas
-      fetchConversations();
-    } catch (error) {
-      console.error('Erro ao marcar mensagens como lidas:', error);
-    }
+    fetchMensagens(conversation.id);
   };
 
   // Funções de manipulação
 
   const handleSendMessageAsync = async () => {
-    if (!newMessage.trim() || !selectedConversation) return;
+    if ((!newMessage.trim() && !selectedFile) || !selectedConversation) return;
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
-
-      const messageData = {
-        remetente_id: session.user.id,
-        destinatario_id: selectedConversation.tutor.id,
-        paciente_id: selectedConversation.paciente?.id || null,
+      const mensagemData = {
         conteudo: newMessage.trim(),
-        tipo: 'texto',
-        data_envio: new Date().toISOString(),
-        lida: false
+        tipo: selectedFile ? 'arquivo' : 'texto',
+        anexo_url: null, // TODO: Implementar upload
       };
 
-      const { error } = await supabase
-        .from('mensagens')
-        .insert(messageData);
+      const mensagem = await api.post(
+        `/conversas/${selectedConversation.id}/mensagens`,
+        mensagemData
+      );
 
-      if (error) throw error;
-
-      // Limpar campo de mensagem
+      // Limpar campos
       setNewMessage('');
       setSelectedFile(null);
+
+      // Não adicionar localmente - deixar o WebSocket adicionar para evitar duplicação
+      // O WebSocket vai receber a mensagem e adicionar automaticamente
       
-      // Recarregar conversas para atualizar a lista
-      fetchConversations();
-      
-      // Atualizar mensagens da conversa selecionada
-      if (selectedConversation) {
-        const updatedConversation = { ...selectedConversation };
-        updatedConversation.messages.push({
-          id: Date.now(), // ID temporário
-          sender: 'vet',
-          text: messageData.conteudo,
-          timestamp: formatMessageTime(messageData.data_envio),
-          status: 'sent',
-          attachments: selectedFile
-            ? [
-                {
-                  type: selectedFile.type.startsWith("image/") ? "image" : "file",
-                  url: URL.createObjectURL(selectedFile),
-                  name: selectedFile.name,
-                },
-              ]
-            : []
+      // Emitir via WebSocket (opcional, o servidor pode já estar enviando)
+      const socket = getSocket();
+      if (socket) {
+        socket.emit('send:message', {
+          conversaId: selectedConversation.id,
+          mensagem: mensagem,
         });
-        setSelectedConversation(updatedConversation);
       }
-      
-      scrollToBottom();
+
+      // Adicionar mensagem localmente apenas se não for recebida via WebSocket em breve
+      // Usar um timeout para garantir que aparece mesmo se WebSocket falhar
+      setTimeout(() => {
+        setMessages((prev) => {
+          // Verificar se a mensagem já existe (adicionada via WebSocket)
+          const existe = prev.some((msg) => msg.id === mensagem.id);
+          if (!existe) {
+            return [...prev, mensagem];
+          }
+          return prev;
+        });
+        scrollToBottom();
+      }, 500);
+
+      // Atualizar lista de conversas
+      fetchConversations();
     } catch (error) {
       console.error('Erro ao enviar mensagem:', error);
-      alert('Erro ao enviar mensagem: ' + error.message);
+      alert('Erro ao enviar mensagem. Tente novamente.');
     }
   };
 
@@ -271,7 +266,11 @@ const ChatPage = () => {
   };
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    } else {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
   };
 
   const formatTime = (timeString) => {
@@ -293,34 +292,16 @@ const ChatPage = () => {
 
   const filteredConversations = conversations.filter(
     (conv) =>
-      conv.tutor?.nome?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      conv.paciente?.nome?.toLowerCase().includes(searchTerm.toLowerCase())
+      (conv.tutor_nome || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Auto-scroll para o final das mensagens quando uma conversa é selecionada
+  // Auto-scroll para o final das mensagens quando uma conversa é selecionada ou novas mensagens chegam
   useEffect(() => {
-    scrollToBottom();
-  }, [selectedConversation]);
-
-  // Simular recebimento de mensagens em tempo real
-  useEffect(() => {
-    // TODO: Connect to WebSocket listener for real-time messages.
-    // socket.on('newMessage', (data) => {
-    //   updateConversation(data);
-    // });
-
-    const interval = setInterval(() => {
-      // Simular digitação
-      if (Math.random() > 0.95) {
-        setIsTyping(true);
-        setTimeout(() => setIsTyping(false), 2000);
-      }
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const { user } = useUser();
+    const timer = setTimeout(() => {
+      scrollToBottom();
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [messages, selectedConversation]);
 
   return (
     <DashboardLayout tipoUsuario="veterinario" nomeUsuario={user?.nome}>
@@ -330,14 +311,28 @@ const ChatPage = () => {
           <Col lg={4} className="mb-4">
             <Card className="border-0 shadow-sm h-100">
               <Card.Header className="bg-white border-bottom">
-                <div className="d-flex justify-content-between align-items-center">
+                <div className="d-flex justify-content-between align-items-center mb-2">
                   <h5 className="mb-0">Conversas</h5>
                   <Badge bg="primary" className="ms-2">
                     {conversations.reduce(
-                      (total, conv) => total + conv.unreadCount,
+                      (total, conv) => total + (conv.nao_lidas_count || 0),
                       0
                     )}
                   </Badge>
+                </div>
+                <div className="d-flex align-items-center justify-content-between">
+                  <small className="text-muted">Permitir contato de tutores</small>
+                  <Button
+                    variant="link"
+                    className="p-0"
+                    onClick={handleTogglePermitirContato}
+                  >
+                    {permitirContato ? (
+                      <FaToggleOn size={24} className="text-success" />
+                    ) : (
+                      <FaToggleOff size={24} className="text-muted" />
+                    )}
+                  </Button>
                 </div>
                 <InputGroup className="mt-3">
                   <InputGroup.Text>
@@ -362,54 +357,57 @@ const ChatPage = () => {
                           ? "bg-light"
                           : ""
                       }`}
-                      onClick={() => setSelectedConversation(conversation)}
+                      onClick={() => handleConversationSelect(conversation)}
                     >
                       <div className="d-flex align-items-start gap-3">
                         <div className="position-relative">
-                          <Image
-                            src={conversation.petImage}
-                            alt={conversation.pet}
-                            roundedCircle
-                            width={40}
-                            height={40}
-                          />
-                          <div
-                            className={`position-absolute bottom-0 end-0 ${
-                              conversation.isOnline
-                                ? "bg-success"
-                                : "bg-secondary"
-                            }`}
-                            style={{
-                              width: 12,
-                              height: 12,
-                              borderRadius: "50%",
-                              border: "2px solid white",
-                            }}
-                          ></div>
+                          {conversation.tutor_foto ? (
+                            <Image
+                              src={conversation.tutor_foto}
+                              alt={conversation.tutor_nome || 'Tutor'}
+                              roundedCircle
+                              width={40}
+                              height={40}
+                            />
+                          ) : (
+                            <div
+                              className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
+                              style={{ width: 40, height: 40 }}
+                            >
+                              {(conversation.tutor_nome || 'T')[0].toUpperCase()}
+                            </div>
+                          )}
                         </div>
                         <div className="flex-grow-1 min-w-0">
                           <div className="d-flex justify-content-between align-items-start">
                             <div>
                               <h6 className="mb-1 fw-semibold">
-                                {conversation.tutor?.nome || 'N/A'}
+                                {conversation.tutor_nome || 'Tutor'}
                               </h6>
-                              <small className="text-muted">
-                                {conversation.paciente?.nome || 'N/A'} ({conversation.paciente?.especie || 'N/A'})
-                              </small>
+                              {conversation.assunto && (
+                                <small className="text-muted">
+                                  {conversation.assunto}
+                                </small>
+                              )}
                             </div>
                             <div className="text-end">
                               <small className="text-muted d-block">
-                                {conversation.lastMessageTime}
+                                {conversation.ultima_mensagem_at
+                                  ? new Date(conversation.ultima_mensagem_at).toLocaleTimeString('pt-BR', {
+                                      hour: '2-digit',
+                                      minute: '2-digit',
+                                    })
+                                  : ''}
                               </small>
-                              {conversation.unreadCount > 0 && (
+                              {(conversation.nao_lidas_count || 0) > 0 && (
                                 <Badge bg="primary" className="mt-1">
-                                  {conversation.unreadCount}
+                                  {conversation.nao_lidas_count}
                                 </Badge>
                               )}
                             </div>
                           </div>
                           <p className="text-muted mb-0 mt-1 small text-truncate">
-                            {conversation.lastMessage}
+                            {conversation.ultima_mensagem || 'Sem mensagens'}
                           </p>
                         </div>
                       </div>
@@ -437,15 +435,11 @@ const ChatPage = () => {
                         </div>
                         <div>
                           <h6 className="mb-0 fw-semibold">
-                            {selectedConversation.tutor?.nome || 'N/A'}
+                            {selectedConversation.tutor_nome || 'Tutor'}
                           </h6>
                           <small className="text-muted">
-                            {selectedConversation.paciente?.nome || 'N/A'} •{" "}
-                            {selectedConversation.isOnline ? (
-                              <span className="text-success">Online</span>
-                            ) : (
-                              <span className="text-muted">Offline</span>
-                            )}
+                            Conversa #{selectedConversation.id}
+                            {selectedConversation.assunto && ` • ${selectedConversation.assunto}`}
                           </small>
                         </div>
                       </div>
@@ -485,85 +479,112 @@ const ChatPage = () => {
 
                   {/* Área de Mensagens */}
                   <Card.Body
-                    className="p-0"
-                    style={{ height: "400px", overflowY: "auto" }}
+                    className="p-0 d-flex flex-column"
+                    style={{ 
+                      height: "calc(100vh - 300px)",
+                      minHeight: "400px",
+                      maxHeight: "600px"
+                    }}
                   >
-                    <div className="p-3">
-                      {selectedConversation.messages.map((message) => (
-                        <div
-                          key={message.id}
-                          className={`d-flex mb-3 ${
-                            message.sender === "vet"
-                              ? "justify-content-end"
-                              : "justify-content-start"
-                          }`}
-                        >
-                          <div
-                            className={`max-w-75 ${
-                              message.sender === "vet"
-                                ? "bg-primary text-white"
-                                : "bg-light text-dark"
-                            } rounded-3 p-3`}
-                            style={{ maxWidth: "75%" }}
-                          >
-                            <p className="mb-2">{message.text}</p>
+                    <div 
+                      ref={messagesContainerRef}
+                      className="flex-grow-1 p-3"
+                      style={{ 
+                        overflowY: "auto",
+                        overflowX: "hidden"
+                      }}
+                    >
+                      {messages.length === 0 ? (
+                        <div className="text-center text-muted py-4">
+                          Nenhuma mensagem ainda. Inicie a conversa!
+                        </div>
+                      ) : (
+                        messages.map((message) => {
+                          const isVet = message.remetente_tipo === 'veterinario';
+                          return (
+                            <div
+                              key={message.id}
+                              className={`d-flex mb-3 ${
+                                isVet
+                                  ? "justify-content-end"
+                                  : "justify-content-start"
+                              }`}
+                            >
+                              <div
+                                className={`max-w-75 ${
+                                  isVet
+                                    ? "bg-primary text-white"
+                                    : "bg-light text-dark"
+                                } rounded-3 p-3`}
+                                style={{ maxWidth: "75%" }}
+                              >
+                                <p className="mb-2">{message.conteudo}</p>
 
-                            {/* Anexos */}
-                            {message.attachments &&
-                              message.attachments.length > 0 && (
-                                <div className="mb-2">
-                                  {message.attachments.map(
-                                    (attachment, index) => (
-                                      <div key={index} className="mb-2">
-                                        {attachment.type === "image" ? (
-                                          <Image
-                                            src={attachment.url}
-                                            alt={attachment.name}
-                                            fluid
-                                            className="rounded"
-                                            style={{ maxHeight: "200px" }}
-                                          />
-                                        ) : (
-                                          <div className="d-flex align-items-center gap-2 p-2 bg-white rounded">
-                                            <FaFile className="text-primary" />
-                                            <span className="small">
-                                              {attachment.name}
-                                            </span>
-                                            <Button
-                                              variant="link"
-                                              size="sm"
-                                              className="p-0"
-                                            >
-                                              <FaDownload />
-                                            </Button>
-                                          </div>
-                                        )}
+                                {/* Anexos */}
+                                {message.anexo_url && (
+                                  <div className="mb-2">
+                                    {message.tipo === "imagem" ? (
+                                      <Image
+                                        src={message.anexo_url}
+                                        alt="Anexo"
+                                        fluid
+                                        className="rounded"
+                                        style={{ maxHeight: "200px" }}
+                                      />
+                                    ) : (
+                                      <div className="d-flex align-items-center gap-2 p-2 bg-white rounded">
+                                        <FaFile className="text-primary" />
+                                        <a
+                                          href={message.anexo_url}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="small"
+                                        >
+                                          Ver anexo
+                                        </a>
+                                        <Button
+                                          variant="link"
+                                          size="sm"
+                                          className="p-0"
+                                          href={message.anexo_url}
+                                          download
+                                        >
+                                          <FaDownload />
+                                        </Button>
                                       </div>
-                                    )
+                                    )}
+                                  </div>
+                                )}
+
+                                <div className="d-flex justify-content-between align-items-center">
+                                  <small className="opacity-75">
+                                    {new Date(message.created_at).toLocaleTimeString('pt-BR', {
+                                      hour: '2-digit',
+                                      minute: '2-digit',
+                                    })}
+                                  </small>
+                                  {isVet && (
+                                    <span className="ms-2">
+                                      {message.lida ? (
+                                        <FaCheckDouble className={isVet ? "text-white" : "text-primary"} />
+                                      ) : (
+                                        <FaCheck />
+                                      )}
+                                    </span>
                                   )}
                                 </div>
-                              )}
-
-                            <div className="d-flex justify-content-between align-items-center">
-                              <small className="opacity-75">
-                                {message.timestamp}
-                              </small>
-                              {message.sender === "vet" && (
-                                <span className="ms-2">
-                                  {getMessageStatusIcon(message.status)}
-                                </span>
-                              )}
+                              </div>
                             </div>
-                          </div>
-                        </div>
-                      ))}
+                          );
+                        })
+                      )}
 
                       {/* Indicador de Digitação */}
                       {isTyping && (
                         <div className="d-flex justify-content-start mb-3">
                           <div className="bg-light text-dark rounded-3 p-3">
                             <small className="text-muted">
-                              {selectedConversation.tutor} está digitando...
+                              {selectedConversation.tutor_nome || 'Tutor'} está digitando...
                             </small>
                           </div>
                         </div>

@@ -11,6 +11,7 @@ import {
   PublicRoute,
 } from "./features/authentication/components/AuthGuard";
 import { SubscriptionProvider } from "./contexts/SubscriptionContext";
+import NotificationToast from "./components/ui/NotificationToast";
 
 // --- LAZY LOADING DAS PÁGINAS ---
 
@@ -188,6 +189,7 @@ function App() {
   return (
     <SubscriptionProvider>
       <ScrollToTop />
+      <NotificationToast />
       <div key={location.pathname} className="fade-in">
         <Suspense fallback={<PageLoader />}>
           <Routes location={location}>

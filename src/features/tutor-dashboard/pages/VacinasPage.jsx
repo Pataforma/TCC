@@ -32,125 +32,222 @@ import {
   FaFileMedical,
 } from "react-icons/fa";
 import DashboardLayout from "../../../layouts/DashboardLayout";
+import { api } from "../../../utils/api";
+import { useUser } from "../../../contexts/UserContext";
 
 const VacinasPage = () => {
+  const { user } = useUser();
   const [nomeUsuario, setNomeUsuario] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [selectedVacina, setSelectedVacina] = useState(null);
-
-  // Dados mockados de vacinas
-  const [vacinasPendentes] = useState([
-    {
-      id: 1,
-      pet: "Luna",
-      nome: "Vacina Antirrábica",
-      tipo: "Anual",
-      dataAplicacao: null,
-      proximaDose: "2024-01-20",
-      status: "pendente",
-      urgente: true,
-      diasAtraso: 5,
-      veterinario: "Dra. Juliana Santos",
-      clinica: "Clínica Veterinária Pataforma",
-      valor: 75.0,
-      observacoes: "Vacina obrigatória por lei",
-    },
-    {
-      id: 2,
-      pet: "Thor",
-      nome: "Vacina V10",
-      tipo: "Anual",
-      dataAplicacao: null,
-      proximaDose: "2024-02-15",
-      status: "pendente",
-      urgente: false,
-      diasAtraso: 0,
-      veterinario: "Dr. André Silva",
-      clinica: "Clínica Veterinária Pataforma",
-      valor: 85.0,
-      observacoes: "Proteção contra 10 doenças caninas",
-    },
-    {
-      id: 3,
-      pet: "Max",
-      nome: "Vacina V8",
-      tipo: "Anual",
-      dataAplicacao: null,
-      proximaDose: "2024-03-10",
-      status: "pendente",
-      urgente: false,
-      diasAtraso: 0,
-      veterinario: "Dr. André Silva",
-      clinica: "Clínica Veterinária Pataforma",
-      valor: 80.0,
-      observacoes: "Proteção contra 8 doenças caninas",
-    },
-  ]);
-
-  const [historicoVacinas] = useState([
-    {
-      id: 1,
-      pet: "Luna",
-      nome: "Vacina Antirrábica",
-      tipo: "Anual",
-      dataAplicacao: "2023-01-15",
-      proximaDose: "2024-01-15",
-      status: "aplicada",
-      veterinario: "Dra. Juliana Santos",
-      clinica: "Clínica Veterinária Pataforma",
-      valor: 75.0,
-      observacoes: "Aplicada sem reações adversas",
-      lote: "LOT-2023-001",
-    },
-    {
-      id: 2,
-      pet: "Thor",
-      nome: "Vacina V10",
-      tipo: "Anual",
-      dataAplicacao: "2023-02-10",
-      proximaDose: "2024-02-10",
-      status: "aplicada",
-      veterinario: "Dr. André Silva",
-      clinica: "Clínica Veterinária Pataforma",
-      valor: 85.0,
-      observacoes: "Aplicada com sucesso",
-      lote: "LOT-2023-002",
-    },
-    {
-      id: 3,
-      pet: "Max",
-      nome: "Vacina V8",
-      tipo: "Anual",
-      dataAplicacao: "2023-03-05",
-      proximaDose: "2024-03-05",
-      status: "aplicada",
-      veterinario: "Dr. André Silva",
-      clinica: "Clínica Veterinária Pataforma",
-      valor: 80.0,
-      observacoes: "Aplicada sem complicações",
-      lote: "LOT-2023-003",
-    },
-    {
-      id: 4,
-      pet: "Luna",
-      nome: "Vacina V4 Felina",
-      tipo: "Anual",
-      dataAplicacao: "2023-04-20",
-      proximaDose: "2024-04-20",
-      status: "aplicada",
-      veterinario: "Dra. Juliana Santos",
-      clinica: "Clínica Veterinária Pataforma",
-      valor: 70.0,
-      observacoes: "Aplicada com sucesso",
-      lote: "LOT-2023-004",
-    },
-  ]);
+  const [vacinasPendentes, setVacinasPendentes] = useState([]);
+  const [historicoVacinas, setHistoricoVacinas] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // TODO: Buscar dados do usuário do Supabase
-    setNomeUsuario("Maria Silva");
-  }, []);
+    if (user) {
+      setNomeUsuario(user.nome || user.email || "");
+    }
+    fetchVacinas();
+  }, [user]);
+
+  const fetchVacinas = async () => {
+    setLoading(true);
+    try {
+      // Buscar pets do usuário para mapear IDs
+      const pets = await api.get("/pets");
+      const petsMap = {};
+      pets.forEach((pet) => {
+        petsMap[pet.id] = pet.nome;
+      });
+
+      // Buscar consultas de vacinação
+      const consultas = await api.get("/consultas");
+      const consultasVacinas = consultas.filter(
+        (c) =>
+          c.tipo &&
+          (c.tipo.toLowerCase().includes("vacina") ||
+            c.tipo.toLowerCase().includes("vacinação"))
+      );
+
+      // Buscar lembretes de vacinas
+      const lembretes = await api.get("/lembretes");
+      const lembretesVacinas = lembretes.filter(
+        (l) =>
+          l.tipo &&
+          (l.tipo.toLowerCase().includes("vacina") ||
+            l.titulo.toLowerCase().includes("vacina"))
+      );
+
+      // Combinar e formatar
+      const pendentes = formatarVacinasPendentes(
+        consultasVacinas,
+        lembretesVacinas,
+        petsMap
+      );
+      const historico = formatarHistoricoVacinas(
+        consultasVacinas,
+        lembretesVacinas,
+        petsMap
+      );
+
+      setVacinasPendentes(pendentes);
+      setHistoricoVacinas(historico);
+    } catch (error) {
+      console.error("Erro ao buscar vacinas:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatarVacinasPendentes = (consultas, lembretes, petsMap = {}) => {
+    const agora = new Date();
+    const vacinas = [];
+
+    // Processar consultas futuras
+    consultas
+      .filter((c) => {
+        const dataConsulta = new Date(c.data_consulta);
+        return (
+          c.status !== "realizado" &&
+          c.status !== "cancelado" &&
+          dataConsulta >= agora
+        );
+      })
+      .forEach((c) => {
+        const dataConsulta = new Date(c.data_consulta);
+        const diasAtraso = Math.max(
+          0,
+          Math.floor((agora - dataConsulta) / (1000 * 60 * 60 * 24))
+        );
+
+        vacinas.push({
+          id: `consulta-${c.id}`,
+          pet: c.pet?.nome || c.pacientes?.nome || "Pet não informado",
+          nome: c.tipo || "Vacina",
+          tipo: "Anual", // TODO: Extrair do tipo ou observações
+          dataAplicacao: null,
+          proximaDose: dataConsulta.toISOString().split("T")[0],
+          status: "pendente",
+          urgente: diasAtraso > 0,
+          diasAtraso: diasAtraso,
+          veterinario:
+            c.veterinario?.nome || "Veterinário não informado",
+          clinica: c.veterinario?.nome_clinica || "Clínica não informada",
+          valor: 0, // TODO: Adicionar campo valor
+          observacoes: c.observacoes || "",
+        });
+      });
+
+    // Processar lembretes futuros
+    lembretes
+      .filter((l) => {
+        const dataLembrete = new Date(l.data);
+        return dataLembrete >= agora;
+      })
+      .forEach((l) => {
+        const dataLembrete = new Date(l.data);
+        const diasAtraso = Math.max(
+          0,
+          Math.floor((agora - dataLembrete) / (1000 * 60 * 60 * 24))
+        );
+
+        // Buscar nome do pet
+        const petNome = l.pet_id
+          ? petsMap[l.pet_id] || "Pet não informado"
+          : "Pet não informado";
+
+        vacinas.push({
+          id: `lembrete-${l.id}`,
+          pet: petNome,
+          nome: l.titulo || "Vacina",
+          tipo: "Anual", // TODO: Extrair do tipo
+          dataAplicacao: null,
+          proximaDose: dataLembrete.toISOString().split("T")[0],
+          status: "pendente",
+          urgente: l.urgente || diasAtraso > 0,
+          diasAtraso: diasAtraso,
+          veterinario: "Não informado",
+          clinica: "Não informada",
+          valor: 0,
+          observacoes: l.descricao || "",
+        });
+      });
+
+    return vacinas.sort((a, b) => {
+      const dataA = new Date(a.proximaDose);
+      const dataB = new Date(b.proximaDose);
+      return dataA - dataB;
+    });
+  };
+
+  const formatarHistoricoVacinas = (consultas, lembretes, petsMap = {}) => {
+    const agora = new Date();
+    const vacinas = [];
+
+    // Processar consultas realizadas
+    consultas
+      .filter((c) => c.status === "realizado")
+      .forEach((c) => {
+        const dataConsulta = new Date(c.data_consulta);
+        const proximaDose = new Date(dataConsulta);
+        proximaDose.setFullYear(proximaDose.getFullYear() + 1); // Assumindo anual
+
+        vacinas.push({
+          id: `consulta-${c.id}`,
+          pet: c.pet?.nome || c.pacientes?.nome || "Pet não informado",
+          nome: c.tipo || "Vacina",
+          tipo: "Anual",
+          dataAplicacao: dataConsulta.toISOString().split("T")[0],
+          proximaDose: proximaDose.toISOString().split("T")[0],
+          status: "aplicada",
+          veterinario:
+            c.veterinario?.nome || "Veterinário não informado",
+          clinica: c.veterinario?.nome_clinica || "Clínica não informada",
+          valor: 0,
+          observacoes: c.observacoes || "Aplicada com sucesso",
+          lote: null, // TODO: Adicionar campo lote
+        });
+      });
+
+    // Processar lembretes passados
+    lembretes
+      .filter((l) => {
+        const dataLembrete = new Date(l.data);
+        return dataLembrete < agora;
+      })
+      .forEach((l) => {
+        const dataLembrete = new Date(l.data);
+        const proximaDose = new Date(dataLembrete);
+        proximaDose.setFullYear(proximaDose.getFullYear() + 1);
+
+        const petNome = l.pet_id
+          ? petsMap[l.pet_id] || "Pet não informado"
+          : "Pet não informado";
+
+        vacinas.push({
+          id: `lembrete-${l.id}`,
+          pet: petNome,
+          nome: l.titulo || "Vacina",
+          tipo: "Anual",
+          dataAplicacao: dataLembrete.toISOString().split("T")[0],
+          proximaDose: proximaDose.toISOString().split("T")[0],
+          status: "aplicada",
+          veterinario: "Não informado",
+          clinica: "Não informada",
+          valor: 0,
+          observacoes: l.descricao || "Aplicada com sucesso",
+          lote: null,
+        });
+      });
+
+    return vacinas.sort((a, b) => {
+      const dataA = new Date(a.dataAplicacao);
+      const dataB = new Date(b.dataAplicacao);
+      return dataB - dataA; // Mais recentes primeiro
+    });
+  };
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString("pt-BR");
@@ -199,6 +296,20 @@ const VacinasPage = () => {
   const totalPendentes = vacinasPendentes.length;
   const totalAplicadas = historicoVacinas.length;
   const totalAtrasadas = vacinasPendentes.filter((v) => v.urgente).length;
+
+  if (loading) {
+    return (
+      <DashboardLayout tipoUsuario="tutor" nomeUsuario={nomeUsuario}>
+        <Container fluid className="py-4">
+          <div className="text-center p-5">
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Carregando...</span>
+            </div>
+          </div>
+        </Container>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout tipoUsuario="tutor" nomeUsuario={nomeUsuario}>

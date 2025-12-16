@@ -1,53 +1,22 @@
-import React, { useState } from "react";
+import React from "react";
 import { Dropdown, Badge } from "react-bootstrap";
 import {
   FaBell,
   FaEnvelope,
-  FaCalendarAlt,
-  FaExclamationTriangle,
+  FaUserMd,
+  FaUser,
 } from "react-icons/fa";
+import { useNotifications } from "../../contexts/NotificationContext";
 
 const NotificationsDropdown = () => {
-  const [notifications] = useState([
-    {
-      id: 1,
-      type: "message",
-      title: "Nova mensagem",
-      message: "Você recebeu uma nova mensagem do Dr. Silva",
-      time: "2 min atrás",
-      read: false,
-      icon: FaEnvelope,
-    },
-    {
-      id: 2,
-      type: "appointment",
-      title: "Consulta confirmada",
-      message: "Sua consulta para amanhã foi confirmada",
-      time: "1 hora atrás",
-      read: false,
-      icon: FaCalendarAlt,
-    },
-    {
-      id: 3,
-      type: "alert",
-      title: "Vacina vencendo",
-      message: "A vacina do seu pet Luna vence em 7 dias",
-      time: "3 horas atrás",
-      read: true,
-      icon: FaExclamationTriangle,
-    },
-  ]);
-
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  const { notifications, unreadCount, markAsRead, markAllAsRead, removeNotification } = useNotifications();
 
   const getIconColor = (type) => {
     switch (type) {
-      case "message":
+      case "mensagem_veterinario":
         return "text-primary";
-      case "appointment":
-        return "text-success";
-      case "alert":
-        return "text-warning";
+      case "mensagem_tutor":
+        return "text-info";
       default:
         return "text-muted";
     }
@@ -55,14 +24,38 @@ const NotificationsDropdown = () => {
 
   const getIcon = (type) => {
     switch (type) {
-      case "message":
-        return FaEnvelope;
-      case "appointment":
-        return FaCalendarAlt;
-      case "alert":
-        return FaExclamationTriangle;
+      case "mensagem_veterinario":
+        return FaUserMd;
+      case "mensagem_tutor":
+        return FaUser;
       default:
-        return FaBell;
+        return FaEnvelope;
+    }
+  };
+
+  const formatTime = (timestamp) => {
+    if (!timestamp) return 'agora';
+    const now = new Date();
+    const time = new Date(timestamp);
+    const diffInSeconds = Math.floor((now - time) / 1000);
+    
+    if (diffInSeconds < 60) {
+      return 'agora';
+    } else if (diffInSeconds < 3600) {
+      const minutes = Math.floor(diffInSeconds / 60);
+      return `${minutes} min atrás`;
+    } else if (diffInSeconds < 86400) {
+      const hours = Math.floor(diffInSeconds / 3600);
+      return `${hours} hora${hours > 1 ? 's' : ''} atrás`;
+    } else {
+      return time.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+    }
+  };
+
+  const handleNotificationClick = (notification) => {
+    markAsRead(notification.id);
+    if (notification.onClick) {
+      notification.onClick();
     }
   };
 
@@ -108,49 +101,66 @@ const NotificationsDropdown = () => {
             Nenhuma notificação
           </Dropdown.Item>
         ) : (
-          notifications.map((notification) => {
-            const Icon = getIcon(notification.type);
-            return (
-              <Dropdown.Item
-                key={notification.id}
-                className={`py-3 ${!notification.read ? "bg-light" : ""}`}
-                style={{ borderBottom: "1px solid #f0f0f0" }}
-              >
-                <div className="d-flex align-items-start gap-3">
-                  <div className={`${getIconColor(notification.type)} mt-1`}>
-                    <Icon size={16} />
-                  </div>
-                  <div className="flex-grow-1">
-                    <div className="d-flex justify-content-between align-items-start">
-                      <h6
-                        className="mb-1 fw-semibold"
-                        style={{ fontSize: "14px" }}
-                      >
-                        {notification.title}
-                      </h6>
-                      {!notification.read && (
-                        <div
-                          className="bg-primary rounded-circle ms-2"
-                          style={{ width: 8, height: 8, minWidth: 8 }}
-                        />
-                      )}
+          <>
+            {notifications.slice(0, 10).map((notification) => {
+              const Icon = getIcon(notification.type);
+              return (
+                <Dropdown.Item
+                  key={notification.id}
+                  className={`py-3 ${!notification.read ? "bg-light" : ""}`}
+                  style={{ 
+                    borderBottom: "1px solid #f0f0f0",
+                    cursor: notification.onClick ? 'pointer' : 'default'
+                  }}
+                  onClick={() => handleNotificationClick(notification)}
+                >
+                  <div className="d-flex align-items-start gap-3">
+                    <div className={`${getIconColor(notification.type)} mt-1`}>
+                      <Icon size={16} />
                     </div>
-                    <p className="mb-1 text-muted" style={{ fontSize: "13px" }}>
-                      {notification.message}
-                    </p>
-                    <small className="text-muted">{notification.time}</small>
+                    <div className="flex-grow-1">
+                      <div className="d-flex justify-content-between align-items-start">
+                        <h6
+                          className="mb-1 fw-semibold"
+                          style={{ fontSize: "14px" }}
+                        >
+                          {notification.title}
+                        </h6>
+                        {!notification.read && (
+                          <div
+                            className="bg-primary rounded-circle ms-2"
+                            style={{ width: 8, height: 8, minWidth: 8 }}
+                          />
+                        )}
+                      </div>
+                      <p className="mb-1 text-muted" style={{ fontSize: "13px" }}>
+                        {notification.message}
+                      </p>
+                      <small className="text-muted">{formatTime(notification.timestamp)}</small>
+                    </div>
                   </div>
-                </div>
+                </Dropdown.Item>
+              );
+            })}
+            {notifications.length > 10 && (
+              <Dropdown.Item className="text-center text-muted py-2" disabled>
+                +{notifications.length - 10} notificações antigas
               </Dropdown.Item>
-            );
-          })
+            )}
+          </>
         )}
 
-        <Dropdown.Divider />
-
-        <Dropdown.Item className="text-center text-primary fw-semibold">
-          Ver todas as notificações
-        </Dropdown.Item>
+        {notifications.length > 0 && (
+          <>
+            <Dropdown.Divider />
+            <Dropdown.Item 
+              className="text-center text-primary fw-semibold"
+              onClick={markAllAsRead}
+            >
+              Marcar todas como lidas
+            </Dropdown.Item>
+          </>
+        )}
       </Dropdown.Menu>
     </Dropdown>
   );

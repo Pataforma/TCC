@@ -121,7 +121,7 @@ const RedeSocialVeterinario = () => {
     }
   };
 
-  const handleEntrarContato = () => {
+  const handleEntrarContato = async () => {
     if (!user) {
       alert("Você precisa estar logado para entrar em contato");
       navigate("/telalogin");
@@ -133,10 +133,24 @@ const RedeSocialVeterinario = () => {
       return;
     }
 
-    // Redirecionar para chat
-    navigate("/dashboard/veterinario/chat", {
-      state: { veterinario_id: id },
-    });
+    // Verificar se veterinário permite contato
+    if (veterinario && (veterinario.permitir_contato === false || veterinario.permitir_contato === 0)) {
+      alert("Este veterinário não permite contato de tutores");
+      return;
+    }
+
+    try {
+      // Criar conversa
+      const conversa = await api.post('/conversas', {
+        veterinario_id: id,
+      });
+      
+      // Redirecionar para página de mensagens com a conversa aberta
+      navigate(`/dashboard-tutor/mensagens?conversa=${conversa.id}`);
+    } catch (error) {
+      console.error('Erro ao criar conversa:', error);
+      alert(error.message || 'Erro ao entrar em contato. Tente novamente.');
+    }
   };
 
   // Verificar se é o próprio perfil do usuário (usando id_usuario como identificador global)
@@ -311,7 +325,8 @@ const RedeSocialVeterinario = () => {
                   )}
                 </Button>
               )}
-              {user && user.tipo_usuario === "tutor" && !isOwnProfile && (
+              {user && user.tipo_usuario === "tutor" && !isOwnProfile && 
+               veterinario && veterinario.permitir_contato !== false && veterinario.permitir_contato !== 0 && (
                 <Button variant="outline-primary" onClick={handleEntrarContato}>
                   <FaComments className="me-2" />
                   Entrar em Contato

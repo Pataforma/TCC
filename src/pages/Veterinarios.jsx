@@ -4,10 +4,12 @@ import Header from "../components/ui/Header";
 import Footer from "../components/ui/Footer";
 import Botao from "../components/ui/Botao";
 import { api } from "../utils/api";
-import { FaSpinner, FaSearch, FaTimes } from "react-icons/fa";
+import { useUser } from "../contexts/UserContext";
+import { FaSpinner, FaSearch, FaTimes, FaComments } from "react-icons/fa";
 
 const Veterinarios = () => {
   const navigate = useNavigate();
+  const { user } = useUser();
   const [viewProfile, setViewProfile] = useState(null);
   const [veterinarios, setVeterinarios] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -16,6 +18,27 @@ const Veterinarios = () => {
     cidade: "",
     especialidades: [], // Array para múltiplas especialidades
   });
+
+  const handleEntrarEmContato = async (veterinario) => {
+    if (!user) {
+      alert('Você precisa estar logado para entrar em contato');
+      navigate('/login');
+      return;
+    }
+
+    try {
+      // Criar conversa
+      const conversa = await api.post('/conversas', {
+        veterinario_id: veterinario.id_veterinarios,
+      });
+      
+      // Redirecionar para página de mensagens com a conversa aberta
+      navigate(`/dashboard-tutor/mensagens?conversa=${conversa.id}`);
+    } catch (error) {
+      console.error('Erro ao criar conversa:', error);
+      alert(error.message || 'Erro ao entrar em contato. Tente novamente.');
+    }
+  };
 
   // Carregar veterinários do backend
   useEffect(() => {
@@ -469,7 +492,16 @@ const Veterinarios = () => {
                             <i className="bi bi-geo"></i> {vet.endereco_clinica}
                           </p>
                         )}
-                        <div className="mt-3">
+                        <div className="mt-3 d-grid gap-2">
+                          {vet.permitir_contato !== false && vet.permitir_contato !== 0 && (
+                            <Botao
+                              text="Entrar em Contato"
+                              bgColor="var(--main-color)"
+                              hoverColor="var(--bg-button)"
+                              className="w-100"
+                              onClick={() => handleEntrarEmContato(vet)}
+                            />
+                          )}
                           <Botao
                             text="Ver Rede Social"
                             bgColor="var(--elements-color)"

@@ -42,8 +42,11 @@ import {
 } from "react-icons/fa";
 import DashboardLayout from "../../../layouts/DashboardLayout";
 import SimpleChart from "../../../components/Dashboard/SimpleChart";
+import { api } from "../../../utils/api";
+import { useUser } from "../../../contexts/UserContext";
 
 const DashboardTutorFinanceiro = () => {
+  const { user } = useUser();
   const [nomeUsuario, setNomeUsuario] = useState("");
   const [activeTab, setActiveTab] = useState("dashboard");
   const [showAddModal, setShowAddModal] = useState(false);
@@ -52,126 +55,156 @@ const DashboardTutorFinanceiro = () => {
   const [filtroPeriodo, setFiltroPeriodo] = useState("mes");
   const [filtroCategoria, setFiltroCategoria] = useState("");
   const [filtroPet, setFiltroPet] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  // Dados mockados financeiros
-  const [dadosFinanceiros] = useState({
-    totalGasto: 2840.5,
-    mediaMensal: 236.71,
-    totalTransacoes: 12,
-    gastoMesAtual: 420.0,
-    gastoMesAnterior: 380.0,
-    variacao: 10.5,
+  // Estados para dados reais
+  const [transacoes, setTransacoes] = useState([]);
+  const [pets, setPets] = useState([]);
+  const [dadosFinanceiros, setDadosFinanceiros] = useState({
+    totalGasto: 0,
+    mediaMensal: 0,
+    totalTransacoes: 0,
+    gastoMesAtual: 0,
+    gastoMesAnterior: 0,
+    variacao: 0,
+  });
+  const [gastosPorCategoria, setGastosPorCategoria] = useState([]);
+  const [gastosPorPet, setGastosPorPet] = useState([]);
+  const [gastosMensais, setGastosMensais] = useState([]);
+
+  // Formulário para nova despesa
+  const [novaDespesa, setNovaDespesa] = useState({
+    valor: "",
+    data: new Date().toISOString().split("T")[0],
+    descricao: "",
+    categoria: "",
+    fornecedor: "",
+    forma_pagamento: "",
+    pet_id: "",
+    observacoes: "",
   });
 
-  const [transacoes] = useState([
-    {
-      id: 1,
-      data: "2024-01-15",
-      descricao: "Consulta de Rotina - Thor",
-      categoria: "Consulta",
-      pet: "Thor",
-      clinica: "Clínica Veterinária Pataforma",
-      valor: 120.0,
-      status: "pago",
-      formaPagamento: "Cartão de Crédito",
-      parcelas: 1,
-      observacoes: "Consulta de rotina anual",
-    },
-    {
-      id: 2,
-      data: "2024-01-12",
-      descricao: "Vacina Antirrábica - Luna",
-      categoria: "Vacinação",
-      pet: "Luna",
-      clinica: "Clínica Veterinária Pataforma",
-      valor: 75.0,
-      status: "pago",
-      formaPagamento: "PIX",
-      parcelas: 1,
-      observacoes: "Vacina obrigatória anual",
-    },
-    {
-      id: 3,
-      data: "2024-01-10",
-      descricao: "Cirurgia de Castração - Max",
-      categoria: "Cirurgia",
-      pet: "Max",
-      clinica: "Clínica Veterinária Pataforma",
-      valor: 450.0,
-      status: "pago",
-      formaPagamento: "Cartão de Crédito",
-      parcelas: 3,
-      observacoes: "Cirurgia eletiva de castração",
-    },
-    {
-      id: 4,
-      data: "2024-01-08",
-      descricao: "Exames Laboratoriais - Thor",
-      categoria: "Exames",
-      pet: "Thor",
-      clinica: "Clínica Veterinária Pataforma",
-      valor: 180.0,
-      status: "pago",
-      formaPagamento: "Cartão de Débito",
-      parcelas: 1,
-      observacoes: "Hemograma completo e bioquímico",
-    },
-    {
-      id: 5,
-      data: "2024-01-05",
-      descricao: "Banho e Tosa - Luna",
-      categoria: "Pet Shop",
-      pet: "Luna",
-      clinica: "Pet Shop Cão & Gato",
-      valor: 60.0,
-      status: "pago",
-      formaPagamento: "Dinheiro",
-      parcelas: 1,
-      observacoes: "Banho, tosa e corte de unhas",
-    },
-    {
-      id: 6,
-      data: "2024-01-03",
-      descricao: "Ração Premium - Thor",
-      categoria: "Alimentação",
-      pet: "Thor",
-      clinica: "Pet Shop Cão & Gato",
-      valor: 85.0,
-      status: "pago",
-      formaPagamento: "Cartão de Crédito",
-      parcelas: 1,
-      observacoes: "Ração especial para cães adultos",
-    },
-  ]);
-
-  const [gastosPorCategoria] = useState([
-    { label: "Consultas", value: 480, color: "#4ecdc4" },
-    { label: "Vacinas", value: 150, color: "#ff6b6b" },
-    { label: "Cirurgias", value: 450, color: "#45b7d1" },
-    { label: "Exames", value: 180, color: "#96ceb4" },
-    { label: "Pet Shop", value: 145, color: "#feca57" },
-    { label: "Alimentação", value: 85, color: "#ff9ff3" },
-  ]);
-
-  const [gastosPorPet] = useState([
-    { label: "Thor", value: 785, color: "#4ecdc4" },
-    { label: "Luna", value: 135, color: "#ff6b6b" },
-    { label: "Max", value: 450, color: "#45b7d1" },
-  ]);
-
-  const [gastosMensais] = useState([
-    { label: "Jan", value: 420 },
-    { label: "Dez", value: 380 },
-    { label: "Nov", value: 320 },
-    { label: "Out", value: 450 },
-    { label: "Set", value: 280 },
-    { label: "Ago", value: 390 },
-  ]);
-
   useEffect(() => {
-    // TODO: Buscar dados do usuário do Supabase
-    setNomeUsuario("Maria Silva");
-  }, []);
+    if (user) {
+      setNomeUsuario(user.nome || "");
+      fetchTransacoes();
+      fetchEstatisticas();
+      fetchPets();
+    }
+  }, [user, filtroPeriodo]);
+
+  const fetchPets = async () => {
+    try {
+      const data = await api.get("/pets");
+      setPets(data);
+    } catch (error) {
+      console.error("Erro ao buscar pets:", error);
+    }
+  };
+
+  const fetchTransacoes = async () => {
+    try {
+      setLoading(true);
+      const params = new URLSearchParams();
+      if (filtroPeriodo === "mes") {
+        const hoje = new Date();
+        const primeiroDia = new Date(hoje.getFullYear(), hoje.getMonth(), 1)
+          .toISOString()
+          .split("T")[0];
+        params.append("data_inicio", primeiroDia);
+      } else if (filtroPeriodo === "ano") {
+        const hoje = new Date();
+        const primeiroDia = new Date(hoje.getFullYear(), 0, 1)
+          .toISOString()
+          .split("T")[0];
+        params.append("data_inicio", primeiroDia);
+      }
+
+      const data = await api.get(`/tutores/transacoes?${params.toString()}`);
+      setTransacoes(data);
+    } catch (error) {
+      console.error("Erro ao buscar transações:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchEstatisticas = async () => {
+    try {
+      const params = new URLSearchParams();
+      params.append("periodo", filtroPeriodo);
+      const data = await api.get(
+        `/tutores/transacoes/estatisticas?${params.toString()}`
+      );
+      setDadosFinanceiros({
+        totalGasto: data.totalGasto || 0,
+        mediaMensal: data.mediaMensal || 0,
+        totalTransacoes: data.totalTransacoes || 0,
+        gastoMesAtual: data.gastoMesAtual || 0,
+        gastoMesAnterior: data.gastoMesAnterior || 0,
+        variacao: data.variacao || 0,
+      });
+
+      // Mapear dados para gráficos
+      const cores = [
+        "#4ecdc4",
+        "#ff6b6b",
+        "#45b7d1",
+        "#96ceb4",
+        "#feca57",
+        "#ff9ff3",
+      ];
+      setGastosPorCategoria(
+        (data.gastosPorCategoria || []).map((item, index) => ({
+          ...item,
+          color: cores[index % cores.length],
+        }))
+      );
+      setGastosPorPet(
+        (data.gastosPorPet || []).map((item, index) => ({
+          ...item,
+          color: cores[index % cores.length],
+        }))
+      );
+      setGastosMensais(data.gastosMensais || []);
+    } catch (error) {
+      console.error("Erro ao buscar estatísticas:", error);
+    }
+  };
+
+  const handleCreateDespesa = async (e) => {
+    e.preventDefault();
+    try {
+      await api.post("/tutores/transacoes", {
+        valor: parseFloat(novaDespesa.valor),
+        data: novaDespesa.data,
+        descricao: novaDespesa.descricao,
+        categoria: novaDespesa.categoria,
+        fornecedor: novaDespesa.fornecedor,
+        forma_pagamento: novaDespesa.forma_pagamento,
+        pet_id: novaDespesa.pet_id ? parseInt(novaDespesa.pet_id) : null,
+        observacoes: novaDespesa.observacoes,
+        status: "pendente",
+      });
+
+      setShowAddModal(false);
+      setNovaDespesa({
+        valor: "",
+        data: new Date().toISOString().split("T")[0],
+        descricao: "",
+        categoria: "",
+        fornecedor: "",
+        forma_pagamento: "",
+        pet_id: "",
+        observacoes: "",
+      });
+      fetchTransacoes();
+      fetchEstatisticas();
+    } catch (error) {
+      console.error("Erro ao criar despesa:", error);
+      alert("Erro ao criar despesa. Tente novamente.");
+    }
+  };
 
   const formatCurrency = (value) => {
     return new Intl.NumberFormat("pt-BR", {
@@ -454,9 +487,11 @@ const DashboardTutorFinanceiro = () => {
                           onChange={(e) => setFiltroPet(e.target.value)}
                         >
                           <option value="">Todos os pets</option>
-                          <option value="Thor">Thor</option>
-                          <option value="Luna">Luna</option>
-                          <option value="Max">Max</option>
+                          {pets.map((pet) => (
+                            <option key={pet.id} value={pet.nome}>
+                              {pet.nome}
+                            </option>
+                          ))}
                         </Form.Select>
                         <Button variant="outline-secondary" size="sm">
                           <FaDownload className="me-1" />
@@ -480,7 +515,22 @@ const DashboardTutorFinanceiro = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {transacoesFiltradas.map((transacao) => (
+                        {loading ? (
+                          <tr>
+                            <td colSpan={8} className="text-center py-4">
+                              <div className="spinner-border text-primary" role="status">
+                                <span className="visually-hidden">Carregando...</span>
+                              </div>
+                            </td>
+                          </tr>
+                        ) : transacoesFiltradas.length === 0 ? (
+                          <tr>
+                            <td colSpan={8} className="text-center py-4 text-muted">
+                              Nenhuma transação encontrada
+                            </td>
+                          </tr>
+                        ) : (
+                          transacoesFiltradas.map((transacao) => (
                           <tr key={transacao.id}>
                             <td>
                               <div>
@@ -537,7 +587,8 @@ const DashboardTutorFinanceiro = () => {
                               </div>
                             </td>
                           </tr>
-                        ))}
+                          ))
+                        )}
                       </tbody>
                     </Table>
                   </Card.Body>
@@ -718,7 +769,7 @@ const DashboardTutorFinanceiro = () => {
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <Form>
+            <Form onSubmit={handleCreateDespesa}>
               <Row>
                 <Col md={6}>
                   <Form.Group className="mb-3">
@@ -726,13 +777,24 @@ const DashboardTutorFinanceiro = () => {
                     <Form.Control
                       type="text"
                       placeholder="Ex: Consulta de rotina"
+                      value={novaDespesa.descricao}
+                      onChange={(e) =>
+                        setNovaDespesa({ ...novaDespesa, descricao: e.target.value })
+                      }
+                      required
                     />
                   </Form.Group>
                 </Col>
                 <Col md={6}>
                   <Form.Group className="mb-3">
                     <Form.Label>Categoria *</Form.Label>
-                    <Form.Select>
+                    <Form.Select
+                      value={novaDespesa.categoria}
+                      onChange={(e) =>
+                        setNovaDespesa({ ...novaDespesa, categoria: e.target.value })
+                      }
+                      required
+                    >
                       <option value="">Selecione a categoria</option>
                       <option value="Consulta">Consulta</option>
                       <option value="Vacinação">Vacinação</option>
@@ -740,6 +802,7 @@ const DashboardTutorFinanceiro = () => {
                       <option value="Exames">Exames</option>
                       <option value="Pet Shop">Pet Shop</option>
                       <option value="Alimentação">Alimentação</option>
+                      <option value="Outros">Outros</option>
                     </Form.Select>
                   </Form.Group>
                 </Col>
@@ -748,19 +811,33 @@ const DashboardTutorFinanceiro = () => {
               <Row>
                 <Col md={6}>
                   <Form.Group className="mb-3">
-                    <Form.Label>Pet *</Form.Label>
-                    <Form.Select>
-                      <option value="">Selecione o pet</option>
-                      <option value="Thor">Thor</option>
-                      <option value="Luna">Luna</option>
-                      <option value="Max">Max</option>
+                    <Form.Label>Pet</Form.Label>
+                    <Form.Select
+                      value={novaDespesa.pet_id}
+                      onChange={(e) =>
+                        setNovaDespesa({ ...novaDespesa, pet_id: e.target.value })
+                      }
+                    >
+                      <option value="">Selecione o pet (opcional)</option>
+                      {pets.map((pet) => (
+                        <option key={pet.id} value={pet.id}>
+                          {pet.nome}
+                        </option>
+                      ))}
                     </Form.Select>
                   </Form.Group>
                 </Col>
                 <Col md={6}>
                   <Form.Group className="mb-3">
                     <Form.Label>Data *</Form.Label>
-                    <Form.Control type="date" />
+                    <Form.Control
+                      type="date"
+                      value={novaDespesa.data}
+                      onChange={(e) =>
+                        setNovaDespesa({ ...novaDespesa, data: e.target.value })
+                      }
+                      required
+                    />
                   </Form.Group>
                 </Col>
               </Row>
@@ -773,13 +850,26 @@ const DashboardTutorFinanceiro = () => {
                       type="number"
                       step="0.01"
                       placeholder="0,00"
+                      value={novaDespesa.valor}
+                      onChange={(e) =>
+                        setNovaDespesa({ ...novaDespesa, valor: e.target.value })
+                      }
+                      required
                     />
                   </Form.Group>
                 </Col>
                 <Col md={6}>
                   <Form.Group className="mb-3">
                     <Form.Label>Forma de Pagamento</Form.Label>
-                    <Form.Select>
+                    <Form.Select
+                      value={novaDespesa.forma_pagamento}
+                      onChange={(e) =>
+                        setNovaDespesa({
+                          ...novaDespesa,
+                          forma_pagamento: e.target.value,
+                        })
+                      }
+                    >
                       <option value="">Selecione</option>
                       <option value="Dinheiro">Dinheiro</option>
                       <option value="Cartão de Débito">Cartão de Débito</option>
@@ -797,6 +887,10 @@ const DashboardTutorFinanceiro = () => {
                 <Form.Control
                   type="text"
                   placeholder="Nome da clínica ou estabelecimento"
+                  value={novaDespesa.fornecedor}
+                  onChange={(e) =>
+                    setNovaDespesa({ ...novaDespesa, fornecedor: e.target.value })
+                  }
                 />
               </Form.Group>
 
@@ -806,19 +900,26 @@ const DashboardTutorFinanceiro = () => {
                   as="textarea"
                   rows={3}
                   placeholder="Observações sobre a despesa..."
+                  value={novaDespesa.observacoes}
+                  onChange={(e) =>
+                    setNovaDespesa({ ...novaDespesa, observacoes: e.target.value })
+                  }
                 />
               </Form.Group>
+              <Modal.Footer>
+                <Button
+                  variant="secondary"
+                  onClick={() => setShowAddModal(false)}
+                >
+                  Cancelar
+                </Button>
+                <Button variant="primary" type="submit">
+                  <FaPlus className="me-2" />
+                  Adicionar Despesa
+                </Button>
+              </Modal.Footer>
             </Form>
           </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={() => setShowAddModal(false)}>
-              Cancelar
-            </Button>
-            <Button variant="primary">
-              <FaPlus className="me-2" />
-              Adicionar Despesa
-            </Button>
-          </Modal.Footer>
         </Modal>
       </Container>
     </DashboardLayout>

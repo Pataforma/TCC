@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   Container,
   Row,
@@ -37,8 +38,14 @@ import {
   FaBellSlash,
 } from "react-icons/fa";
 import DashboardLayout from "../../../layouts/DashboardLayout";
+import { api } from "../../../utils/api";
+import { useUser } from "../../../contexts/UserContext";
+import { connectSocket, disconnectSocket, getSocket } from "../../../utils/socket";
+import BuscarVeterinarioModal from "../components/BuscarVeterinarioModal";
 
 const MensagensPage = () => {
+  const { user } = useUser();
+  const [searchParams] = useSearchParams();
   const [nomeUsuario, setNomeUsuario] = useState("");
   const [conversas, setConversas] = useState([]);
   const [conversaAtiva, setConversaAtiva] = useState(null);
@@ -46,10 +53,13 @@ const MensagensPage = () => {
   const [novaMensagem, setNovaMensagem] = useState("");
   const [filtroBusca, setFiltroBusca] = useState("");
   const [showAttachmentModal, setShowAttachmentModal] = useState(false);
+  const [showBuscarVetModal, setShowBuscarVetModal] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [loading, setLoading] = useState(true);
   const messagesEndRef = useRef(null);
+  const messagesContainerRef = useRef(null);
 
-  // Dados mockados de conversas
+  // Dados mockados de conversas (removido - usando dados reais)
   const [conversasData] = useState([
     {
       id: 1,
@@ -210,63 +220,169 @@ const MensagensPage = () => {
     ],
   });
 
+  // Conectar WebSocket e buscar conversas
   useEffect(() => {
-    // TODO: Buscar dados do usuário do Supabase
-    setNomeUsuario("Maria Silva");
-    setConversas(conversasData);
-  }, [conversasData]);
+    if (user) {
+      setNomeUsuario(user.nome || "");
+      fetchConversas();
+      
+      // Verificar se há conversa na URL
+      const conversaId = searchParams.get('conversa');
+      if (conversaId) {
+        // Buscar conversa e abrir
+        api.get(`/conversas/${conversaId}`)
+          .then((conversa) => {
+            setConversaAtiva(conversa);
+            fetchMensagens(conversa.id);
+          })
+          .catch((error) => {
+            console.error('Erro ao buscar conversa:', error);
+          });
+      }
+      
+      // Conectar WebSocket
+      const token = localStorage.getItem('token');
+      if (token) {
+        const socket = connectSocket(token);
+        
+        // Escutar novas mensagens
+        socket?.on('new:message', (mensagem) => {
+          // Se a conversa estiver aberta, adicionar mensagem à lista
+          if (conversaAtiva && mensagem.conversa_id === conversaAtiva.id) {
+            setMensagens((prev) => {
+              // Verificar se a mensagem já existe para evitar duplicação
+              const existe = prev.some((msg) => msg.id === mensagem.id);
+              if (!existe) {
+                return [...prev, mensagem];
+              }
+              return prev;
+            });
+          }
+          // Sempre atualizar lista de conversas para mostrar novas mensagens
+          fetchConversas();
+        });
+        
+        // Escutar mensagem lida
+        socket?.on('message:read', (data) => {
+          setMensagens((prev) =>
+            prev.map((msg) =>
+              msg.id === data.mensagemId ? { ...msg, lida: true } : msg
+            )
+          );
+        });
+        
+        return () => {
+          socket?.off('new:message');
+          socket?.off('message:read');
+        };
+      }
+    }
+    
+    return () => {
+      disconnectSocket();
+    };
+  }, [user, conversaAtiva]);
+
+  const fetchConversas = async () => {
+    try {
+      setLoading(true);
+      const data = await api.get('/conversas');
+      setConversas(data || []);
+    } catch (error) {
+      console.error('Erro ao buscar conversas:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchMensagens = async (conversaId) => {
+    try {
+      const data = await api.get(`/conversas/${conversaId}/mensagens`);
+      setMensagens(data || []);
+      
+      // Marcar todas como lidas
+      await api.put(`/conversas/${conversaId}/mensagens/lidas`);
+      
+      // Entrar na sala da conversa via WebSocket
+      const socket = getSocket();
+      if (socket) {
+        socket.emit('join:conversa', conversaId);
+      }
+    } catch (error) {
+      console.error('Erro ao buscar mensagens:', error);
+    }
+  };
+
+  const scrollToBottom = () => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    } else {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   useEffect(() => {
     // Scroll para a última mensagem
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    scrollToBottom();
   }, [mensagens]);
 
   const handleConversaClick = (conversa) => {
     setConversaAtiva(conversa);
-    setMensagens(mensagensData[conversa.id] || []);
-    // Marcar mensagens como lidas
-    const conversasAtualizadas = conversas.map((c) =>
-      c.id === conversa.id ? { ...c, naoLidas: 0 } : c
-    );
-    setConversas(conversasAtualizadas);
+    fetchMensagens(conversa.id);
   };
 
-  const handleEnviarMensagem = () => {
-    if (!novaMensagem.trim() && !selectedFile) return;
+  const handleEnviarMensagem = async () => {
+    if ((!novaMensagem.trim() && !selectedFile) || !conversaAtiva) return;
 
-    const novaMsg = {
-      id: Date.now(),
-      remetente: "tutor",
-      conteudo: novaMensagem,
-      timestamp: new Date().toLocaleTimeString("pt-BR", {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-      lida: false,
-      tipo: selectedFile ? "arquivo" : "texto",
-      arquivo: selectedFile,
-    };
-
-    setMensagens([...mensagens, novaMsg]);
-    setNovaMensagem("");
-    setSelectedFile(null);
-    setShowAttachmentModal(false);
-
-    // Simular resposta do veterinário após 2 segundos
-    setTimeout(() => {
-      const resposta = {
-        id: Date.now() + 1,
-        remetente: "veterinario",
-        conteudo: "Mensagem recebida! Responderei em breve.",
-        timestamp: new Date().toLocaleTimeString("pt-BR", {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-        lida: false,
-        tipo: "texto",
+    try {
+      // TODO: Upload de arquivo se houver selectedFile
+      const mensagemData = {
+        conteudo: novaMensagem.trim(),
+        tipo: selectedFile ? 'arquivo' : 'texto',
+        anexo_url: selectedFile ? null : null, // TODO: Implementar upload
       };
-      setMensagens((prev) => [...prev, resposta]);
-    }, 2000);
+
+      const mensagem = await api.post(
+        `/conversas/${conversaAtiva.id}/mensagens`,
+        mensagemData
+      );
+
+      // Limpar campos
+      setNovaMensagem("");
+      setSelectedFile(null);
+      setShowAttachmentModal(false);
+
+      // Não adicionar localmente - deixar o WebSocket adicionar para evitar duplicação
+      // O WebSocket vai receber a mensagem e adicionar automaticamente
+      
+      // Emitir via WebSocket (opcional, o servidor pode já estar enviando)
+      const socket = getSocket();
+      if (socket) {
+        socket.emit('send:message', {
+          conversaId: conversaAtiva.id,
+          mensagem: mensagem,
+        });
+      }
+
+      // Adicionar mensagem localmente apenas se não for recebida via WebSocket em breve
+      // Usar um timeout para garantir que aparece mesmo se WebSocket falhar
+      setTimeout(() => {
+        setMensagens((prev) => {
+          // Verificar se a mensagem já existe (adicionada via WebSocket)
+          const existe = prev.some((msg) => msg.id === mensagem.id);
+          if (!existe) {
+            return [...prev, mensagem];
+          }
+          return prev;
+        });
+      }, 500);
+
+      // Atualizar lista de conversas
+      fetchConversas();
+    } catch (error) {
+      console.error('Erro ao enviar mensagem:', error);
+      alert('Erro ao enviar mensagem. Tente novamente.');
+    }
   };
 
   const handleFileSelect = (event) => {
@@ -283,8 +399,8 @@ const MensagensPage = () => {
 
   const conversasFiltradas = conversas.filter(
     (conversa) =>
-      conversa.veterinario.toLowerCase().includes(filtroBusca.toLowerCase()) ||
-      conversa.clinica.toLowerCase().includes(filtroBusca.toLowerCase())
+      (conversa.veterinario_nome || '').toLowerCase().includes(filtroBusca.toLowerCase()) ||
+      (conversa.nome_clinica || '').toLowerCase().includes(filtroBusca.toLowerCase())
   );
 
   const formatTimestamp = (timestamp) => {
@@ -313,9 +429,18 @@ const MensagensPage = () => {
                     <FaComments className="me-2" />
                     Mensagens
                   </h5>
-                  <Badge bg="primary">
-                    {conversas.filter((c) => c.naoLidas > 0).length}
-                  </Badge>
+                  <div className="d-flex align-items-center gap-2">
+                    <Badge bg="primary">
+                      {conversas.filter((c) => (c.nao_lidas_count || 0) > 0).length}
+                    </Badge>
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={() => setShowBuscarVetModal(true)}
+                    >
+                      <FaPlus />
+                    </Button>
+                  </div>
                 </div>
               </Card.Header>
 
@@ -337,67 +462,80 @@ const MensagensPage = () => {
 
                 {/* Lista de Conversas */}
                 <ListGroup variant="flush">
-                  {conversasFiltradas.map((conversa) => (
-                    <ListGroup.Item
-                      key={conversa.id}
-                      action
-                      className={`border-0 p-3 ${
-                        conversaAtiva?.id === conversa.id ? "bg-light" : ""
-                      }`}
-                      onClick={() => handleConversaClick(conversa)}
-                    >
-                      <div className="d-flex align-items-center gap-3">
-                        <div className="position-relative">
-                          <img
-                            src={conversa.avatar}
-                            alt={conversa.veterinario}
-                            className="rounded-circle"
-                            style={{ width: 50, height: 50 }}
-                          />
-                          {conversa.online && (
-                            <div
-                              className="position-absolute bottom-0 end-0 bg-success rounded-circle"
-                              style={{
-                                width: 12,
-                                height: 12,
-                                border: "2px solid white",
-                              }}
-                            />
-                          )}
-                        </div>
-
-                        <div className="flex-grow-1 min-w-0">
-                          <div className="d-flex justify-content-between align-items-start">
-                            <div>
-                              <h6 className="fw-semibold mb-1">
-                                {conversa.veterinario}
-                              </h6>
-                              <p className="text-muted small mb-1">
-                                {conversa.clinica}
-                              </p>
-                              <p className="text-muted small mb-0">
-                                {conversa.especialidade}
-                              </p>
-                            </div>
-                            <div className="text-end">
-                              <small className="text-muted">
-                                {conversa.timestamp}
-                              </small>
-                              {conversa.naoLidas > 0 && (
-                                <Badge bg="danger" className="ms-2">
-                                  {conversa.naoLidas}
-                                </Badge>
-                              )}
-                            </div>
-                          </div>
-
-                          <p className="text-muted small mb-0 mt-2">
-                            {conversa.ultimaMensagem}
-                          </p>
-                        </div>
+                  {loading ? (
+                    <ListGroup.Item className="text-center py-4">
+                      <div className="spinner-border text-primary" role="status">
+                        <span className="visually-hidden">Carregando...</span>
                       </div>
                     </ListGroup.Item>
-                  ))}
+                  ) : conversasFiltradas.length === 0 ? (
+                    <ListGroup.Item className="text-center py-4 text-muted">
+                      Nenhuma conversa encontrada
+                    </ListGroup.Item>
+                  ) : (
+                    conversasFiltradas.map((conversa) => (
+                      <ListGroup.Item
+                        key={conversa.id}
+                        action
+                        className={`border-0 p-3 ${
+                          conversaAtiva?.id === conversa.id ? "bg-light" : ""
+                        }`}
+                        onClick={() => handleConversaClick(conversa)}
+                      >
+                        <div className="d-flex align-items-center gap-3">
+                          <div className="position-relative">
+                            {conversa.veterinario_foto ? (
+                              <img
+                                src={conversa.veterinario_foto}
+                                alt={conversa.veterinario_nome || 'Veterinário'}
+                                className="rounded-circle"
+                                style={{ width: 50, height: 50, objectFit: 'cover' }}
+                              />
+                            ) : (
+                              <div
+                                className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
+                                style={{ width: 50, height: 50 }}
+                              >
+                                {(conversa.veterinario_nome || 'V')[0].toUpperCase()}
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="flex-grow-1 min-w-0">
+                            <div className="d-flex justify-content-between align-items-start">
+                              <div>
+                                <h6 className="fw-semibold mb-1">
+                                  {conversa.veterinario_nome || 'Veterinário'}
+                                </h6>
+                                <p className="text-muted small mb-0">
+                                  {conversa.nome_clinica || 'Clínica'}
+                                </p>
+                              </div>
+                              <div className="text-end">
+                                <small className="text-muted">
+                                  {conversa.ultima_mensagem_at
+                                    ? new Date(conversa.ultima_mensagem_at).toLocaleTimeString('pt-BR', {
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                      })
+                                    : ''}
+                                </small>
+                                {(conversa.nao_lidas_count || 0) > 0 && (
+                                  <Badge bg="danger" className="ms-2">
+                                    {conversa.nao_lidas_count}
+                                  </Badge>
+                                )}
+                              </div>
+                            </div>
+
+                            <p className="text-muted small mb-0 mt-2">
+                              {conversa.ultima_mensagem || 'Sem mensagens'}
+                            </p>
+                          </div>
+                        </div>
+                      </ListGroup.Item>
+                    ))
+                  )}
                 </ListGroup>
               </Card.Body>
             </Card>
@@ -411,19 +549,27 @@ const MensagensPage = () => {
                 <Card.Header className="bg-white border-0">
                   <div className="d-flex justify-content-between align-items-center">
                     <div className="d-flex align-items-center gap-3">
-                      <img
-                        src={conversaAtiva.avatar}
-                        alt={conversaAtiva.veterinario}
-                        className="rounded-circle"
-                        style={{ width: 40, height: 40 }}
-                      />
+                      {conversaAtiva.veterinario_foto ? (
+                        <img
+                          src={conversaAtiva.veterinario_foto}
+                          alt={conversaAtiva.veterinario_nome || 'Veterinário'}
+                          className="rounded-circle"
+                          style={{ width: 40, height: 40, objectFit: 'cover' }}
+                        />
+                      ) : (
+                        <div
+                          className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
+                          style={{ width: 40, height: 40 }}
+                        >
+                          {(conversaAtiva.veterinario_nome || 'V')[0].toUpperCase()}
+                        </div>
+                      )}
                       <div>
                         <h6 className="fw-semibold mb-0">
-                          {conversaAtiva.veterinario}
+                          {conversaAtiva.veterinario_nome || 'Veterinário'}
                         </h6>
                         <small className="text-muted">
-                          {conversaAtiva.clinica} •{" "}
-                          {conversaAtiva.especialidade}
+                          {conversaAtiva.nome_clinica || 'Clínica'}
                         </small>
                       </div>
                     </div>
@@ -470,62 +616,84 @@ const MensagensPage = () => {
                 {/* Mensagens */}
                 <Card.Body
                   className="p-0 d-flex flex-column"
-                  style={{ height: "calc(100% - 140px)" }}
+                  style={{ 
+                    height: "calc(100vh - 300px)",
+                    minHeight: "400px",
+                    maxHeight: "600px"
+                  }}
                 >
                   <div
+                    ref={messagesContainerRef}
                     className="flex-grow-1 p-3"
-                    style={{ overflowY: "auto" }}
+                    style={{ 
+                      overflowY: "auto",
+                      overflowX: "hidden"
+                    }}
                   >
-                    {mensagens.map((mensagem) => (
-                      <div
-                        key={mensagem.id}
-                        className={`d-flex mb-3 ${
-                          mensagem.remetente === "tutor"
-                            ? "justify-content-end"
-                            : "justify-content-start"
-                        }`}
-                      >
-                        <div
-                          className={`p-3 rounded-3 ${
-                            mensagem.remetente === "tutor"
-                              ? "bg-primary text-white"
-                              : "bg-light text-dark"
-                          }`}
-                          style={{ maxWidth: "70%" }}
-                        >
-                          {mensagem.tipo === "arquivo" ? (
-                            <div>
-                              <div className="d-flex align-items-center gap-2 mb-2">
-                                <FaFile />
-                                <span className="fw-semibold">
-                                  {mensagem.arquivo.nome}
-                                </span>
-                              </div>
-                              <small className="text-muted">
-                                {Math.round(mensagem.arquivo.tamanho / 1024)} KB
-                              </small>
-                            </div>
-                          ) : (
-                            <p className="mb-1">{mensagem.conteudo}</p>
-                          )}
-
-                          <div className="d-flex align-items-center gap-2 mt-2">
-                            <small className="opacity-75">
-                              {mensagem.timestamp}
-                            </small>
-                            {mensagem.remetente === "tutor" && (
-                              <span>
-                                {mensagem.lida ? (
-                                  <FaCheckDouble className="text-info" />
-                                ) : (
-                                  <FaCheck />
-                                )}
-                              </span>
-                            )}
-                          </div>
-                        </div>
+                    {mensagens.length === 0 ? (
+                      <div className="text-center text-muted py-4">
+                        Nenhuma mensagem ainda. Inicie a conversa!
                       </div>
-                    ))}
+                    ) : (
+                      mensagens.map((mensagem) => {
+                        const isTutor = mensagem.remetente_tipo === 'tutor';
+                        return (
+                          <div
+                            key={mensagem.id}
+                            className={`d-flex mb-3 ${
+                              isTutor
+                                ? "justify-content-end"
+                                : "justify-content-start"
+                            }`}
+                          >
+                            <div
+                              className={`p-3 rounded-3 ${
+                                isTutor
+                                  ? "bg-primary text-white"
+                                  : "bg-light text-dark"
+                              }`}
+                              style={{ maxWidth: "70%" }}
+                            >
+                              {mensagem.tipo === "arquivo" && mensagem.anexo_url ? (
+                                <div>
+                                  <div className="d-flex align-items-center gap-2 mb-2">
+                                    <FaFile />
+                                    <a
+                                      href={mensagem.anexo_url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className={isTutor ? "text-white" : "text-dark"}
+                                    >
+                                      Ver anexo
+                                    </a>
+                                  </div>
+                                </div>
+                              ) : (
+                                <p className="mb-1">{mensagem.conteudo}</p>
+                              )}
+
+                              <div className="d-flex align-items-center gap-2 mt-2">
+                                <small className="opacity-75">
+                                  {new Date(mensagem.created_at).toLocaleTimeString('pt-BR', {
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                  })}
+                                </small>
+                                {isTutor && (
+                                  <span>
+                                    {mensagem.lida ? (
+                                      <FaCheckDouble className={isTutor ? "text-white" : "text-info"} />
+                                    ) : (
+                                      <FaCheck />
+                                    )}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })
+                    )}
                     <div ref={messagesEndRef} />
                   </div>
 
@@ -629,6 +797,18 @@ const MensagensPage = () => {
             </div>
           </Modal.Body>
         </Modal>
+
+        {/* Modal Buscar Veterinário */}
+        <BuscarVeterinarioModal
+          show={showBuscarVetModal}
+          onHide={() => setShowBuscarVetModal(false)}
+          onConversaCriada={(conversa) => {
+            setShowBuscarVetModal(false);
+            setConversaAtiva(conversa);
+            fetchMensagens(conversa.id);
+            fetchConversas();
+          }}
+        />
       </Container>
     </DashboardLayout>
   );
