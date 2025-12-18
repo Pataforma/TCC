@@ -160,7 +160,25 @@ const DashboardVeterinarioAgenda = () => {
       cancelada: "Cancelada",
     };
 
-    return <Badge bg={variants[status]}>{labels[status]}</Badge>;
+    const colors = {
+      confirmada: "#0DB2AC",
+      pendente: "#FABA32",
+      cancelada: "#dc3545",
+    };
+
+    return (
+      <Badge
+        bg={variants[status]}
+        style={{
+          backgroundColor: colors[status] || "#6c757d",
+          color: "white",
+          fontSize: "10px",
+          padding: "2px 6px",
+        }}
+      >
+        {labels[status]}
+      </Badge>
+    );
   };
 
   const handleConsultaClick = (consulta) => {
@@ -427,158 +445,88 @@ const DashboardVeterinarioAgenda = () => {
 
   return (
     <DashboardLayout tipoUsuario="veterinario" nomeUsuario={user?.nome}>
-      <div className="container-fluid">
-        {/* Header da Página */}
-        <div className="d-flex justify-content-between align-items-center mb-4">
+      <div className="container-fluid" style={{ height: "calc(100vh - 80px)", display: "flex", flexDirection: "column" }}>
+        {/* Header da Página - Fixo */}
+        <div 
+          className="d-flex justify-content-between align-items-center mb-3 bg-white"
+          style={{ 
+            position: "sticky", 
+            top: 0, 
+            zIndex: 1000, 
+            paddingTop: "1rem",
+            paddingBottom: "1rem",
+            borderBottom: "1px solid #e9ecef"
+          }}
+        >
           <div>
-            <h2 className="fw-bold text-dark mb-1">Agenda</h2>
-            <p className="text-muted mb-0">
+            <h2 className="fw-bold text-dark mb-1" style={{ fontSize: "24px" }}>Agenda</h2>
+            <p className="text-muted mb-0" style={{ fontSize: "14px" }}>
               Gerencie suas consultas e configure sua disponibilidade
             </p>
           </div>
           <div className="d-flex gap-2">
-            <Button variant="primary" size="sm">
+            <Button 
+              variant="outline-secondary" 
+              size="sm"
+              style={{ borderColor: "#e9ecef", color: "#6c757d" }}
+            >
               <FaCalendarAlt className="me-2" />
               Exportar
             </Button>
           </div>
         </div>
 
-        {/* Tabs: Consultas e Disponibilidade */}
-        <Tabs
-          activeKey={activeTabAgenda}
-          onSelect={(k) => setActiveTabAgenda(k || "consultas")}
-          className="mb-4"
-        >
+        {/* Tabs: Consultas e Disponibilidade - Fixo */}
+        <div style={{ position: "sticky", top: "120px", zIndex: 999, backgroundColor: "white", borderBottom: "1px solid #e9ecef", marginBottom: "1rem" }}>
+          <Tabs
+            activeKey={activeTabAgenda}
+            onSelect={(k) => setActiveTabAgenda(k || "consultas")}
+            className="mb-0"
+          >
           <Tab eventKey="consultas" title="Consultas">
-            {/* Lista de Consultas - EM DESTAQUE */}
-            <Card className="border-0 shadow-sm mb-4" style={{ borderRadius: 16 }}>
-              <Card.Header className="bg-white border-0">
-                <h5 className="fw-semibold text-dark mb-0">Próximas Consultas</h5>
-              </Card.Header>
-              <Card.Body className="p-0">
-                <Table hover className="mb-0">
-                  <thead className="bg-light">
-                    <tr>
-                      <th className="border-0">Horário</th>
-                      <th className="border-0">Paciente</th>
-                      <th className="border-0">Tutor</th>
-                      <th className="border-0">Tipo</th>
-                      <th className="border-0">Status</th>
-                      <th className="border-0">Ações</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {consultas.map((consulta) => (
-                      <tr
-                        key={consulta.id}
-                        className="cursor-pointer"
-                        onClick={() => handleConsultaClick(consulta)}
-                      >
-                        <td className="align-middle">
-                          <div className="fw-semibold">
-                            {new Date(consulta.data_consulta).toLocaleTimeString("pt-BR", {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
-                          </div>
-                          <small className="text-muted">
-                            {formatarDataConsulta(consulta.data_consulta)} •{" "}
-                            {consulta.duracao}min
-                          </small>
-                        </td>
-                        <td className="align-middle">
-                          <div className="d-flex align-items-center gap-2">
-                            <div
-                              className="bg-primary d-flex align-items-center justify-content-center text-white rounded-circle"
-                              style={{ width: 32, height: 32 }}
-                            >
-                              <FaPaw size={12} />
-                            </div>
-                            <div>
-                              <div className="fw-semibold">
-                                {consulta.pacientes?.nome || "N/A"}
-                              </div>
-                              <small className="text-muted">
-                                {consulta.pacientes?.especie} -{" "}
-                                {consulta.pacientes?.raca}
-                              </small>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="align-middle">
-                          <div>{consulta.tutores?.nome || "N/A"}</div>
-                          <small className="text-muted">
-                            {consulta.tutores?.telefone}
-                          </small>
-                        </td>
-                        <td className="align-middle">
-                          <span className="badge bg-light text-dark">
-                            {(() => {
-                              const tipos = {
-                                'consulta_rotina': 'Consulta de Rotina',
-                                'vacina': 'Vacinação',
-                                'exame': 'Exame',
-                                'consulta_emergencia': 'Consulta de Emergência',
-                                'cirurgia': 'Cirurgia',
-                                'retorno': 'Retorno',
-                                'outro': 'Outro'
-                              };
-                              return tipos[consulta.tipo] || consulta.tipo;
-                            })()}
-                          </span>
-                        </td>
-                        <td className="align-middle">
-                          {getStatusBadge(consulta.status)}
-                        </td>
-                        <td className="align-middle">
-                          <div className="d-flex gap-1">
-                            <Button variant="outline-primary" size="sm">
-                              <FaVideo size={12} />
-                            </Button>
-                            <Button variant="outline-success" size="sm">
-                              <FaCheckCircle size={12} />
-                            </Button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </Table>
-              </Card.Body>
-            </Card>
-
-            {/* Calendário Geral */}
-            <Card className="border-0 shadow-sm" style={{ borderRadius: 16 }}>
-              <Card.Header className="bg-white border-0">
-                <h5 className="fw-semibold text-dark mb-0">Calendário Geral</h5>
-              </Card.Header>
-              <Card.Body className="p-4">
-                <div className="d-flex justify-content-between align-items-center mb-3">
-                  <div className="d-flex align-items-center gap-3">
+            <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}>
+              {/* Controles do Calendário - Fixo */}
+              <div 
+                style={{ 
+                  position: "sticky", 
+                  top: "180px", 
+                  zIndex: 998, 
+                  backgroundColor: "white", 
+                  padding: "1rem 0",
+                  borderBottom: "1px solid #e9ecef",
+                  marginBottom: "1rem"
+                }}
+              >
+                <div className="d-flex justify-content-between align-items-center">
+                  <div className="d-flex align-items-center gap-2">
                     <Button
                       variant="outline-secondary"
                       size="sm"
                       onClick={handleAnterior}
+                      style={{ borderColor: "#e9ecef", color: "#6c757d" }}
                     >
                       <FaChevronLeft />
                     </Button>
-                    <h5 className="fw-semibold text-dark mb-0">
+                    <h6 className="fw-semibold text-dark mb-0" style={{ fontSize: "15px", minWidth: "200px" }}>
                       {activeTab === "mes"
                         ? formatarNomeMes(currentDate)
+                        : activeTab === "semana"
+                        ? `${formatarDataSemana(datas[0])} - ${formatarDataSemana(datas[6])}`
                         : formatarData(currentDate)}
-                    </h5>
+                    </h6>
                     <Button
                       variant="outline-secondary"
                       size="sm"
                       onClick={handleProximo}
+                      style={{ borderColor: "#e9ecef", color: "#6c757d" }}
                     >
                       <FaChevronRight />
                     </Button>
                     <Button
-                      variant="outline-primary"
+                      variant="outline-secondary"
                       size="sm"
                       onClick={handleHoje}
+                      style={{ borderColor: "#e9ecef", color: "#6c757d" }}
                     >
                       Hoje
                     </Button>
@@ -590,37 +538,57 @@ const DashboardVeterinarioAgenda = () => {
                     onSelect={setActiveTab}
                   >
                     <Nav.Item>
-                      <Nav.Link eventKey="dia" className="rounded-pill">
+                      <Nav.Link eventKey="dia" className="rounded-pill" style={{ fontSize: "13px" }}>
                         Dia
                       </Nav.Link>
                     </Nav.Item>
                     <Nav.Item>
-                      <Nav.Link eventKey="semana" className="rounded-pill">
+                      <Nav.Link eventKey="semana" className="rounded-pill" style={{ fontSize: "13px" }}>
                         Semana
                       </Nav.Link>
                     </Nav.Item>
                     <Nav.Item>
-                      <Nav.Link eventKey="mes" className="rounded-pill">
+                      <Nav.Link eventKey="mes" className="rounded-pill" style={{ fontSize: "13px" }}>
                         Mês
                       </Nav.Link>
                     </Nav.Item>
                   </Nav>
                 </div>
+              </div>
 
-                {/* Calendário */}
-                <div className="border rounded-3" style={{ minHeight: 600 }}>
+              {/* Área do Calendário com Scroll Interno */}
+              <div 
+                style={{ 
+                  flex: 1, 
+                  overflowY: "auto", 
+                  overflowX: "hidden",
+                  border: "1px solid #e9ecef",
+                  borderRadius: "8px",
+                  backgroundColor: "white"
+                }}
+              >
+                <div style={{ minHeight: "100%" }}>
                   {activeTab === "dia" && (
-                    <div className="d-flex">
-                      {/* Coluna de Horários */}
-                      <div style={{ width: 80, borderRight: "1px solid #dee2e6" }}>
-                        <div className="p-3 bg-light border-bottom">
-                          <small className="text-muted fw-semibold">Horário</small>
+                    <div className="d-flex" style={{ position: "relative" }}>
+                      {/* Coluna de Horários - Fixa */}
+                      <div 
+                        style={{ 
+                          width: 80, 
+                          borderRight: "1px solid #e9ecef",
+                          position: "sticky",
+                          left: 0,
+                          zIndex: 10,
+                          backgroundColor: "white"
+                        }}
+                      >
+                        <div className="p-2 border-bottom" style={{ backgroundColor: "#f8f9fa" }}>
+                          <small className="text-muted fw-semibold" style={{ fontSize: "12px" }}>Horário</small>
                         </div>
                         {horarios.map((horario) => (
                           <div
                             key={horario}
                             className="p-2 border-bottom d-flex align-items-center justify-content-center"
-                            style={{ height: 60, fontSize: 12 }}
+                            style={{ height: 60, fontSize: 12, color: "#6c757d" }}
                           >
                             {horario}
                           </div>
@@ -629,8 +597,8 @@ const DashboardVeterinarioAgenda = () => {
 
                       {/* Grade de Consultas - Visualização Diária */}
                       <div className="flex-grow-1">
-                        <div className="p-3 bg-light border-bottom">
-                          <small className="text-muted fw-semibold">
+                        <div className="p-2 border-bottom" style={{ backgroundColor: "#f8f9fa" }}>
+                          <small className="text-muted fw-semibold" style={{ fontSize: "12px" }}>
                             {formatarData(currentDate)}
                           </small>
                         </div>
@@ -648,22 +616,38 @@ const DashboardVeterinarioAgenda = () => {
                                   style={{ top: 0, left: 0 }}
                                 >
                                   <Card
-                                    className="h-100 border-0 shadow-sm cursor-pointer"
+                                    className="h-100 border cursor-pointer"
                                     style={{
                                       backgroundColor:
                                         consulta.status === "confirmada"
-                                          ? "#d1ecf1"
-                                          : "#fff3cd",
-                                      borderRadius: 8,
+                                          ? "rgba(13, 178, 172, 0.1)"
+                                          : consulta.status === "pendente"
+                                          ? "rgba(250, 186, 50, 0.1)"
+                                          : "#f8f9fa",
+                                      borderColor:
+                                        consulta.status === "confirmada"
+                                          ? "#0DB2AC"
+                                          : consulta.status === "pendente"
+                                          ? "#FABA32"
+                                          : "#e9ecef",
+                                      borderRadius: 6,
                                       cursor: "pointer",
                                     }}
                                     onClick={() => handleConsultaClick(consulta)}
+                                    onMouseEnter={(e) => {
+                                      e.currentTarget.style.transform = "scale(1.02)";
+                                      e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.1)";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                      e.currentTarget.style.transform = "scale(1)";
+                                      e.currentTarget.style.boxShadow = "none";
+                                    }}
                                   >
                                     <Card.Body className="p-2">
                                       <div className="d-flex justify-content-between align-items-start">
-                                        <div>
+                                        <div style={{ flex: 1, minWidth: 0 }}>
                                           <h6
-                                            className="fw-semibold mb-1"
+                                            className="fw-semibold mb-1 text-dark"
                                             style={{ fontSize: 12 }}
                                           >
                                             {consulta.pacientes?.nome || "N/A"}
@@ -689,17 +673,26 @@ const DashboardVeterinarioAgenda = () => {
                   )}
 
                   {activeTab === "semana" && (
-                    <div className="d-flex">
-                      {/* Coluna de Horários */}
-                      <div style={{ width: 80, borderRight: "1px solid #dee2e6" }}>
-                        <div className="p-3 bg-light border-bottom">
-                          <small className="text-muted fw-semibold">Horário</small>
+                    <div className="d-flex" style={{ position: "relative" }}>
+                      {/* Coluna de Horários - Fixa */}
+                      <div 
+                        style={{ 
+                          width: 80, 
+                          borderRight: "1px solid #e9ecef",
+                          position: "sticky",
+                          left: 0,
+                          zIndex: 10,
+                          backgroundColor: "white"
+                        }}
+                      >
+                        <div className="p-2 border-bottom" style={{ backgroundColor: "#f8f9fa" }}>
+                          <small className="text-muted fw-semibold" style={{ fontSize: "12px" }}>Horário</small>
                         </div>
                         {horarios.map((horario) => (
                           <div
                             key={horario}
                             className="p-2 border-bottom d-flex align-items-center justify-content-center"
-                            style={{ height: 60, fontSize: 12 }}
+                            style={{ height: 60, fontSize: 12, color: "#6c757d" }}
                           >
                             {horario}
                           </div>
@@ -712,11 +705,11 @@ const DashboardVeterinarioAgenda = () => {
                           key={data.toISOString()}
                           style={{
                             width: `${100 / 7}%`,
-                            borderRight: "1px solid #dee2e6",
+                            borderRight: "1px solid #e9ecef",
                           }}
                         >
-                          <div className="p-3 bg-light border-bottom text-center">
-                            <small className="text-muted fw-semibold">
+                          <div className="p-2 border-bottom text-center" style={{ backgroundColor: "#f8f9fa" }}>
+                            <small className="text-muted fw-semibold" style={{ fontSize: "12px" }}>
                               {formatarDataSemana(data)}
                             </small>
                           </div>
@@ -734,22 +727,38 @@ const DashboardVeterinarioAgenda = () => {
                                     style={{ top: 0, left: 0 }}
                                   >
                                     <Card
-                                      className="h-100 border-0 shadow-sm cursor-pointer"
+                                      className="h-100 border cursor-pointer"
                                       style={{
                                         backgroundColor:
                                           consulta.status === "confirmada"
-                                            ? "#d1ecf1"
-                                            : "#fff3cd",
-                                        borderRadius: 8,
+                                            ? "rgba(13, 178, 172, 0.1)"
+                                            : consulta.status === "pendente"
+                                            ? "rgba(250, 186, 50, 0.1)"
+                                            : "#f8f9fa",
+                                        borderColor:
+                                          consulta.status === "confirmada"
+                                            ? "#0DB2AC"
+                                            : consulta.status === "pendente"
+                                            ? "#FABA32"
+                                            : "#e9ecef",
+                                        borderRadius: 6,
                                         cursor: "pointer",
                                       }}
                                       onClick={() => handleConsultaClick(consulta)}
+                                      onMouseEnter={(e) => {
+                                        e.currentTarget.style.transform = "scale(1.02)";
+                                        e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.1)";
+                                      }}
+                                      onMouseLeave={(e) => {
+                                        e.currentTarget.style.transform = "scale(1)";
+                                        e.currentTarget.style.boxShadow = "none";
+                                      }}
                                     >
                                       <Card.Body className="p-2">
                                         <div className="d-flex justify-content-between align-items-start">
-                                          <div>
+                                          <div style={{ flex: 1, minWidth: 0 }}>
                                             <h6
-                                              className="fw-semibold mb-1"
+                                              className="fw-semibold mb-1 text-dark"
                                               style={{ fontSize: 12 }}
                                             >
                                               {consulta.pacientes?.nome || "N/A"}
@@ -778,8 +787,8 @@ const DashboardVeterinarioAgenda = () => {
                   {activeTab === "mes" && (
                     <div>
                       {/* Cabeçalho do Mês */}
-                      <div className="p-3 bg-light border-bottom text-center">
-                        <h6 className="fw-semibold mb-0">
+                      <div className="p-2 border-bottom text-center" style={{ backgroundColor: "#f8f9fa" }}>
+                        <h6 className="fw-semibold mb-0" style={{ fontSize: "14px" }}>
                           {formatarNomeMes(currentDate)}
                         </h6>
                       </div>
@@ -796,6 +805,8 @@ const DashboardVeterinarioAgenda = () => {
                                 width: `${100 / 7}%`,
                                 backgroundColor: "#f8f9fa",
                                 minHeight: 40,
+                                fontSize: "12px",
+                                color: "#6c757d"
                               }}
                             >
                               {dia}
@@ -819,7 +830,7 @@ const DashboardVeterinarioAgenda = () => {
                                 width: `${100 / 7}%`,
                                 minHeight: 80,
                                 backgroundColor: isToday
-                                  ? "#e3f2fd"
+                                  ? "rgba(13, 178, 172, 0.05)"
                                   : isCurrentMonth
                                     ? "#ffffff"
                                     : "#f8f9fa",
@@ -833,11 +844,19 @@ const DashboardVeterinarioAgenda = () => {
                                         ? "text-dark"
                                         : "text-muted"
                                     }`}
+                                  style={{ fontSize: "12px" }}
                                 >
                                   {formatarDataMes(data)}
                                 </small>
                                 {consultasDia.length > 0 && (
-                                  <Badge bg="primary" className="ms-auto">
+                                  <Badge 
+                                    bg="secondary" 
+                                    className="ms-auto"
+                                    style={{ 
+                                      backgroundColor: "#0DB2AC",
+                                      fontSize: "10px"
+                                    }}
+                                  >
                                     {consultasDia.length}
                                   </Badge>
                                 )}
@@ -852,8 +871,17 @@ const DashboardVeterinarioAgenda = () => {
                                     style={{
                                       backgroundColor:
                                         consulta.status === "confirmada"
-                                          ? "#d1ecf1"
-                                          : "#fff3cd",
+                                          ? "rgba(13, 178, 172, 0.1)"
+                                          : consulta.status === "pendente"
+                                          ? "rgba(250, 186, 50, 0.1)"
+                                          : "#f8f9fa",
+                                      border: `1px solid ${
+                                        consulta.status === "confirmada"
+                                          ? "#0DB2AC"
+                                          : consulta.status === "pendente"
+                                          ? "#FABA32"
+                                          : "#e9ecef"
+                                      }`,
                                       fontSize: 10,
                                       cursor: "pointer",
                                     }}
@@ -864,16 +892,19 @@ const DashboardVeterinarioAgenda = () => {
                                     })} - ${consulta.pacientes?.nome || "N/A"
                                       }`}
                                   >
-                                    <div className="fw-semibold text-truncate">
-                                      {consulta.horario}
+                                    <div className="fw-semibold text-truncate text-dark">
+                                      {new Date(consulta.data_consulta).toLocaleTimeString("pt-BR", {
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                      })}
                                     </div>
-                                    <div className="text-truncate">
+                                    <div className="text-truncate text-muted">
                                       {consulta.pacientes?.nome || "N/A"}
                                     </div>
                                   </div>
                                 ))}
                                 {consultasDia.length > 3 && (
-                                  <small className="text-muted">
+                                  <small className="text-muted" style={{ fontSize: "10px" }}>
                                     +{consultasDia.length - 3} mais
                                   </small>
                                 )}
@@ -885,8 +916,8 @@ const DashboardVeterinarioAgenda = () => {
                     </div>
                   )}
                 </div>
-              </Card.Body>
-            </Card>
+              </div>
+            </div>
 
             {/* Modal de Detalhes da Consulta */}
             <Modal
@@ -1237,9 +1268,12 @@ const DashboardVeterinarioAgenda = () => {
           </Tab>
 
           <Tab eventKey="disponibilidade" title="Disponibilidade">
-            <ConfiguracaoDisponibilidade />
+            <div style={{ overflowY: "auto", maxHeight: "calc(100vh - 300px)" }}>
+              <ConfiguracaoDisponibilidade />
+            </div>
           </Tab>
         </Tabs>
+        </div>
       </div>
     </DashboardLayout>
   );

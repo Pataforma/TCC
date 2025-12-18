@@ -31,6 +31,38 @@
     box-shadow: 0 4px 15px rgba(252, 105, 77, 0.3);
 }
 
+/* Estilos para os botões do sidebar */
+.sidebarMenuItem {
+    transition: all 0.2s ease;
+}
+
+.sidebarMenuItem:not(.active) {
+    color: #2c3e50;
+}
+
+.sidebarMenuItem:not(.active):hover {
+    background-color: rgba(13, 178, 172, 0.1) !important;
+    color: var(--main-color, #0DB2AC) !important;
+}
+
+.sidebarMenuItem:not(.active):hover .sidebarIcon {
+    color: var(--main-color, #0DB2AC) !important;
+}
+
+.sidebarMenuItem.active {
+    background-color: var(--main-color, #0DB2AC) !important;
+    color: white !important;
+}
+
+.sidebarMenuItem.active .sidebarIcon {
+    color: white !important;
+}
+
+.sidebarIcon {
+    transition: color 0.2s ease;
+    flex-shrink: 0;
+}
+
 .userProfile {
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);

@@ -23,17 +23,24 @@ export default function ProfileSwitcher() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Obter tipos do usuário
-  const tipos = user?.tipos || [];
+  // Obter tipos do usuário - apenas os que têm perfil completo
+  const tipos = (user?.tipos || []).filter(tipo => tipo.perfil_completo === true);
   const tipoAtual = user?.tipo_usuario || "pendente";
 
-  // Se não tem múltiplos tipos, não mostrar o switcher
+  // Se não tem múltiplos tipos com perfil completo, não mostrar o switcher
   if (!user || tipos.length <= 1) {
     return null;
   }
 
   const handleProfileSwitch = async (tipo) => {
     if (tipo === tipoAtual || switching) return;
+
+    // Verificar se o tipo tem perfil completo antes de trocar
+    const tipoSelecionado = tipos.find(t => t.tipo === tipo);
+    if (!tipoSelecionado || !tipoSelecionado.perfil_completo) {
+      alert("Este perfil ainda não está completo. Complete o perfil antes de usar.");
+      return;
+    }
 
     setSwitching(true);
     setIsOpen(false);
@@ -46,7 +53,7 @@ export default function ProfileSwitcher() {
       await fetchUserData();
 
       // Redirecionar para o dashboard do tipo selecionado
-      navigate(`/dashboard/${tipo}/perfil`, { replace: true });
+      navigate(`/dashboard/${tipo}`, { replace: true });
     } catch (error) {
       console.error("Erro ao alternar tipo:", error);
       alert("Erro ao alternar perfil: " + (error.message || "Tente novamente"));
@@ -55,7 +62,7 @@ export default function ProfileSwitcher() {
     }
   };
 
-  const handleCreateNewProfile = () => {
+  const handleBackToAccounts = () => {
     setIsOpen(false);
     navigate("/tipo-usuario");
   };
@@ -173,10 +180,10 @@ export default function ProfileSwitcher() {
 
           <div className={styles.dropdownFooter}>
             <button
-              className={styles.createProfileBtn}
-              onClick={handleCreateNewProfile}
+              className={styles.backToAccountsBtn}
+              onClick={handleBackToAccounts}
             >
-              <i className="fas fa-plus"></i> Criar novo perfil
+              <i className="fas fa-arrow-left"></i> Voltar para tela de contas
             </button>
           </div>
         </div>

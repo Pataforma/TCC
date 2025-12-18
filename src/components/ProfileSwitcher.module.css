@@ -4,8 +4,8 @@
 }
 
 .trigger {
-    background: none;
-    border: none;
+    background: var(--main-color, #0DB2AC);
+    border: 1px solid var(--main-color, #0DB2AC);
     cursor: pointer;
     padding: 0.5rem;
     border-radius: 8px;
@@ -14,10 +14,14 @@
     align-items: center;
     gap: 0.8rem;
     min-width: 200px;
+    box-shadow: 0 2px 8px rgba(13, 178, 172, 0.2);
 }
 
 .trigger:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--bg-button, #089691);
+    border-color: var(--bg-button, #089691);
+    box-shadow: 0 4px 12px rgba(13, 178, 172, 0.3);
+    transform: translateY(-1px);
 }
 
 .profileInfo {
@@ -56,16 +60,18 @@
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 120px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .profileType {
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(255, 255, 255, 0.95);
     font-size: 0.8rem;
     text-transform: capitalize;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .arrow {
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(255, 255, 255, 0.95);
     font-size: 0.8rem;
     transition: transform 0.3s ease;
     flex-shrink: 0;
@@ -137,6 +143,7 @@
     cursor: pointer;
     transition: all 0.3s ease;
     text-align: left;
+    color: #2c3e50;
 }
 
 .profileOption:hover {
@@ -144,17 +151,31 @@
 }
 
 .profileOption.active {
-    background: #e3f2fd;
-    border-left: 4px solid #1976d2;
+    background: rgba(13, 178, 172, 0.1);
+    border-left: 4px solid var(--main-color, #0DB2AC);
 }
 
-.profileOption.active .profileName {
-    color: #1976d2;
+.profileOption .profileName {
+    color: #2c3e50;
     font-weight: 600;
 }
 
+.profileOption.active .profileName {
+    color: var(--main-color, #0DB2AC);
+    font-weight: 600;
+}
+
+.profileOption .profileType {
+    color: #6c757d;
+    font-size: 0.8rem;
+}
+
+.profileOption.active .profileType {
+    color: #6c757d;
+}
+
 .profileOption i.fa-check {
-    color: #28a745;
+    color: var(--main-color, #0DB2AC);
     margin-left: auto;
     font-size: 1rem;
 }
@@ -165,15 +186,15 @@
     background: #f8f9fa;
 }
 
-.createProfileBtn {
+.backToAccountsBtn {
     width: 100%;
-    background: linear-gradient(135deg, #ffb300, #ff8f00);
-    color: white;
-    border: none;
+    background: white;
+    color: #2c3e50;
+    border: 1px solid #e9ecef;
     border-radius: 8px;
     padding: 0.8rem 1rem;
     font-size: 0.9rem;
-    font-weight: 600;
+    font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
@@ -182,10 +203,12 @@
     gap: 0.5rem;
 }
 
-.createProfileBtn:hover {
-    background: linear-gradient(135deg, #ff8f00, #ff6f00);
+.backToAccountsBtn:hover {
+    background: #f8f9fa;
+    border-color: var(--main-color, #0DB2AC);
+    color: var(--main-color, #0DB2AC);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(255, 179, 0, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 @media (max-width: 768px) {

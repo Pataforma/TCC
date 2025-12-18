@@ -3,7 +3,7 @@ import { Modal, Button, Form, Row, Col, Alert } from "react-bootstrap";
 import { api } from "../../../utils/api";
 import { FaSave, FaTimes } from "react-icons/fa";
 
-export default function ModalEditarPaciente({ show, onHide, paciente, onPacienteAtualizado }) {
+export default function ModalEditarPaciente({ show, onHide, paciente, onPacienteAtualizado, embedded = false }) {
   const [formData, setFormData] = useState({
     nome: "",
     especie: "",
@@ -83,159 +83,188 @@ export default function ModalEditarPaciente({ show, onHide, paciente, onPaciente
     }
   };
 
+  const formContent = (
+    <Form onSubmit={handleSubmit}>
+      {error && <Alert variant="danger" className="mb-3">{error}</Alert>}
+      {success && <Alert variant="success" className="mb-3">{success}</Alert>}
+
+      <Row className="g-3">
+        <Col md={6}>
+          <Form.Group>
+            <Form.Label style={{ fontSize: "13px" }}>Nome</Form.Label>
+            <Form.Control
+              type="text"
+              name="nome"
+              value={formData.nome}
+              onChange={handleChange}
+              required
+              size="sm"
+            />
+          </Form.Group>
+        </Col>
+        <Col md={6}>
+          <Form.Group>
+            <Form.Label style={{ fontSize: "13px" }}>Espécie</Form.Label>
+            <Form.Select
+              name="especie"
+              value={formData.especie}
+              onChange={handleChange}
+              required
+              size="sm"
+            >
+              <option value="">Selecione...</option>
+              {especies.map((esp) => (
+                <option key={esp} value={esp}>
+                  {esp}
+                </option>
+              ))}
+            </Form.Select>
+          </Form.Group>
+        </Col>
+
+        <Col md={6}>
+          <Form.Group>
+            <Form.Label style={{ fontSize: "13px" }}>Raça</Form.Label>
+            <Form.Control
+              type="text"
+              name="raca"
+              value={formData.raca}
+              onChange={handleChange}
+              size="sm"
+            />
+          </Form.Group>
+        </Col>
+        <Col md={3}>
+          <Form.Group>
+            <Form.Label style={{ fontSize: "13px" }}>Data de Nascimento</Form.Label>
+            <Form.Control
+              type="date"
+              name="data_nascimento"
+              value={formData.data_nascimento}
+              onChange={handleChange}
+              size="sm"
+            />
+          </Form.Group>
+        </Col>
+        <Col md={3}>
+          <Form.Group>
+            <Form.Label style={{ fontSize: "13px" }}>Peso (kg)</Form.Label>
+            <Form.Control
+              type="number"
+              step="0.1"
+              min="0"
+              name="peso"
+              value={formData.peso}
+              onChange={handleChange}
+              size="sm"
+            />
+          </Form.Group>
+        </Col>
+
+        <Col md={4}>
+          <Form.Group>
+            <Form.Label style={{ fontSize: "13px" }}>Sexo</Form.Label>
+            <Form.Select name="sexo" value={formData.sexo} onChange={handleChange} size="sm">
+              <option value="">Selecione...</option>
+              {sexos.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </Form.Select>
+          </Form.Group>
+        </Col>
+        <Col md={4}>
+          <Form.Group>
+            <Form.Label style={{ fontSize: "13px" }}>Cor</Form.Label>
+            <Form.Control
+              type="text"
+              name="cor"
+              value={formData.cor}
+              onChange={handleChange}
+              size="sm"
+            />
+          </Form.Group>
+        </Col>
+        <Col md={4}>
+          <Form.Group>
+            <Form.Label style={{ fontSize: "13px" }}>Microchip</Form.Label>
+            <Form.Control
+              type="text"
+              name="microchip"
+              value={formData.microchip}
+              onChange={handleChange}
+              size="sm"
+            />
+          </Form.Group>
+        </Col>
+
+        <Col md={12}>
+          <Form.Group>
+            <Form.Label style={{ fontSize: "13px" }}>Observações</Form.Label>
+            <Form.Control
+              as="textarea"
+              rows={3}
+              name="observacoes"
+              value={formData.observacoes}
+              onChange={handleChange}
+              size="sm"
+            />
+          </Form.Group>
+        </Col>
+
+        <Col md={4}>
+          <Form.Group>
+            <Form.Label style={{ fontSize: "13px" }}>Status</Form.Label>
+            <Form.Select name="status" value={formData.status} onChange={handleChange} size="sm">
+              <option value="ativo">Ativo</option>
+              <option value="inativo">Inativo</option>
+              <option value="pendente">Pendente</option>
+            </Form.Select>
+          </Form.Group>
+        </Col>
+      </Row>
+
+      <div className="d-flex gap-2 mt-4">
+        <Button 
+          variant="outline-secondary" 
+          onClick={onHide} 
+          disabled={loading}
+          size="sm"
+          style={{ flex: 1, borderColor: "#e9ecef", color: "#6c757d" }}
+        >
+          <FaTimes className="me-2" /> Cancelar
+        </Button>
+        <Button 
+          type="submit" 
+          variant="primary" 
+          disabled={loading}
+          size="sm"
+          style={{ flex: 1 }}
+        >
+          {loading ? (
+            <span className="spinner-border spinner-border-sm me-2" />
+          ) : (
+            <FaSave className="me-2" />
+          )}
+          Salvar
+        </Button>
+      </div>
+    </Form>
+  );
+
+  if (embedded) {
+    return formContent;
+  }
+
   return (
     <Modal show={show} onHide={onHide} size="lg" centered>
       <Modal.Header closeButton>
         <Modal.Title>Editar Paciente</Modal.Title>
       </Modal.Header>
-      <Form onSubmit={handleSubmit}>
-        <Modal.Body>
-          {error && <Alert variant="danger">{error}</Alert>}
-          {success && <Alert variant="success">{success}</Alert>}
-
-          <Row className="g-3">
-            <Col md={6}>
-              <Form.Group>
-                <Form.Label>Nome</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="nome"
-                  value={formData.nome}
-                  onChange={handleChange}
-                  required
-                />
-              </Form.Group>
-            </Col>
-            <Col md={6}>
-              <Form.Group>
-                <Form.Label>Espécie</Form.Label>
-                <Form.Select
-                  name="especie"
-                  value={formData.especie}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">Selecione...</option>
-                  {especies.map((esp) => (
-                    <option key={esp} value={esp}>
-                      {esp}
-                    </option>
-                  ))}
-                </Form.Select>
-              </Form.Group>
-            </Col>
-
-            <Col md={6}>
-              <Form.Group>
-                <Form.Label>Raça</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="raca"
-                  value={formData.raca}
-                  onChange={handleChange}
-                />
-              </Form.Group>
-            </Col>
-            <Col md={3}>
-              <Form.Group>
-                <Form.Label>Data de Nascimento</Form.Label>
-                <Form.Control
-                  type="date"
-                  name="data_nascimento"
-                  value={formData.data_nascimento}
-                  onChange={handleChange}
-                />
-              </Form.Group>
-            </Col>
-            <Col md={3}>
-              <Form.Group>
-                <Form.Label>Peso (kg)</Form.Label>
-                <Form.Control
-                  type="number"
-                  step="0.1"
-                  min="0"
-                  name="peso"
-                  value={formData.peso}
-                  onChange={handleChange}
-                />
-              </Form.Group>
-            </Col>
-
-            <Col md={4}>
-              <Form.Group>
-                <Form.Label>Sexo</Form.Label>
-                <Form.Select name="sexo" value={formData.sexo} onChange={handleChange}>
-                  <option value="">Selecione...</option>
-                  {sexos.map((s) => (
-                    <option key={s} value={s}>
-                      {s}
-                    </option>
-                  ))}
-                </Form.Select>
-              </Form.Group>
-            </Col>
-            <Col md={4}>
-              <Form.Group>
-                <Form.Label>Cor</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="cor"
-                  value={formData.cor}
-                  onChange={handleChange}
-                />
-              </Form.Group>
-            </Col>
-            <Col md={4}>
-              <Form.Group>
-                <Form.Label>Microchip</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="microchip"
-                  value={formData.microchip}
-                  onChange={handleChange}
-                />
-              </Form.Group>
-            </Col>
-
-            <Col md={12}>
-              <Form.Group>
-                <Form.Label>Observações</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  rows={3}
-                  name="observacoes"
-                  value={formData.observacoes}
-                  onChange={handleChange}
-                />
-              </Form.Group>
-            </Col>
-
-            <Col md={4}>
-              <Form.Group>
-                <Form.Label>Status</Form.Label>
-                <Form.Select name="status" value={formData.status} onChange={handleChange}>
-                  <option value="ativo">Ativo</option>
-                  <option value="inativo">Inativo</option>
-                  <option value="pendente">Pendente</option>
-                </Form.Select>
-              </Form.Group>
-            </Col>
-          </Row>
-        </Modal.Body>
-        <Modal.Footer className="border-0">
-          <Button variant="secondary" onClick={onHide} disabled={loading}>
-            <FaTimes className="me-2" /> Cancelar
-          </Button>
-          <Button type="submit" variant="primary" disabled={loading}>
-            {loading ? (
-              <span className="spinner-border spinner-border-sm me-2" />
-            ) : (
-              <FaSave className="me-2" />
-            )}
-            Salvar Alterações
-          </Button>
-        </Modal.Footer>
-      </Form>
+      <Modal.Body>
+        {formContent}
+      </Modal.Body>
     </Modal>
   );
 }

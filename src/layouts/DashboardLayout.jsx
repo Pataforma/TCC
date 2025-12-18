@@ -4,6 +4,7 @@ import logo from "../assets/imgs/logo.png";
 import HeaderActions from "../components/ui/HeaderActions";
 import ProfileSwitcher from "../components/ProfileSwitcher";
 import { useUser } from "../contexts/UserContext";
+import styles from "./DashboardLayout.module.css";
 import {
   FaBars,
   FaTimes,
@@ -35,6 +36,7 @@ const DashboardLayout = ({
   tipoUsuario,
   nomeUsuario,
   estoqueBaixoCount = 0,
+  sidebarBlurred = false,
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -219,6 +221,10 @@ const DashboardLayout = ({
           width: 280,
           zIndex: 1040,
           borderRight: "1px solid #e9ecef",
+          filter: sidebarBlurred ? "blur(4px)" : "none",
+          opacity: sidebarBlurred ? 0.7 : 1,
+          transition: "filter 0.3s ease, opacity 0.3s ease",
+          pointerEvents: sidebarBlurred ? "none" : "auto",
         }}
       >
         {/* Logo e Header do Sidebar */}
@@ -242,21 +248,27 @@ const DashboardLayout = ({
               return (
                 <button
                   key={item.to}
-                  className={`btn d-flex align-items-center gap-3 px-3 py-3 rounded-3 border-0 text-start w-100 ${
-                    active
-                      ? "bg-main text-white shadow-sm"
-                      : "bg-transparent text-dark hover-bg-light"
+                  className={`btn d-flex align-items-center gap-3 px-3 py-3 rounded-3 border-0 text-start w-100 ${styles.sidebarMenuItem} ${
+                    active ? "active" : ""
                   }`}
                   style={{
                     fontSize: 15,
                     fontWeight: active ? 600 : 500,
-                    transition: "all 0.2s ease",
+                    backgroundColor: active ? "var(--main-color, #0DB2AC)" : "transparent",
+                    color: active ? "white" : "#2c3e50",
                   }}
                   onClick={() => navigate(item.to)}
                   title={item.label}
                   aria-label={`Navegar para ${item.label}`}
                 >
-                  <Icon size={18} />
+                  <Icon 
+                    size={18} 
+                    className={styles.sidebarIcon}
+                    style={{ 
+                      color: active ? "white" : "#2c3e50",
+                      transition: "color 0.2s ease"
+                    }}
+                  />
                   <span className="flex-grow-1">{item.label}</span>
                   {item.badge && (
                     <span
@@ -352,7 +364,10 @@ const DashboardLayout = ({
       {/* Conteúdo principal */}
       <div
         className="flex-grow-1"
-        style={{ marginLeft: 280, minHeight: "100vh" }}
+        style={{ 
+          marginLeft: 280, 
+          minHeight: "100vh",
+        }}
       >
         {/* Header Principal */}
         <header

@@ -78,7 +78,11 @@ export const TutorRoute = ({ children }) => {
     return <Navigate to="/telalogin" state={{ from: location }} replace />;
   }
 
-  if (!perfilCompleto) {
+  // Verificar se o usuário tem perfil tutor completo
+  const tipoTutor = user.tipos?.find(t => t.tipo === 'tutor');
+  const temPerfilTutor = tipoTutor && tipoTutor.perfil_completo === true;
+
+  if (!temPerfilTutor) {
     return <Navigate to="/tipo-usuario" replace />;
   }
 
@@ -102,7 +106,11 @@ export const VeterinarioRoute = ({ children }) => {
     return <Navigate to="/telalogin" state={{ from: location }} replace />;
   }
 
-  if (!perfilCompleto) {
+  // Verificar se o usuário tem perfil veterinário completo
+  const tipoVeterinario = user.tipos?.find(t => t.tipo === 'veterinario');
+  const temPerfilVeterinario = tipoVeterinario && tipoVeterinario.perfil_completo === true;
+
+  if (!temPerfilVeterinario) {
     return <Navigate to="/tipo-usuario" replace />;
   }
 

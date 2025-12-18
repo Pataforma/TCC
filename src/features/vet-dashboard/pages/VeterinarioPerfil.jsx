@@ -113,7 +113,7 @@ const VeterinarioPerfil = () => {
 
   const uploadFoto = async (file) => {
     if (!file) return null;
-    // TODO: Implementar upload de foto quando tiver endpoint de storage
+    // TODO IN DEBUG: Implementar upload de foto quando tiver endpoint de storage - Erro 16/11/2025 Edupds
     // Por enquanto, retornar null ou usar base64
     const reader = new FileReader();
     return new Promise((resolve, reject) => {

@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../../../layouts/DashboardLayout";
 import StatCard from "../../../components/Dashboard/StatCard";
 import SimpleChart from "../../../components/Dashboard/SimpleChart";
-import UpgradeToProBanner from "../../plans/components/UpgradeToProBanner";
 import { useUser } from "../../../contexts/UserContext";
 import { api } from "../../../utils/api";
 import {
@@ -215,9 +214,9 @@ const DashboardVeterinario = () => {
 
   const getStatusBadge = (status) => {
     const variants = {
-      confirmada: "success",
-      pendente: "warning",
-      cancelada: "danger",
+      confirmada: "secondary",
+      pendente: "secondary",
+      cancelada: "secondary",
     };
 
     const labels = {
@@ -226,7 +225,18 @@ const DashboardVeterinario = () => {
       cancelada: "Cancelada",
     };
 
-    return <Badge bg={variants[status]}>{labels[status]}</Badge>;
+    return (
+      <Badge
+        bg={variants[status]}
+        style={{
+          backgroundColor: status === "confirmada" ? "#0DB2AC" : status === "pendente" ? "#FABA32" : "#dc3545",
+          color: "white",
+          fontSize: "11px",
+        }}
+      >
+        {labels[status]}
+      </Badge>
+    );
   };
 
   const handleCardClick = (action) => {
@@ -259,46 +269,45 @@ const DashboardVeterinario = () => {
     <DashboardLayout tipoUsuario="veterinario" nomeUsuario={user?.nome}>
       <div className="container-fluid">
         {/* Header da Página */}
-        <div className="d-flex justify-content-between align-items-center mb-4">
+        <div className="d-flex justify-content-between align-items-center mb-3">
           <div>
-            <h2 className="fw-bold text-dark mb-1">Dashboard Veterinário</h2>
-            <p className="text-muted mb-0">
+            <h2 className="fw-bold text-dark mb-1" style={{ fontSize: "24px" }}>
+              Dashboard
+            </h2>
+            <p className="text-muted mb-0" style={{ fontSize: "14px" }}>
               Bem-vindo de volta, {user?.nome?.split(" ")[0] || "Doutor(a)"}!
-              Aqui está o resumo do seu dia.
             </p>
           </div>
           <div className="d-flex gap-2">
             <Button
-              variant="outline-primary"
+              variant="outline-secondary"
               size="sm"
               onClick={() => handleCardClick("agenda")}
+              style={{ borderColor: "#e9ecef", color: "#6c757d" }}
             >
               <FaCalendarAlt className="me-2" />
-              Ver Agenda
+              Agenda
             </Button>
             <Button
-              variant="primary"
+              variant="outline-secondary"
               size="sm"
               onClick={() => handleCardClick("financeiro")}
+              style={{ borderColor: "#e9ecef", color: "#6c757d" }}
             >
               <FaMoneyBill className="me-2" />
               Financeiro
             </Button>
           </div>
         </div>
-        <UpgradeToProBanner />
 
         {/* Cards de Estatísticas */}
-        <Row className="g-4 mb-4">
+        <Row className="g-3 mb-3">
           <Col xs={12} sm={6} lg={3}>
             <StatCard
               title="Consultas Agendadas"
               value={stats.consultasAgendadas}
               icon={FaCalendarAlt}
-              color="primary"
-              trend="up"
-              trendValue="+12%"
-              onClick={() => handleCardClick("agenda")}
+              color="secondary"
             />
           </Col>
           <Col xs={12} sm={6} lg={3}>
@@ -306,10 +315,7 @@ const DashboardVeterinario = () => {
               title="Pendências"
               value={stats.consultasPendentes}
               icon={FaExclamationTriangle}
-              color="warning"
-              trend="down"
-              trendValue="-5%"
-              onClick={() => handleCardClick("agenda")}
+              color="secondary"
             />
           </Col>
           <Col xs={12} sm={6} lg={3}>
@@ -317,9 +323,7 @@ const DashboardVeterinario = () => {
               title="Novas Mensagens"
               value={stats.novasMensagens}
               icon={FaComments}
-              color="info"
-              trend="up"
-              trendValue="+8%"
+              color="secondary"
             />
           </Col>
           <Col xs={12} sm={6} lg={3}>
@@ -327,74 +331,87 @@ const DashboardVeterinario = () => {
               title="Faturamento do Mês"
               value={`R$ ${stats.faturamentoMes.toLocaleString()}`}
               icon={FaMoneyBill}
-              color="success"
-              trend="up"
-              trendValue="+15%"
-              onClick={() => handleCardClick("financeiro")}
+              color="secondary"
             />
           </Col>
         </Row>
 
-        {/* Layout Orientado a Ações - 4 Blocos */}
-        <Row className="g-4">
+        {/* Layout Compacto */}
+        <Row className="g-3">
           {/* Bloco 1: Caixa de Entrada (Inbox) */}
           <Col lg={6}>
             <Card
-              className="border-0 shadow-sm h-100"
-              style={{ borderRadius: 16 }}
+              className="border h-100"
+              style={{ borderRadius: 8, borderColor: "#e9ecef" }}
             >
-              <Card.Header className="bg-white border-0 pb-0">
+              <Card.Header
+                className="bg-white border-0 pb-2"
+                style={{ borderBottom: "1px solid #e9ecef" }}
+              >
                 <div className="d-flex justify-content-between align-items-center">
-                  <h5 className="fw-semibold text-dark mb-0">
-                    <FaInbox className="me-2 text-primary" />
+                  <h6 className="fw-semibold text-dark mb-0" style={{ fontSize: "15px" }}>
+                    <FaInbox className="me-2" style={{ color: "#6c757d" }} />
                     Caixa de Entrada
-                  </h5>
-                  <Badge bg="danger">{inboxItems.length}</Badge>
+                  </h6>
+                  {inboxItems.length > 0 && (
+                    <Badge bg="secondary" style={{ backgroundColor: "#6c757d" }}>
+                      {inboxItems.length}
+                    </Badge>
+                  )}
                 </div>
               </Card.Header>
-              <Card.Body className="pt-3">
-                <div className="d-flex flex-column gap-3">
-                  {inboxItems.map((item) => (
-                    <div
-                      key={item.id}
-                      className="d-flex align-items-start gap-3 p-3 rounded-3 cursor-pointer hover-lift"
-                      style={{
-                        backgroundColor: "#f8f9fa",
-                        border: "1px solid #e9ecef",
-                      }}
-                    >
+              <Card.Body className="p-3">
+                {inboxItems.length > 0 ? (
+                  <div className="d-flex flex-column gap-2">
+                    {inboxItems.map((item) => (
                       <div
-                        className="d-flex align-items-center justify-content-center rounded-circle"
+                        key={item.id}
+                        className="d-flex align-items-center gap-2 p-2 rounded"
                         style={{
-                          width: 40,
-                          height: 40,
-                          backgroundColor:
-                            item.prioridade === "alta" ? "#dc3545" : "#ffc107",
-                          color: "white",
+                          backgroundColor: "#f8f9fa",
+                          border: "1px solid #e9ecef",
+                          cursor: "pointer",
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = "#f1f3f5";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = "#f8f9fa";
                         }}
                       >
-                        {item.tipo === "exame" && <FaFileMedical size={16} />}
-                        {item.tipo === "mensagem" && <FaComments size={16} />}
-                        {item.tipo === "estoque" && <FaBox size={16} />}
+                        <div
+                          className="d-flex align-items-center justify-content-center rounded"
+                          style={{
+                            width: 32,
+                            height: 32,
+                            backgroundColor: "#e9ecef",
+                            color: "#6c757d",
+                          }}
+                        >
+                          {item.tipo === "exame" && <FaFileMedical size={14} />}
+                          {item.tipo === "mensagem" && <FaComments size={14} />}
+                          {item.tipo === "estoque" && <FaBox size={14} />}
+                        </div>
+                        <div className="flex-grow-1">
+                          <h6 className="fw-semibold text-dark mb-0" style={{ fontSize: "14px" }}>
+                            {item.titulo}
+                          </h6>
+                          <small className="text-muted" style={{ fontSize: "12px" }}>
+                            {item.paciente || item.produto} •{" "}
+                            {new Date(item.data).toLocaleDateString("pt-BR")}
+                          </small>
+                        </div>
                       </div>
-                      <div className="flex-grow-1">
-                        <h6 className="fw-semibold text-dark mb-1">
-                          {item.titulo}
-                        </h6>
-                        <p className="text-muted mb-1" style={{ fontSize: 13 }}>
-                          {item.descricao}
-                        </p>
-                        <small className="text-muted">
-                          {item.paciente || item.produto} •{" "}
-                          {new Date(item.data).toLocaleDateString("pt-BR")}
-                        </small>
-                      </div>
-                      <Button variant="outline-primary" size="sm">
-                        Ver
-                      </Button>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-4">
+                    <FaInbox size={32} className="text-muted mb-2" />
+                    <p className="text-muted mb-0" style={{ fontSize: "13px" }}>
+                      Nenhuma mensagem
+                    </p>
+                  </div>
+                )}
               </Card.Body>
             </Card>
           </Col>
@@ -402,93 +419,79 @@ const DashboardVeterinario = () => {
           {/* Bloco 2: Agenda de Hoje */}
           <Col lg={6}>
             <Card
-              className="border-0 shadow-sm h-100"
-              style={{ borderRadius: 16 }}
+              className="border h-100"
+              style={{ borderRadius: 8, borderColor: "#e9ecef" }}
             >
-              <Card.Header className="bg-white border-0 pb-0">
+              <Card.Header
+                className="bg-white border-0 pb-2"
+                style={{ borderBottom: "1px solid #e9ecef" }}
+              >
                 <div className="d-flex justify-content-between align-items-center">
-                  <h5 className="fw-semibold text-dark mb-0">
-                    <FaClock className="me-2 text-primary" />
+                  <h6 className="fw-semibold text-dark mb-0" style={{ fontSize: "15px" }}>
+                    <FaClock className="me-2" style={{ color: "#6c757d" }} />
                     Agenda de Hoje
-                  </h5>
+                  </h6>
                   <Button
                     variant="link"
-                    className="text-primary p-0"
+                    className="p-0 text-decoration-none"
+                    style={{ color: "#6c757d", fontSize: "13px" }}
                     onClick={() => handleCardClick("agenda")}
                   >
                     Ver todas
                   </Button>
                 </div>
               </Card.Header>
-              <Card.Body className="pt-3">
+              <Card.Body className="p-3">
                 {consultasHoje.length > 0 ? (
-                  <div className="d-flex flex-column gap-3">
+                  <div className="d-flex flex-column gap-2">
                     {consultasHoje.slice(0, 4).map((consulta) => (
                       <div
                         key={consulta.id}
-                        className="d-flex justify-content-between align-items-center p-3 rounded-3"
+                        className="d-flex justify-content-between align-items-center p-2 rounded"
                         style={{
-                          backgroundColor:
-                            consulta.status === "confirmada"
-                              ? "#f8f9fa"
-                              : "#fff3cd",
+                          backgroundColor: "#f8f9fa",
                           border: "1px solid #e9ecef",
                         }}
                       >
-                        <div className="d-flex align-items-center gap-3">
+                        <div className="d-flex align-items-center gap-2">
                           <div
-                            className="d-flex align-items-center justify-content-center rounded-circle"
+                            className="d-flex align-items-center justify-content-center rounded"
                             style={{
-                              width: 40,
-                              height: 40,
-                              backgroundColor:
-                                consulta.status === "confirmada"
-                                  ? "#0DB2AC"
-                                  : "#FABA32",
-                              color: "white",
+                              width: 32,
+                              height: 32,
+                              backgroundColor: "#e9ecef",
+                              color: "#6c757d",
                             }}
                           >
-                            <FaPaw size={16} />
+                            <FaPaw size={14} />
                           </div>
                           <div>
-                            <h6 className="fw-semibold text-dark mb-1">
+                            <h6 className="fw-semibold text-dark mb-0" style={{ fontSize: "14px" }}>
                               {consulta.paciente}
                             </h6>
-                            <p
-                              className="text-muted mb-0"
-                              style={{ fontSize: 13 }}
-                            >
-                              {consulta.tutor} • {consulta.tipo}
-                            </p>
+                            <small className="text-muted" style={{ fontSize: "12px" }}>
+                              {consulta.tutor} • {consulta.horario}
+                            </small>
                           </div>
                         </div>
                         <div className="d-flex align-items-center gap-2">
-                          <div className="text-end">
-                            <div className="fw-semibold text-dark">
-                              {consulta.horario}
-                            </div>
-                            {getStatusBadge(consulta.status)}
-                          </div>
-                          <div className="d-flex flex-column gap-1">
-                            <Button variant="outline-primary" size="sm">
-                              Ver Prontuário
-                            </Button>
-                            <Button variant="outline-success" size="sm">
-                              Teleconsulta
-                            </Button>
-                          </div>
+                          {getStatusBadge(consulta.status)}
+                          <Button
+                            variant="outline-secondary"
+                            size="sm"
+                            style={{ borderColor: "#e9ecef", color: "#6c757d", fontSize: "12px" }}
+                          >
+                            Ver
+                          </Button>
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-5">
-                    <FaCalendarAlt size={48} className="text-muted mb-3" />
-                    <h6 className="text-muted">
+                  <div className="text-center py-4">
+                    <FaCalendarAlt size={32} className="text-muted mb-2" />
+                    <p className="text-muted mb-0" style={{ fontSize: "13px" }}>
                       Nenhuma consulta agendada para hoje
-                    </h6>
-                    <p className="text-muted" style={{ fontSize: 14 }}>
-                      Aproveite para organizar sua agenda.
                     </p>
                   </div>
                 )}
@@ -497,48 +500,50 @@ const DashboardVeterinario = () => {
           </Col>
         </Row>
 
-        {/* Bloco 3: Acesso Rápido */}
-        <Row className="mt-4">
+        {/* Acesso Rápido */}
+        <Row className="mt-3">
           <Col xs={12}>
-            <Card className="border-0 shadow-sm" style={{ borderRadius: 16 }}>
-              <Card.Body className="p-4">
-                <h6 className="fw-semibold text-dark mb-3">Acesso Rápido</h6>
-                <div className="d-flex flex-wrap gap-3">
+            <Card className="border" style={{ borderRadius: 8, borderColor: "#e9ecef" }}>
+              <Card.Body className="p-3">
+                <h6 className="fw-semibold text-dark mb-3" style={{ fontSize: "15px" }}>
+                  Acesso Rápido
+                </h6>
+                <div className="d-flex flex-wrap gap-2">
                   <Button
-                    variant="primary"
-                    size="lg"
-                    className="rounded-pill px-4"
+                    variant="outline-secondary"
+                    size="sm"
                     onClick={() => handleCardClick("agenda")}
+                    style={{ borderColor: "#e9ecef", color: "#6c757d" }}
                   >
                     <FaPlus className="me-2" />
                     Nova Consulta
                   </Button>
                   <Button
-                    variant="success"
-                    size="lg"
-                    className="rounded-pill px-4"
+                    variant="outline-secondary"
+                    size="sm"
                     onClick={() => handleCardClick("pacientes")}
+                    style={{ borderColor: "#e9ecef", color: "#6c757d" }}
                   >
                     <FaUsers className="me-2" />
                     Novo Paciente
                   </Button>
                   <Button
-                    variant="info"
-                    size="lg"
-                    className="rounded-pill px-4"
+                    variant="outline-secondary"
+                    size="sm"
                     onClick={() => handleCardClick("buscar-paciente")}
+                    style={{ borderColor: "#e9ecef", color: "#6c757d" }}
                   >
                     <FaSearch className="me-2" />
                     Buscar Paciente
                   </Button>
                   <Button
-                    variant="warning"
-                    size="lg"
-                    className="rounded-pill px-4"
+                    variant="outline-secondary"
+                    size="sm"
                     onClick={() => handleCardClick("estoque")}
+                    style={{ borderColor: "#e9ecef", color: "#6c757d" }}
                   >
                     <FaBox className="me-2" />
-                    Gestão de Estoque
+                    Estoque
                   </Button>
                 </div>
               </Card.Body>
@@ -547,24 +552,34 @@ const DashboardVeterinario = () => {
         </Row>
 
         {/* Gráficos */}
-        <Row className="mt-4">
-          <Col lg={6}>
-            <SimpleChart
-              title="Faturamento Mensal"
-              data={faturamentoData}
-              color="#0DB2AC"
-              height={200}
-            />
-          </Col>
-          <Col lg={6}>
-            <SimpleChart
-              title="Serviços Realizados"
-              data={servicosData}
-              color="#FC694D"
-              height={200}
-            />
-          </Col>
-        </Row>
+        {faturamentoData.length > 0 || servicosData.length > 0 ? (
+          <Row className="mt-3">
+            <Col lg={6}>
+              <Card className="border" style={{ borderRadius: 8, borderColor: "#e9ecef" }}>
+                <Card.Body className="p-3">
+                  <SimpleChart
+                    title="Faturamento Mensal"
+                    data={faturamentoData}
+                    color="#6c757d"
+                    height={180}
+                  />
+                </Card.Body>
+              </Card>
+            </Col>
+            <Col lg={6}>
+              <Card className="border" style={{ borderRadius: 8, borderColor: "#e9ecef" }}>
+                <Card.Body className="p-3">
+                  <SimpleChart
+                    title="Serviços Realizados"
+                    data={servicosData}
+                    color="#6c757d"
+                    height={180}
+                  />
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
+        ) : null}
       </div>
     </DashboardLayout>
   );
